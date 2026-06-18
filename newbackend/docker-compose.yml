@@ -1,0 +1,45 @@
+version: '3.8'
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: 100xwins_postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: 100xwins
+      POSTGRES_PASSWORD: password123
+      POSTGRES_DB: 100xwins_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - 100xwins_net
+
+  # Redis Cache & Pub/Sub
+  redis:
+    image: redis:7-alpine
+    container_name: 100xwins_redis
+    ports:
+      - "6379:6379"
+    networks:
+      - 100xwins_net
+
+  # RabbitMQ Message Broker
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: 100xwins_rabbitmq
+    ports:
+      - "5672:5672"   # AMQP
+      - "15672:15672" # Management UI
+    environment:
+      RABBITMQ_DEFAULT_USER: user
+      RABBITMQ_DEFAULT_PASS: password
+    networks:
+      - 100xwins_net
+
+networks:
+  100xwins_net:
+    driver: bridge
+
+volumes:
+  postgres_data:

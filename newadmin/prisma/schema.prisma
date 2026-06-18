@@ -1,0 +1,696 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  TECH_MASTER
+  SUPER_ADMIN
+  MANAGER
+  MASTER      // New: Level 1 Agent
+  AGENT       // New: Level 2 Agent
+  USER
+}
+
+model User {
+  id          Int      @id @default(autoincrement())
+  email       String?  @unique
+  phoneNumber String?  @unique
+  password    String
+  username    String?  @unique
+  firstName   String?
+  lastName    String?
+  city        String?
+  role        Role     @default(USER)
+  currency    String?  @default("INR")
+  country     String?  // ISO-2 country code
+  isBanned    Boolean  @default(false)
+  bonus_id    String?
+  balance     Float    @default(0)
+  exposure    Float    @default(0)
+  fiatBonus   Float    @default(0)
+  cryptoBonus Float    @default(0)
+  casinoBonus Float    @default(0)
+  sportsBonus Float    @default(0)
+  cryptoBalance Float  @default(0)
+  activeWallet  String @default("fiat")
+  wageringRequired     Float @default(0)
+  wageringDone         Float @default(0)
+  casinoBonusWageringRequired Float @default(0)
+  casinoBonusWageringDone     Float @default(0)
+  sportsBonusWageringRequired Float @default(0)
+  sportsBonusWageringDone     Float @default(0)
+  depositWageringRequired Float @default(0)
+  depositWageringDone     Float @default(0)
+  totalDeposited   Float @default(0)
+  totalWagered     Float @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  casinoTransactions CasinoTransaction[]
+  transactions Transaction[]
+  notifications Notification[]
+  // bets relation removed as Bet is now in MongoDB
+
+  // Referral System
+  referralCode    String?  @unique
+  referrerId      Int?
+  referrer        User?    @relation("UserReferrals", fields: [referrerId], references: [id])
+  referrals       User[]   @relation("UserReferrals")
+  referralHistoryGiven ReferralHistory[] @relation("ReferrerRelation")
+  referralHistoryReceived ReferralHistory[] @relation("ReferredRelation")
+
+  // Manager System
+  managerId       Int?
+  manager         User?    @relation("UserManager", fields: [managerId], references: [id])
+  managedUsers    User[]   @relation("UserManager")
+
+  // KYC & Responsible Gambling
+  kycStatus       KycStatus @default(NONE)
+  kycDocuments    KycDocument[]
+  depositLimit    Float?
+  lossLimit       Float?
+  selfExclusionUntil DateTime?
+
+  // Support
+  supportTickets  SupportTicket[]
+
+  // VIP
+  vipTier         VipTier   @default(NONE)
+  vipApplication  VipApplication?
+
+  // User Bonuses
+  userBonuses     UserBonus[]
+
+}
+
+enum KycStatus {
+  NONE
+  PENDING
+  VERIFIED
+  REJECTED
+}
+
+model KycDocument {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  type      String   // ID_CARD, PASSPORT, PROOF_OF_ADDRESS
+  url       String
+  status    KycStatus @default(PENDING)
+  reason    String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+model CasinoTransaction {
+  id          Int      @id @default(autoincrement())
+  txn_id      String   @unique
+  user_id     Int
+  username    String
+  amount      Float
+  type        String   // debit, credit, refund
+  provider    String
+  game_code   String
+  game_name   String?
+  round_id    String?
+  wallet_type String   @default("fiat")
+  timestamp   DateTime @default(now())
+  user        User     @relation(fields: [user_id], references: [id])
+}
+
+model Transaction {
+  id              Int      @id @default(autoincrement())
+  userId          Int
+  amount          Float
+  type            String   // DEPOSIT, WITHDRAWAL
+  status          String   @default("PENDING") // PENDING, APPROVED, REJECTED
+  paymentMethod   String?
+  paymentDetails  Json?
+  transactionId   String?  @unique // unique transaction id from payment gateway or manual reference
+  proof           String?
+  utr             String?  @unique
+  adminId         Int?     // Admin who approved/rejected
+  remarks         String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  user            User     @relation(fields: [userId], references: [id])
+}
+
+model SystemConfig {
+  id        Int      @id @default(autoincrement())
+  key       String   @unique
+  value     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+
+model HomeCategory {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String?
+  image       String?
+  link        String
+  isLarge     Boolean  @default(false)
+  order       Int      @default(0)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model ReferralReward {
+  id             Int      @id @default(autoincrement())
+  name           String
+  description    String?
+  conditionType  String   // SIGNUP, DEPOSIT_FIRST, DEPOSIT_RECURRING, BET_Volume
+  conditionValue Float    @default(0) // Minimum deposit/bet amount to trigger
+  rewardType     String   // FIXED, PERCENTAGE
+  rewardAmount   Float    // Fixed amount or percentage value
+  isActive       Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  referralHistory ReferralHistory[]
+}
+
+model PaymentMethod {
+  id        Int      @id @default(autoincrement())
+  name      String   // UPI, BANK, CRYPTO
+  type      String   // DEPOSIT, WITHDRAWAL
+  minAmount Float
+  maxAmount Float
+  fee       Float    @default(0)
+  feeType   String   @default("PERCENTAGE") // PERCENTAGE, FIXED
+  isActive  Boolean  @default(true)
+  details   Json?    // Bank details or wallet address
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ReferralHistory {
+  id             Int      @id @default(autoincrement())
+  referrerId     Int
+  referredUserId Int
+  rewardId       Int?
+  amount         Float
+  status         String   @default("PENDING") // PENDING, COMPLETED, FAILED
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  referrer       User     @relation("ReferrerRelation", fields: [referrerId], references: [id])
+  referredUser   User     @relation("ReferredRelation", fields: [referredUserId], references: [id])
+  reward         ReferralReward? @relation(fields: [rewardId], references: [id])
+}
+
+model SupportTicket {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  status    String   @default("OPEN") // OPEN, CLOSED
+  subject   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id])
+  messages  SupportMessage[]
+}
+
+model SupportMessage {
+  id        Int      @id @default(autoincrement())
+  ticketId  Int
+  sender    String   // 'USER' or 'ADMIN'
+  message   String
+  createdAt DateTime @default(now())
+  ticket    SupportTicket @relation(fields: [ticketId], references: [id])
+}
+
+model AuditLog {
+  id        Int      @id @default(autoincrement())
+  adminId   Int
+  action    String   // 'UPDATE_USER', 'APPROVE_WITHDRAWAL', etc.
+  details   Json?
+  ipAddress String?
+  createdAt DateTime @default(now())
+}
+
+// ─── VIP System ───────────────────────────────────────────────────────────────
+
+enum VipTier {
+  NONE
+  SILVER
+  GOLD
+  PLATINUM
+  DIAMOND
+}
+
+enum VipStatus {
+  PENDING
+  UNDER_REVIEW
+  APPROVED
+  REJECTED
+  TRANSFER_REQUESTED
+}
+
+model VipApplication {
+  id               Int       @id @default(autoincrement())
+  userId           Int       @unique
+  user             User      @relation(fields: [userId], references: [id])
+  status           VipStatus @default(PENDING)
+  message          String?   @db.Text
+  currentPlatform  String?
+  platformUsername String?
+  monthlyVolume    Float?
+  reviewedBy       Int?
+  reviewNotes      String?   @db.Text
+  reviewedAt       DateTime?
+  assignedTier     VipTier?
+  ipAddress        String?
+  userAgent        String?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  @@index([status])
+  @@index([createdAt])
+  @@index([userId])
+}
+
+// ─── Bonus Wagering Tracking ──────────────────────────────────────────────────
+
+enum BonusStatus {
+  ACTIVE
+  COMPLETED
+  FORFEITED
+  EXPIRED
+}
+
+model Notification {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  title     String
+  body      String
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([isRead])
+}
+
+model UserBonus {
+  id               Int         @id @default(autoincrement())
+  userId           Int
+  user             User        @relation(fields: [userId], references: [id])
+  bonusId          String
+  bonusCode        String
+  bonusTitle       String
+  bonusCurrency    String      @default("INR")
+  applicableTo     String      @default("BOTH")
+  depositAmount    Float
+  bonusAmount      Float
+  wageringRequired Float
+  wageringDone     Float       @default(0)
+  status           BonusStatus @default(ACTIVE)
+  isEnabled        Boolean     @default(false)
+  expiresAt        DateTime?
+  completedAt      DateTime?
+  forfeitedAt      DateTime?
+  createdAt        DateTime    @default(now())
+  updatedAt        DateTime    @updatedAt
+  @@index([userId])
+  @@index([status])
+}
+
+// ─── Email OTP ───────────────────────────────────────────────────────────────
+/// Short-lived OTP codes delivered via Email API.
+/// purpose: "REGISTER" | "FORGOT_PASSWORD"
+model EmailOtp {
+  id          Int      @id @default(autoincrement())
+  email       String
+  code        String
+  purpose     String   // "REGISTER" | "FORGOT_PASSWORD" | "BIND_EMAIL"
+  expiresAt   DateTime
+  used        Boolean  @default(false)
+  attempts    Int      @default(0)  // failed verify attempts; invalidated after 5
+  createdAt   DateTime @default(now())
+
+  @@index([email, purpose])
+  @@index([expiresAt])
+}
+
+// ─── Chatwoot Integration ────────────────────────────────────────────────────
+
+model ChatwootConfig {
+  id              Int       @id @default(autoincrement())
+  instanceUrl     String
+  apiToken        String
+  accountId       Int
+  agentBotToken   String?
+  webhookSecret   String?
+  autoSyncUsers   Boolean   @default(false)
+  defaultInboxId  Int?
+  isEnabled       Boolean   @default(true)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+}
+
+// ─── Chatbot Automation System ──────────────────────────────────────────────
+
+model ChatbotProfile {
+  id              Int       @id @default(autoincrement())
+  name            String
+  slug            String    @unique
+  avatar          String?
+  personality     String?
+  tone            String    @default("professional")
+  responseDelay   Int       @default(1000)
+  typingIndicator Boolean   @default(true)
+  isEnabled       Boolean   @default(true)
+  workingHoursOnly Boolean  @default(false)
+  workingHoursStart String?
+  workingHoursEnd   String?
+  workingTimezone   String?
+  channels        ChatbotChannelConfig[]
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+}
+
+model ChatbotChannelConfig {
+  id          Int       @id @default(autoincrement())
+  botId       Int
+  channel     String
+  isEnabled   Boolean   @default(true)
+  priority    Int       @default(0)
+  settings    Json?
+  bot         ChatbotProfile @relation(fields: [botId], references: [id], onDelete: Cascade)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@unique([botId, channel])
+}
+
+// ─── Knowledge Base ─────────────────────────────────────────────────────────
+
+model KnowledgeCategory {
+  id          Int       @id @default(autoincrement())
+  name        String
+  slug        String    @unique
+  description String?
+  parentId    Int?
+  parent      KnowledgeCategory?  @relation("CategoryTree", fields: [parentId], references: [id])
+  children    KnowledgeCategory[] @relation("CategoryTree")
+  articles    KnowledgeArticle[]
+  sortOrder   Int       @default(0)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model KnowledgeArticle {
+  id          Int       @id @default(autoincrement())
+  title       String
+  content     String    @db.Text
+  categoryId  Int?
+  category    KnowledgeCategory? @relation(fields: [categoryId], references: [id])
+  tags        String[]
+  priority    Int       @default(0)
+  isPublished Boolean   @default(true)
+  version     Int       @default(1)
+  metadata    Json?
+  createdBy   Int?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  versions    KnowledgeArticleVersion[]
+
+  @@index([categoryId])
+  @@index([isPublished])
+}
+
+model KnowledgeArticleVersion {
+  id          Int       @id @default(autoincrement())
+  articleId   Int
+  article     KnowledgeArticle @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  title       String
+  content     String    @db.Text
+  version     Int
+  changedBy   Int?
+  createdAt   DateTime  @default(now())
+
+  @@index([articleId])
+}
+
+// ─── Intents & Entities ─────────────────────────────────────────────────────
+
+model ChatbotIntent {
+  id                  Int       @id @default(autoincrement())
+  name                String    @unique
+  displayName         String
+  description         String?
+  category            String?
+  confidenceThreshold Float     @default(0.7)
+  isEnabled           Boolean   @default(true)
+  priority            Int       @default(0)
+  trainingPhrases     ChatbotTrainingPhrase[]
+  responses           ChatbotResponseTemplate[]
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+
+  @@index([category])
+  @@index([isEnabled])
+}
+
+model ChatbotTrainingPhrase {
+  id        Int       @id @default(autoincrement())
+  intentId  Int
+  intent    ChatbotIntent @relation(fields: [intentId], references: [id], onDelete: Cascade)
+  phrase    String
+  language  String    @default("en")
+  createdAt DateTime  @default(now())
+
+  @@index([intentId])
+}
+
+model ChatbotEntity {
+  id          Int       @id @default(autoincrement())
+  name        String    @unique
+  displayName String
+  type        String
+  pattern     String?
+  values      Json?
+  synonyms    ChatbotSynonym[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model ChatbotSynonym {
+  id        Int       @id @default(autoincrement())
+  entityId  Int
+  entity    ChatbotEntity @relation(fields: [entityId], references: [id], onDelete: Cascade)
+  value     String
+  synonyms  String[]
+  createdAt DateTime  @default(now())
+
+  @@index([entityId])
+}
+
+// ─── Response Templates ─────────────────────────────────────────────────────
+
+model ChatbotResponseTemplate {
+  id            Int       @id @default(autoincrement())
+  name          String
+  intentId      Int?
+  intent        ChatbotIntent? @relation(fields: [intentId], references: [id])
+  content       String    @db.Text
+  contentType   String    @default("text")
+  richMedia     Json?
+  language      String    @default("en")
+  conditions    Json?
+  abTestGroup   String?
+  isEnabled     Boolean   @default(true)
+  priority      Int       @default(0)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([intentId])
+  @@index([isEnabled])
+}
+
+// ─── Auto-Reply Rules ───────────────────────────────────────────────────────
+
+model ChatbotAutoReplyRule {
+  id            Int       @id @default(autoincrement())
+  name          String
+  description   String?
+  conditionType String
+  conditionValue Json
+  responseTemplateId Int?
+  responseText  String?   @db.Text
+  responseRich  Json?
+  priority      Int       @default(0)
+  isEnabled     Boolean   @default(true)
+  isFallback    Boolean   @default(false)
+  scheduleStart DateTime?
+  scheduleEnd   DateTime?
+  channels      String[]
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([isEnabled, priority])
+}
+
+// ─── Quick Replies / Canned Responses ───────────────────────────────────────
+
+model ChatbotQuickReplySet {
+  id          Int       @id @default(autoincrement())
+  name        String
+  category    String?
+  shortcode   String?   @unique
+  replies     ChatbotQuickReply[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model ChatbotQuickReply {
+  id          Int       @id @default(autoincrement())
+  setId       Int
+  set         ChatbotQuickReplySet @relation(fields: [setId], references: [id], onDelete: Cascade)
+  label       String
+  content     String    @db.Text
+  sortOrder   Int       @default(0)
+  usageCount  Int       @default(0)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([setId])
+}
+
+// ─── Conversation Flows ─────────────────────────────────────────────────────
+
+model ChatbotFlow {
+  id          Int       @id @default(autoincrement())
+  name        String
+  description String?
+  triggerType String
+  triggerValue Json?
+  isPublished Boolean   @default(false)
+  isDraft     Boolean   @default(true)
+  version     Int       @default(1)
+  nodes       Json
+  variables   Json?
+  channels    String[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  versions    ChatbotFlowVersion[]
+}
+
+model ChatbotFlowVersion {
+  id        Int       @id @default(autoincrement())
+  flowId    Int
+  flow      ChatbotFlow @relation(fields: [flowId], references: [id], onDelete: Cascade)
+  version   Int
+  nodes     Json
+  variables Json?
+  changedBy Int?
+  createdAt DateTime  @default(now())
+
+  @@index([flowId])
+}
+
+model ChatbotFlowTemplate {
+  id          Int       @id @default(autoincrement())
+  name        String
+  description String?
+  category    String
+  nodes       Json
+  variables   Json?
+  createdAt   DateTime  @default(now())
+}
+
+// ─── User Segment Targeting ─────────────────────────────────────────────────
+
+model ChatbotUserSegment {
+  id          Int       @id @default(autoincrement())
+  name        String    @unique
+  description String?
+  conditions  Json
+  botConfigOverrides Json?
+  autoReplyOverrides Json?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model ChatbotUserBlacklist {
+  id        Int       @id @default(autoincrement())
+  userId    Int       @unique
+  reason    String?
+  createdAt DateTime  @default(now())
+}
+
+model ChatbotUserWhitelist {
+  id        Int       @id @default(autoincrement())
+  userId    Int       @unique
+  reason    String?
+  createdAt DateTime  @default(now())
+}
+
+// ─── Escalation ─────────────────────────────────────────────────────────────
+
+model ChatbotEscalationRule {
+  id              Int       @id @default(autoincrement())
+  name            String
+  triggerType     String
+  triggerConfig   Json
+  routeTo         String?
+  priorityLevel   String    @default("normal")
+  slaMinutes      Int?
+  isEnabled       Boolean   @default(true)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+}
+
+// ─── Greeting / Welcome ─────────────────────────────────────────────────────
+
+model ChatbotGreeting {
+  id            Int       @id @default(autoincrement())
+  name          String
+  greetingType  String
+  channel       String
+  content       String    @db.Text
+  richMedia     Json?
+  conditions    Json?
+  isEnabled     Boolean   @default(true)
+  priority      Int       @default(0)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+// ─── Automation Workflows ───────────────────────────────────────────────────
+
+model ChatbotWorkflow {
+  id            Int       @id @default(autoincrement())
+  name          String
+  description   String?
+  triggerType   String
+  triggerConfig Json
+  actions       Json
+  conditions    Json?
+  isEnabled     Boolean   @default(true)
+  schedule      String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+// ─── A/B Tests ──────────────────────────────────────────────────────────────
+
+model ChatbotABTest {
+  id            Int       @id @default(autoincrement())
+  name          String
+  description   String?
+  variants      Json
+  status        String    @default("draft")
+  startDate     DateTime?
+  endDate       DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+

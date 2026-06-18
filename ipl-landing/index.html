@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Zeero.bet — IPL 2026 Betting & Casino</title>
+  <meta name="description" content="India's #1 sports betting exchange. IPL 2026 live odds, UP TO 800% welcome bonus, live casino. Join 1.2M+ winners on Zeero.bet!" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Syne:wght@700;800&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      /* Main website design tokens */
+      --bg-base: #201E22;
+      --bg-card: #322E2F;
+      --bg-elevated: #2A2A2E;
+      --bg-hover: #3F4044;
+      --divider: #555657;
+      --action-primary: #E37D32;
+      --action-hover: #EFA05B;
+      --action-active: #AE5910;
+      --gold-soft: #EFC083;
+      --gold-muted: #A47C4A;
+      --brown-accent: #5D4027;
+      --text-primary: #E1C1B8;
+      --text-secondary: #C9C0B8;
+      --text-muted: #8D8A89;
+      --text-disabled: #555657;
+      --text-inverse: #1A1208;
+      --success: #4CAF50;
+      --live: #2ECC71;
+      --danger: #E24C4C;
+      --border: rgba(85,86,87,0.5);
+    }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg-base);
+      color: var(--text-primary);
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { text-decoration: none; color: inherit; }
+    ::selection { background: var(--action-primary); color: #fff; }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 48px;
+      background: rgba(32,30,34,0.85);
+      backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      transition: padding 0.3s, background 0.3s;
+    }
+    nav.scrolled { padding: 10px 48px; background: rgba(32,30,34,0.97); }
+
+    .logo { display: flex; align-items: center; gap: 10px; }
+    .logo-mark {
+      width: 40px; height: 40px; border-radius: 12px;
+      background: linear-gradient(135deg, var(--action-primary), var(--action-hover));
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 800; color: var(--text-inverse);
+      box-shadow: 0 4px 16px rgba(227,125,50,0.35);
+    }
+    .logo-name {
+      font-family: 'Syne', sans-serif; font-size: 21px; font-weight: 800;
+      color: var(--text-primary);
+    }
+
+    .nav-center { display: flex; gap: 28px; }
+    .nav-center a { font-size: 14px; font-weight: 600; color: var(--text-muted); transition: color 0.2s; }
+    .nav-center a:hover { color: var(--text-primary); }
+
+    .nav-right { display: flex; align-items: center; gap: 12px; }
+    .btn-solid {
+      font-size: 14px; font-weight: 800; color: var(--text-inverse);
+      padding: 10px 24px; background: var(--action-primary); border-radius: 10px;
+      border: none; cursor: pointer; transition: all 0.3s; display: inline-block;
+      box-shadow: 0 0 20px rgba(227,125,50,0.2);
+    }
+    .btn-solid:hover { background: var(--action-hover); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(227,125,50,0.35); }
+
+    .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; padding: 6px; }
+    .hamburger span { width: 22px; height: 2px; background: var(--text-primary); border-radius: 2px; }
+    .mobile-menu {
+      display: none; position: fixed; top: 68px; left: 0; right: 0; z-index: 199;
+      background: rgba(32,30,34,0.98); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border);
+      flex-direction: column; padding: 16px 24px;
+    }
+    .mobile-menu.open { display: flex; }
+    .mobile-menu a { font-size: 16px; font-weight: 600; color: var(--text-muted); padding: 13px 0; border-bottom: 1px solid var(--border); }
+    .mobile-menu a:last-child { border-bottom: none; }
+    .mobile-menu a:hover { color: var(--action-primary); }
+    .mobile-cta {
+      margin-top: 16px !important; text-align: center; background: var(--action-primary) !important;
+      color: var(--text-inverse) !important; font-weight: 800 !important; padding: 14px !important;
+      border-radius: 12px !important; border: none !important;
+    }
+
+    /* ── TICKER ── */
+    .ticker-bar {
+      background: var(--bg-elevated); overflow: hidden; white-space: nowrap;
+      border-bottom: 1px solid var(--border); padding: 9px 0;
+    }
+    .ticker-inner { display: inline-flex; gap: 56px; animation: tick 32s linear infinite; }
+    .ticker-item { font-size: 13px; font-weight: 600; color: var(--text-muted); display: inline-flex; align-items: center; gap: 8px; }
+    .ticker-item b { color: var(--action-primary); }
+    @keyframes tick { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+
+    /* ── HERO ── */
+    .hero {
+      position: relative; min-height: 100svh; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; text-align: center;
+      padding: 150px 24px 80px; overflow: hidden;
+    }
+    .hero-bg {
+      position: absolute; inset: 0; z-index: 0;
+      background: url('./hero.png') center/cover no-repeat;
+      filter: brightness(0.35) saturate(1.1) sepia(0.15);
+      animation: heroZ 28s ease-in-out infinite alternate;
+    }
+    @keyframes heroZ { from{transform:scale(1)} to{transform:scale(1.06)} }
+    .hero-grad {
+      position: absolute; inset: 0; z-index: 1;
+      background: radial-gradient(ellipse 80% 50% at 50% 100%, var(--bg-base) 0%, transparent 80%),
+                  linear-gradient(to bottom, rgba(32,30,34,0.7) 0%, transparent 35%, var(--bg-base) 100%);
+    }
+    .hero-content { position: relative; z-index: 2; max-width: 760px; }
+
+    .tag {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(227,125,50,0.12); border: 1px solid rgba(227,125,50,0.3);
+      color: var(--action-primary); font-size: 12px; font-weight: 700; letter-spacing: 2px;
+      text-transform: uppercase; padding: 7px 16px; border-radius: 50px; margin-bottom: 26px;
+    }
+    .tag .dot { width: 7px; height: 7px; background: var(--live); border-radius: 50%; box-shadow: 0 0 8px var(--live); animation: blink 1.4s ease-in-out infinite; }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+    .hero-title {
+      font-family: 'Syne', sans-serif; font-size: clamp(48px, 10vw, 96px); font-weight: 800;
+      line-height: 1.0; margin-bottom: 22px; letter-spacing: -2px; color: var(--text-primary);
+    }
+    .hero-title .accent {
+      background: linear-gradient(90deg, var(--action-primary), var(--action-hover), var(--gold-soft));
+      background-size: 200%;
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+      animation: shimmer 4s linear infinite;
+    }
+    @keyframes shimmer { to{background-position:200% center} }
+
+    .hero-sub {
+      font-size: clamp(15px, 2.5vw, 19px); color: var(--text-secondary); line-height: 1.7;
+      margin-bottom: 40px; max-width: 560px; margin-left: auto; margin-right: auto;
+    }
+    .hero-sub strong { color: var(--action-primary); font-weight: 700; }
+
+    .hero-cta { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; margin-bottom: 52px; }
+    .cta-main {
+      display: inline-flex; align-items: center; gap: 10px;
+      background: linear-gradient(135deg, var(--action-primary), var(--action-hover));
+      color: var(--text-inverse); font-weight: 800; font-size: 16px; padding: 17px 38px;
+      border-radius: 12px; border: none; cursor: pointer;
+      box-shadow: 0 0 20px rgba(227,125,50,0.35), 0 4px 12px rgba(227,125,50,0.2);
+      transition: all 0.35s; text-transform: uppercase; letter-spacing: 1px;
+    }
+    .cta-main:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 0 30px rgba(227,125,50,0.5); }
+    .cta-alt {
+      display: inline-flex; align-items: center; gap: 10px;
+      background: var(--bg-card); color: var(--text-primary); font-weight: 700; font-size: 16px;
+      padding: 17px 34px; border-radius: 12px; border: 1px solid var(--border);
+      cursor: pointer; transition: all 0.35s;
+    }
+    .cta-alt:hover { background: var(--bg-hover); border-color: var(--action-primary); transform: translateY(-3px); }
+
+    .trust-pills { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
+    .pill {
+      display: flex; align-items: center; gap: 6px;
+      background: var(--bg-card); border: 1px solid var(--border);
+      padding: 9px 16px; border-radius: 10px; font-size: 13px; font-weight: 600;
+      color: var(--text-secondary); transition: all 0.2s;
+    }
+    .pill:hover { border-color: var(--action-primary); color: var(--text-primary); }
+
+    /* ── STATS ── */
+    .stats-section { background: var(--bg-elevated); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+    .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); max-width: 1200px; margin: 0 auto; }
+    .stat-block { padding: 40px 20px; text-align: center; border-right: 1px solid var(--border); }
+    .stat-block:last-child { border-right: none; }
+    .stat-val {
+      font-family: 'Syne', sans-serif; font-size: clamp(38px, 4.5vw, 56px); font-weight: 800;
+      color: var(--text-primary); line-height: 1; margin-bottom: 8px;
+    }
+    .stat-val i { font-style: normal; color: var(--action-primary); }
+    .stat-lbl { font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 2px; }
+
+    /* ── SECTION COMMON ── */
+    .container { max-width: 1200px; margin: 0 auto; padding: 100px 24px; }
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; }
+    .section-eye { color: var(--action-primary); font-size: 13px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 14px; }
+    .section-h2 { font-family: 'Syne', sans-serif; font-size: clamp(34px, 5vw, 56px); font-weight: 800; line-height: 1.1; margin-bottom: 18px; color: var(--text-primary); }
+    .section-p { font-size: 16px; color: var(--text-secondary); line-height: 1.8; margin-bottom: 28px; }
+    .section-p strong { color: var(--action-primary); }
+    .accent { color: var(--action-primary); }
+
+    /* ── BONUS CARD ── */
+    .bonus-card {
+      background: var(--bg-card); border: 1px solid rgba(227,125,50,0.2); border-radius: 24px;
+      padding: 36px; position: relative; overflow: hidden;
+      box-shadow: 0 24px 50px rgba(0,0,0,0.4);
+      animation: floatC 7s ease-in-out infinite;
+    }
+    @keyframes floatC { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-12px)} }
+    .bonus-card::before {
+      content:''; position:absolute; top:-60px; right:-60px; width:180px; height:180px;
+      background: radial-gradient(circle, rgba(227,125,50,0.2), transparent 70%);
+    }
+    .bonus-badge { display: inline-block; background: linear-gradient(90deg, var(--action-primary), var(--action-hover)); color: var(--text-inverse); font-size: 12px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; padding: 6px 16px; border-radius: 8px; margin-bottom: 18px; }
+    .bonus-num { font-family: 'Syne', sans-serif; font-size: 76px; font-weight: 800; line-height: 1; color: var(--action-primary); margin-bottom: 4px; text-shadow: 0 0 40px rgba(227,125,50,0.25); }
+    .bonus-lbl { font-size: 13px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 26px; }
+    .bonus-perks { list-style: none; display: flex; flex-direction: column; gap: 12px; margin-bottom: 28px; }
+    .bonus-perks li { display: flex; align-items: center; gap: 12px; font-size: 15px; font-weight: 600; color: var(--text-secondary); }
+    .perk-icon { width: 36px; height: 36px; flex-shrink: 0; border-radius: 10px; background: var(--bg-elevated); border: 1px solid var(--border); font-size: 16px; display: flex; align-items: center; justify-content: center; }
+    .cta-bonus { display: block; text-align: center; background: var(--action-primary); color: var(--text-inverse); font-size: 15px; font-weight: 800; padding: 16px; border-radius: 12px; text-transform: uppercase; letter-spacing: 1px; transition: all 0.3s; box-shadow: 0 0 20px rgba(227,125,50,0.2); }
+    .cta-bonus:hover { background: var(--action-hover); box-shadow: 0 0 30px rgba(227,125,50,0.4); transform: translateY(-2px); }
+
+    /* ── GAMES ── */
+    .games-section { background: var(--bg-elevated); padding: 100px 0; border-top: 1px solid var(--border); }
+    .games-inner { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+    .games-header { text-align: center; margin-bottom: 50px; }
+    .games-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+    .game-tile {
+      background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px;
+      padding: 24px 16px; text-align: center; transition: all 0.3s; cursor: pointer; position: relative; overflow: hidden;
+    }
+    .game-tile::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background: linear-gradient(90deg, var(--action-primary), var(--action-hover)); transform:scaleX(0); transform-origin:left; transition: transform 0.35s; }
+    .game-tile:hover { background: var(--bg-hover); border-color: rgba(227,125,50,0.3); transform: translateY(-6px); box-shadow: 0 16px 40px rgba(0,0,0,0.4); }
+    .game-tile:hover::before { transform: scaleX(1); }
+    .game-emoji { font-size: 44px; margin-bottom: 12px; line-height: 1; }
+    .game-name { font-size: 17px; font-weight: 700; margin-bottom: 5px; color: var(--text-primary); }
+    .game-tag { font-size: 11px; color: var(--action-primary); font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; }
+    .game-sub { font-size: 12px; color: var(--text-muted); margin-top: 5px; line-height: 1.4; }
+
+    /* ── PROVIDERS ── */
+    .providers-strip { background: var(--bg-card); padding: 36px 0; overflow: hidden; position: relative; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+    .providers-strip::before, .providers-strip::after { content:''; position:absolute; top:0; width:100px; height:100%; z-index:2; }
+    .providers-strip::before { left:0; background: linear-gradient(to right, var(--bg-card), transparent); }
+    .providers-strip::after { right:0; background: linear-gradient(to left, var(--bg-card), transparent); }
+    .providers-row { display: flex; gap: 60px; width: max-content; animation: tick 40s linear infinite; align-items: center; }
+    .provider-name { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 700; color: var(--text-disabled); text-transform: uppercase; letter-spacing: 2px; white-space: nowrap; transition: color 0.2s; }
+    .provider-name:hover { color: var(--text-secondary); }
+
+    /* ── FEATURES ── */
+    .features-section { padding: 100px 24px; max-width: 1200px; margin: 0 auto; }
+    .features-header { text-align: center; margin-bottom: 56px; }
+    .features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+    .feat-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 20px; padding: 32px 24px; transition: all 0.35s; }
+    .feat-card:hover { border-color: rgba(227,125,50,0.3); background: var(--bg-hover); transform: translateY(-6px); box-shadow: 0 20px 44px rgba(0,0,0,0.4); }
+    .feat-icon { width: 56px; height: 56px; border-radius: 14px; font-size: 26px; display: flex; align-items: center; justify-content: center; margin-bottom: 20px; background: rgba(227,125,50,0.12); border: 1px solid rgba(227,125,50,0.2); }
+    .feat-title { font-size: 19px; font-weight: 700; margin-bottom: 10px; color: var(--text-primary); }
+    .feat-desc { font-size: 14px; color: var(--text-muted); line-height: 1.75; }
+
+    /* ── CTA BAND ── */
+    .cta-band { position: relative; text-align: center; padding: 110px 24px; overflow: hidden; background: url('./hero.png') center/cover; background-attachment: fixed; }
+    .cta-band::before { content:''; position:absolute; inset:0; background: rgba(32,30,34,0.9); }
+    .cta-band-in { position: relative; z-index: 1; max-width: 680px; margin: 0 auto; }
+    .cta-band h2 { font-family: 'Syne', sans-serif; font-size: clamp(40px, 7vw, 76px); font-weight: 800; line-height: 1.05; margin-bottom: 18px; color: var(--text-primary); }
+    .cta-band p { font-size: 17px; color: var(--text-secondary); margin-bottom: 40px; line-height: 1.65; }
+    .cta-actions { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+
+    /* ── FOOTER ── */
+    footer { background: #1A181C; border-top: 1px solid var(--border); padding: 64px 24px 32px; }
+    .footer-inner { max-width: 1200px; margin: 0 auto; }
+    .footer-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 40px; margin-bottom: 44px; flex-wrap: wrap; }
+    .footer-brand { display: flex; flex-direction: column; gap: 10px; max-width: 260px; }
+    .footer-brand-logo { font-family: 'Syne', sans-serif; font-size: 26px; font-weight: 800; color: var(--text-primary); }
+    .footer-brand-logo span { color: var(--action-primary); }
+    .footer-desc { font-size: 13px; color: var(--text-muted); line-height: 1.7; }
+    .footer-links-group { display: flex; gap: 56px; flex-wrap: wrap; }
+    .footer-col { display: flex; flex-direction: column; gap: 12px; }
+    .footer-col-title { font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; color: var(--text-disabled); margin-bottom: 4px; }
+    .footer-col a { font-size: 14px; color: var(--text-muted); font-weight: 500; transition: color 0.2s; }
+    .footer-col a:hover { color: var(--action-primary); }
+    .footer-bottom { border-top: 1px solid var(--border); padding-top: 24px; font-size: 12px; color: var(--text-disabled); line-height: 1.8; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 1100px) {
+      .two-col { grid-template-columns: 1fr; gap: 44px; }
+      .games-grid { grid-template-columns: repeat(2, 1fr); }
+      .features-grid { grid-template-columns: repeat(2, 1fr); }
+      .container { padding: 80px 28px; }
+    }
+    @media (max-width: 768px) {
+      nav { padding: 12px 20px; }
+      nav.scrolled { padding: 10px 20px; }
+      .nav-center { display: none; }
+      .hamburger { display: flex; }
+      .hero { padding: 110px 20px 60px; }
+      .hero-sub { font-size: 15px; margin-bottom: 32px; }
+      .hero-cta { flex-direction: column; align-items: center; gap: 12px; margin-bottom: 36px; }
+      .cta-main, .cta-alt { width: 100%; max-width: 340px; justify-content: center; }
+      .pill { font-size: 12px; padding: 8px 13px; }
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+      .stat-block { border-right: none; border-bottom: 1px solid var(--border); padding: 28px 14px; }
+      .stat-block:nth-child(odd) { border-right: 1px solid var(--border); }
+      .stat-block:nth-last-child(-n+2) { border-bottom: none; }
+      .container { padding: 56px 20px; }
+      .bonus-card { padding: 28px 22px; }
+      .bonus-num { font-size: 58px; }
+      .games-section { padding: 56px 0; }
+      .games-inner { padding: 0 16px; }
+      .games-grid { gap: 12px; }
+      .game-tile { padding: 18px 12px; }
+      .game-emoji { font-size: 34px; margin-bottom: 10px; }
+      .game-name { font-size: 15px; }
+      .game-sub { font-size: 11px; }
+      .features-section { padding: 56px 20px; }
+      .features-grid { grid-template-columns: 1fr; gap: 14px; }
+      .feat-card { padding: 26px 20px; }
+      .cta-band { padding: 70px 20px; background-attachment: scroll; }
+      .cta-actions { flex-direction: column; align-items: center; }
+      .cta-actions a { width: 100%; max-width: 340px; text-align: center; justify-content: center; display: flex; }
+      footer { padding: 44px 20px 24px; }
+      .footer-top { flex-direction: column; gap: 28px; }
+      .footer-links-group { gap: 28px; }
+      .section-h2 { font-size: clamp(30px, 7vw, 48px); }
+      .games-header, .features-header { margin-bottom: 32px; }
+    }
+    @media (max-width: 480px) {
+      .logo-mark { width: 34px; height: 34px; font-size: 17px; border-radius: 10px; }
+      .logo-name { font-size: 18px; }
+      .btn-solid { padding: 9px 16px; font-size: 13px; border-radius: 8px; }
+      .hero { padding: 96px 16px 48px; }
+      .tag { font-size: 11px; padding: 6px 14px; }
+      .hero-title { font-size: clamp(38px, 11vw, 56px); letter-spacing: -0.5px; }
+      .hero-sub { font-size: 14px; }
+      .cta-main { font-size: 14px; padding: 15px 20px; }
+      .cta-alt { font-size: 14px; padding: 15px 20px; }
+      .pill { font-size: 11px; padding: 7px 11px; }
+      .trust-pills { gap: 6px; }
+      .stat-val { font-size: 32px; }
+      .stat-lbl { font-size: 11px; }
+      .stat-block { padding: 20px 10px; }
+      .container { padding: 40px 16px; }
+      .section-eye { font-size: 11px; }
+      .section-h2 { font-size: 28px; }
+      .section-p { font-size: 14px; }
+      .bonus-card { padding: 22px 16px; border-radius: 18px; }
+      .bonus-num { font-size: 48px; }
+      .bonus-lbl { font-size: 11px; margin-bottom: 18px; }
+      .bonus-perks li { font-size: 13px; gap: 10px; }
+      .perk-icon { width: 32px; height: 32px; font-size: 14px; }
+      .cta-bonus { font-size: 14px; padding: 14px; }
+      .games-section { padding: 40px 0; }
+      .games-inner { padding: 0 12px; }
+      .games-grid { gap: 10px; }
+      .game-tile { padding: 16px 10px; border-radius: 14px; }
+      .game-emoji { font-size: 28px; margin-bottom: 8px; }
+      .game-name { font-size: 14px; }
+      .game-tag { font-size: 10px; }
+      .game-sub { display: none; }
+      .providers-strip { padding: 26px 0; }
+      .provider-name { font-size: 17px; }
+      .features-section { padding: 40px 14px; }
+      .feat-card { padding: 20px 16px; border-radius: 16px; }
+      .feat-icon { width: 44px; height: 44px; font-size: 20px; margin-bottom: 14px; }
+      .feat-title { font-size: 17px; }
+      .feat-desc { font-size: 13px; }
+      .cta-band { padding: 56px 14px; }
+      .cta-band h2 { font-size: 32px; }
+      .cta-band p { font-size: 14px; margin-bottom: 28px; }
+      footer { padding: 36px 14px 20px; }
+      .footer-brand-logo { font-size: 22px; }
+      .footer-desc { font-size: 12px; }
+      .footer-col a { font-size: 13px; }
+      .footer-bottom { font-size: 11px; padding-top: 16px; }
+    }
+    @media (max-width: 360px) {
+      .hero-title { font-size: 34px; }
+      .games-grid { grid-template-columns: 1fr; }
+      .game-tile { display: flex; align-items: center; gap: 12px; text-align: left; }
+      .game-emoji { margin-bottom: 0; flex-shrink: 0; }
+      .trust-pills { flex-direction: column; align-items: center; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="navbar">
+  <a href="index.html" class="logo">
+    <div class="logo-mark">Z</div>
+    <span class="logo-name">ZEERO.BET</span>
+  </a>
+  <div class="nav-center">
+    <a href="index.html#sports">Sports</a>
+    <a href="index.html#casino">Casino</a>
+    <a href="index.html#vip">VIP</a>
+    <a href="terms.html">Terms</a>
+    <a href="privacy.html">Privacy</a>
+    <a href="responsible-gaming.html">Responsible Gaming</a>
+    <a href="contact.html">Contact</a>
+  </div>
+  <div class="nav-right">
+    <div class="hamburger" id="hamburger"><span></span><span></span><span></span></div>
+    <a href="https://zeero.bet" class="btn-solid">Register Free</a>
+  </div>
+</nav>
+
+<!-- MOBILE MENU -->
+<div class="mobile-menu" id="mobileMenu">
+  <a href="index.html#sports">🏏 Sports Betting</a>
+  <a href="index.html#casino">🎲 Live Casino</a>
+  <a href="index.html#vip">💎 VIP Club</a>
+  <a href="terms.html">Terms &amp; Conditions</a>
+  <a href="privacy.html">Privacy Policy</a>
+  <a href="responsible-gaming.html">Responsible Gaming</a>
+  <a href="contact.html">Contact Us</a>
+  <a href="https://zeero.bet" class="mobile-cta">🚀 Register — Claim Bonus</a>
+</div>
+
+<!-- TICKER -->
+<div style="height:68px;"></div>
+<div class="ticker-bar">
+  <div class="ticker-inner">
+    <div class="ticker-item">🏆 Rahul K. won <b>₹45,000</b> on Aviator</div>
+    <div class="ticker-item">🏏 Mumbai Indians — Odds 1.88</div>
+    <div class="ticker-item">🎲 Priya M. won <b>₹1,20,000</b> on Roulette</div>
+    <div class="ticker-item">💰 Aman won <b>₹85,500</b> on Teen Patti</div>
+    <div class="ticker-item">🏏 CSK vs MI — Live Betting Open</div>
+    <div class="ticker-item">🚀 Deepak withdrew <b>₹25,000</b></div>
+    <div class="ticker-item">🏆 Rahul K. won <b>₹45,000</b> on Aviator</div>
+    <div class="ticker-item">🏏 Mumbai Indians — Odds 1.88</div>
+    <div class="ticker-item">🎲 Priya M. won <b>₹1,20,000</b> on Roulette</div>
+    <div class="ticker-item">💰 Aman won <b>₹85,500</b> on Teen Patti</div>
+    <div class="ticker-item">🏏 CSK vs MI — Live Betting Open</div>
+    <div class="ticker-item">🚀 Deepak withdrew <b>₹25,000</b></div>
+  </div>
+</div>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grad"></div>
+  <div class="hero-content">
+    <span class="tag"><span class="dot"></span>IPL 2026 Official Betting</span>
+    <h1 class="hero-title">India's #1<br/><span class="accent">Betting Exchange</span></h1>
+    <p class="hero-sub">
+      Live odds on every IPL 2026 match, <strong>UP TO 800% Welcome Bonus</strong>, and a world-class live casino — all in one place.
+    </p>
+    <div class="hero-cta">
+      <a href="https://zeero.bet" class="cta-main">🎯 Claim 800% Bonus</a>
+      <a href="index.html#casino" class="cta-alt">🎲 Live Casino</a>
+    </div>
+    <div class="trust-pills">
+      <div class="pill">⚡ 5-Min Withdrawals</div>
+      <div class="pill">🔒 100% Secure</div>
+      <div class="pill">🏏 Best IPL Odds</div>
+      <div class="pill">👤 1.2M+ Players</div>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<section class="stats-section" id="sports">
+  <div class="stats-grid">
+    <div class="stat-block"><div class="stat-val"><i>1.2M</i>+</div><div class="stat-lbl">Active Players</div></div>
+    <div class="stat-block"><div class="stat-val">₹<i>500</i>Cr</div><div class="stat-lbl">Monthly Payouts</div></div>
+    <div class="stat-block"><div class="stat-val"><i>3,500</i>+</div><div class="stat-lbl">Casino Games</div></div>
+    <div class="stat-block"><div class="stat-val">&lt;<i>3</i>min</div><div class="stat-lbl">Avg Withdrawal</div></div>
+  </div>
+</section>
+
+<!-- BONUS -->
+<div class="container">
+  <div class="two-col">
+    <div>
+      <div class="section-eye">Welcome Offer</div>
+      <h2 class="section-h2">UP TO <span class="accent">800%</span><br/>Match Bonus</h2>
+      <p class="section-p">Kick-start your IPL 2026 season with the biggest welcome bonus in India. Deposit any amount and we'll multiply it — <strong>up to 800%</strong>.</p>
+      <a href="https://zeero.bet" class="cta-main">🎁 Claim Now</a>
+    </div>
+    <div>
+      <div class="bonus-card">
+        <div class="bonus-badge">🎉 IPL 2026 Special</div>
+        <div class="bonus-num">800%</div>
+        <div class="bonus-lbl">Match Deposit Bonus</div>
+        <ul class="bonus-perks">
+          <li><div class="perk-icon">⚡</div>5-Min Automated Withdrawals</li>
+          <li><div class="perk-icon">🏏</div>Live Odds on Every Match</li>
+          <li><div class="perk-icon">🎰</div>10% Daily Casino Cashback</li>
+          <li><div class="perk-icon">🔒</div>256-Bit Military Security</li>
+        </ul>
+        <a href="https://zeero.bet" class="cta-bonus">🏆 Join Now &amp; Win Big</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CASINO GAMES -->
+<section class="games-section" id="casino">
+  <div class="games-inner">
+    <div class="games-header">
+      <div class="section-eye">Live Casino &amp; Crash Games</div>
+      <h2 class="section-h2">World-Class Games <span class="accent">At Your Fingertips</span></h2>
+    </div>
+    <div class="games-grid">
+      <div class="game-tile"><div class="game-emoji">✈️</div><div class="game-name">Aviator</div><div class="game-tag">Crash Game</div><div class="game-sub">97% RTP · 1000x</div></div>
+      <div class="game-tile"><div class="game-emoji">🃏</div><div class="game-name">Teen Patti Live</div><div class="game-tag">Live Dealer</div><div class="game-sub">Indian Classic · HD</div></div>
+      <div class="game-tile"><div class="game-emoji">🎡</div><div class="game-name">Lightning Roulette</div><div class="game-tag">Multiplier</div><div class="game-sub">Evolution · 500x</div></div>
+      <div class="game-tile"><div class="game-emoji">🐯</div><div class="game-name">Dragon Tiger</div><div class="game-tag">Cards</div><div class="game-sub">Fast · Instant</div></div>
+      <div class="game-tile"><div class="game-emoji">🎰</div><div class="game-name">Slots</div><div class="game-tag">3D Slots</div><div class="game-sub">2,000+ Titles</div></div>
+      <div class="game-tile"><div class="game-emoji">♠️</div><div class="game-name">Andar Bahar</div><div class="game-tag">Indian Card</div><div class="game-sub">Live Dealer</div></div>
+      <div class="game-tile"><div class="game-emoji">🎲</div><div class="game-name">Dice Games</div><div class="game-tag">Skill</div><div class="game-sub">Provably Fair</div></div>
+      <div class="game-tile"><div class="game-emoji">🏏</div><div class="game-name">Sports Exchange</div><div class="game-tag">Live Betting</div><div class="game-sub">IPL · Football</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- PROVIDERS -->
+<div class="providers-strip">
+  <div class="providers-row">
+    <div class="provider-name">Evolution Gaming</div><div class="provider-name">Pragmatic Play</div><div class="provider-name">Ezugi</div><div class="provider-name">Spribe</div><div class="provider-name">Jili Games</div><div class="provider-name">NetEnt</div><div class="provider-name">Red Tiger</div>
+    <div class="provider-name">Evolution Gaming</div><div class="provider-name">Pragmatic Play</div><div class="provider-name">Ezugi</div><div class="provider-name">Spribe</div><div class="provider-name">Jili Games</div><div class="provider-name">NetEnt</div><div class="provider-name">Red Tiger</div>
+  </div>
+</div>
+
+<!-- FEATURES -->
+<section class="features-section" id="vip">
+  <div class="features-header">
+    <div class="section-eye">Why Pros Choose Zeero.bet</div>
+    <h2 class="section-h2">Built for <span class="accent">Champions</span></h2>
+  </div>
+  <div class="features-grid">
+    <div class="feat-card"><div class="feat-icon">💎</div><div class="feat-title">Exclusive VIP Club</div><p class="feat-desc">24/7 account manager, unlimited withdrawals, luxury rewards, and up to 10% weekly cashback for top players.</p></div>
+    <div class="feat-card"><div class="feat-icon">🤝</div><div class="feat-title">Agent Panel 2.0</div><p class="feat-desc">Master Agent system with transparent dashboards, automated settlements, and uncapped lifetime commissions.</p></div>
+    <div class="feat-card"><div class="feat-icon">📱</div><div class="feat-title">Pro Mobile App</div><p class="feat-desc">One-tap betting, live odds updates, biometric login — Android &amp; iOS for the ultimate experience.</p></div>
+    <div class="feat-card"><div class="feat-icon">⚡</div><div class="feat-title">Instant Withdrawals</div><p class="feat-desc">Automated payment engine processes most withdrawals in under 5 minutes. No delays.</p></div>
+    <div class="feat-card"><div class="feat-icon">📊</div><div class="feat-title">Live Odds Engine</div><p class="feat-desc">Sharpest odds on every IPL match, session, over, and ball-by-ball market.</p></div>
+    <div class="feat-card"><div class="feat-icon">🛡️</div><div class="feat-title">Bank-Grade Security</div><p class="feat-desc">256-bit SSL, 2FA, and AI fraud monitoring — 24/7, 365 days a year.</p></div>
+  </div>
+</section>
+
+<!-- CTA BAND -->
+<section class="cta-band">
+  <div class="cta-band-in">
+    <h2>Make <span class="accent">2026</span> Your Winning Year</h2>
+    <p>Join 1.2 Million+ players. Your UP TO 800% Bonus is waiting.</p>
+    <div class="cta-actions">
+      <a href="https://zeero.bet" class="cta-main">🚀 Create Free Account</a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <div class="footer-brand-logo">ZEERO<span>.</span>BET</div>
+        <p class="footer-desc">India's #1 sports betting exchange and live casino. Play responsibly. 18+ only.</p>
+      </div>
+      <div class="footer-links-group">
+        <div class="footer-col">
+          <div class="footer-col-title">Platform</div>
+          <a href="https://zeero.bet">Home</a>
+          <a href="https://zeero.bet/sports">Sports Betting</a>
+          <a href="https://zeero.bet/casino">Live Casino</a>
+          <a href="https://zeero.bet/vip">VIP Program</a>
+        </div>
+        <div class="footer-col">
+          <div class="footer-col-title">Legal</div>
+          <a href="terms.html">Terms &amp; Conditions</a>
+          <a href="privacy.html">Privacy Policy</a>
+          <a href="responsible-gaming.html">Responsible Gaming</a>
+          <a href="contact.html">Contact Us</a>
+        </div>
+      </div>
+    </div>
+    <p class="footer-bottom">© 2020-2026 Zeero.bet. All rights reserved. 18+ only. Gambling involves financial risk. Play responsibly.</p>
+  </div>
+</footer>
+
+<script>
+  const nav = document.getElementById('navbar');
+  window.addEventListener('scroll', () => nav.classList.toggle('scrolled', window.scrollY > 50));
+
+  const hamburger = document.getElementById('hamburger');
+  const mobileMenu = document.getElementById('mobileMenu');
+  hamburger.addEventListener('click', () => mobileMenu.classList.toggle('open'));
+  mobileMenu.querySelectorAll('a').forEach(a => a.addEventListener('click', () => mobileMenu.classList.remove('open')));
+
+  const reveal = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.style.opacity='1'; e.target.style.transform='translateY(0)'; reveal.unobserve(e.target); }});
+  }, { threshold: 0.08, rootMargin: '0px 0px -30px 0px' });
+  document.querySelectorAll('.stat-block, .game-tile, .feat-card, .bonus-card').forEach((el, i) => {
+    el.style.opacity='0'; el.style.transform='translateY(20px)';
+    el.style.transition=`opacity 0.45s ${i*0.05}s ease, transform 0.45s ${i*0.05}s ease`;
+    reveal.observe(el);
+  });
+</script>
+</body>
+</html>

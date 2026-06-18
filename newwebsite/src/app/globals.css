@@ -1,0 +1,1149 @@
+@import "tailwindcss";
+
+:root {
+  /* ═══════════════════════════════════════════════
+     1. CORE BACKGROUND & DARK LAYERS
+     ═══════════════════════════════════════════════ */
+  --bg-base: #0C0D12;           /* Outermost page / outer frame – deep navy */
+  --bg-section: #0F1016;        /* Deep app background / main background */
+  --bg-card: #171921;           /* Card / tile background */
+  --bg-elevated: #1C1E28;       /* Secondary / elevated background */
+  --bg-hover: #262936;          /* Hover / active surface */
+  --divider: #2A2D3A;           /* Divider / subtle border */
+
+  /* Deep stacked layers (used in games, overlays, modals) */
+  --bg-deep: #06070B;           /* Deepest layer – zeero games, dark overlays */
+  --bg-deep-2: #090A10;         /* Second deep layer */
+  --bg-deep-3: #0B0C14;         /* Third deep layer */
+  --bg-deep-4: #080912;         /* Fourth deep variant */
+  --bg-modal: #12141C;          /* Standard modal background */
+  --bg-modal-2: #141620;        /* Variant modal / panel */
+  --bg-modal-3: #161824;        /* Deeper modal variant */
+  --bg-modal-4: #111320;        /* Dark modal frame */
+  --bg-surface: #1A1D28;        /* Surface panels / sheets */
+  --bg-surface-2: #1F2230;      /* Raised / distinct surface */
+  --bg-surface-3: #1C1F2C;      /* Surface variant */
+  --bg-surface-4: #1E2132;      /* Surface variant 2 */
+  --bg-input: #13151E;          /* Input / form field background */
+  --bg-input-2: #151720;        /* Input variant */
+  --bg-well: #121A2A;           /* Blue-tinted well (info, media) */
+  --bg-zeero: #080A12;          /* Zeero originals dark base */
+  --bg-zeero-2: #0A1018;        /* Zeero deeper blue-black */
+  --bg-zeero-3: #070810;        /* Zeero panel background */
+  --bg-game-dark: #0A0C14;      /* Game betslip / dark base (betslip, desktop panel) */
+
+  /* ═══════════════════════════════════════════════
+     2. BRAND / PURPLE (MOST IMPORTANT)
+     ═══════════════════════════════════════════════ */
+  --action-primary: #8B5CF6;    /* Primary purple CTA */
+  --action-hover: #A78BFA;      /* Bright purple hover */
+  --action-active: #7C3AED;     /* Deep purple – pressed state */
+  --gold-soft: #C4B5FD;         /* Soft purple for banners / gradients */
+  --gold-muted: #9D7BD8;        /* Muted purple – icons & highlights */
+  --brown-accent: #2E1065;      /* Dark purple accent */
+
+  /* Brand alpha tints (semi-transparent brand over dark surfaces) */
+  --brand-alpha-05: rgba(139, 92, 246, 0.05);
+  --brand-alpha-08: rgba(139, 92, 246, 0.08);
+  --brand-alpha-10: rgba(139, 92, 246, 0.10);
+  --brand-alpha-12: rgba(139, 92, 246, 0.12);
+  --brand-alpha-20: rgba(139, 92, 246, 0.20);
+  --brand-alpha-25: rgba(139, 92, 246, 0.25);
+  --brand-alpha-28: rgba(139, 92, 246, 0.28);
+  --brand-alpha-30: rgba(139, 92, 246, 0.30);
+  --brand-alpha-35: rgba(139, 92, 246, 0.35);
+  --brand-alpha-40: rgba(139, 92, 246, 0.40);
+
+  /* ═══════════════════════════════════════════════
+     3. TEXT HIERARCHY
+     ═══════════════════════════════════════════════ */
+  --text-primary: #E8ECF4;      /* Headings – cool white */
+  --text-secondary: #B0B8C9;    /* Body / secondary text */
+  --text-muted: #6B7280;        /* Muted / helper text */
+  --text-disabled: #3E4452;     /* Disabled state text */
+  --text-inverse: #FFFFFF;      /* Text on purple/brand backgrounds */
+  --text-white: #FFFFFF;        /* Pure white text */
+  --text-faint: #505868;        /* Very faint text */
+  --text-gray: #5B6478;         /* Gray text */
+  --text-gray-light: #8892A4;   /* Light gray text */
+
+  /* ═══════════════════════════════════════════════
+     4. STATUS – SUCCESS / LIVE
+     ═══════════════════════════════════════════════ */
+  --success-primary: #34D399;   /* Success emerald */
+  --success-bright: #10B981;    /* Bright success */
+  --success-vivid: #2DD4BF;     /* Vivid live teal-green */
+  --live-indicator: #10B981;    /* Live badge green */
+  --success-soft: #0D2818;      /* Soft success background */
+
+  /* Success alpha tints */
+  --success-alpha-10: rgba(52, 211, 153, 0.10);
+  --success-alpha-12: rgba(52, 211, 153, 0.12);
+  --success-alpha-16: rgba(52, 211, 153, 0.16);
+  --success-alpha-20: rgba(52, 211, 153, 0.20);
+  --success-alpha-40: rgba(52, 211, 153, 0.40);
+
+  /* ═══════════════════════════════════════════════
+     5. STATUS – DANGER / ERROR / LOSS
+     ═══════════════════════════════════════════════ */
+  --danger-primary: #E24C4C;    /* Danger red */
+  --danger-bright: #ef4444;     /* Bright red */
+  --danger-vivid: #e74c3c;      /* Vivid red */
+  --danger-deep: #dc2626;       /* Deep danger */
+  --danger-soft: #2A1414;       /* Soft danger background */
+  --danger-muted: #B94A4A;      /* Muted danger */
+
+  /* Danger alpha tints */
+  --danger-alpha-08: rgba(226, 76, 76, 0.08);
+  --danger-alpha-10: rgba(226, 76, 76, 0.10);
+  --danger-alpha-16: rgba(226, 76, 76, 0.16);
+  --danger-alpha-25: rgba(226, 76, 76, 0.25);
+  --danger-alpha-40: rgba(226, 76, 76, 0.40);
+
+  /* ═══════════════════════════════════════════════
+     6. STATUS – WARNING / AMBER
+     ═══════════════════════════════════════════════ */
+  --warning-primary: #F59E0B;   /* Amber warning */
+  --warning-bright: #f0c040;    /* Bright amber */
+  --warning-deep: #e5a100;      /* Deep amber */
+  --warning-soft: #2A1F05;      /* Warning background */
+
+  /* Warning alpha tints */
+  --warning-alpha-08: rgba(245, 158, 11, 0.08);
+  --warning-alpha-12: rgba(245, 158, 11, 0.12);
+  --warning-alpha-15: rgba(245, 158, 11, 0.15);
+  --warning-alpha-25: rgba(245, 158, 11, 0.25);
+
+  /* ═══════════════════════════════════════════════
+     7. STATUS – INFO / BLUE
+     ═══════════════════════════════════════════════ */
+  --info-primary: #6366F1;      /* Info indigo */
+  --info-bright: #818CF8;       /* Bright info */
+  --info-soft: #0F0F20;         /* Info background */
+
+  /* Blue alpha tints */
+  --info-alpha-18: rgba(28, 114, 232, 0.18);
+  --info-alpha-22: rgba(28, 114, 232, 0.22);
+  --info-alpha-30: rgba(28, 114, 232, 0.30);
+
+  /* ═══════════════════════════════════════════════
+     8. ACCENT COLORS
+     ═══════════════════════════════════════════════ */
+  --accent-blue: #3B82F6;
+  --accent-teal: #14B8A6;
+  --accent-teal-bright: #2DD4BF;  /* Tether/USDT green-teal */
+  --accent-purple: #8B5CF6;
+  --accent-purple-soft: #12101F;  /* Purple background */
+  --accent-purple-alpha: rgba(139, 92, 246, 0.30);
+  --accent-cyan: #06B6D4;         /* New: cyan for contrast accents */
+
+  /* ═══════════════════════════════════════════════
+     9. WHITE OVERLAY SCALE (glassmorphism)
+     ═══════════════════════════════════════════════ */
+  --white-02: rgba(255, 255, 255, 0.02);
+  --white-04: rgba(255, 255, 255, 0.04);
+  --white-05: rgba(255, 255, 255, 0.05);
+  --white-06: rgba(255, 255, 255, 0.06);
+  --white-07: rgba(255, 255, 255, 0.07);
+  --white-08: rgba(255, 255, 255, 0.08);
+  --white-10: rgba(255, 255, 255, 0.10);
+  --white-12: rgba(255, 255, 255, 0.12);
+  --white-20: rgba(255, 255, 255, 0.20);
+  --white-50: rgba(255, 255, 255, 0.50);
+
+  /* Glass / blur surfaces */
+  --bg-glass: var(--white-05);
+  --bg-glass-sm: var(--white-04);
+  --bg-glass-hover: var(--white-08);
+  --bg-glass-active: var(--white-10);
+
+  /* ═══════════════════════════════════════════════
+     10. BLACK OVERLAY SCALE (overlays, backdrops)
+     ═══════════════════════════════════════════════ */
+  --black-20: rgba(0, 0, 0, 0.20);
+  --black-25: rgba(0, 0, 0, 0.25);
+  --black-30: rgba(0, 0, 0, 0.30);
+  --black-35: rgba(0, 0, 0, 0.35);
+  --black-40: rgba(0, 0, 0, 0.40);
+  --black-50: rgba(0, 0, 0, 0.50);
+  --black-60: rgba(0, 0, 0, 0.60);
+  --black-70: rgba(0, 0, 0, 0.70);
+  --black-80: rgba(0, 0, 0, 0.80);
+
+  --bg-overlay: var(--black-70);       /* Modal backdrops */
+  --bg-overlay-medium: var(--black-50); /* Medium overlay */
+  --bg-overlay-light: var(--black-40);  /* Light overlay */
+
+  /* ═══════════════════════════════════════════════
+     11. SEMANTIC COMPONENT TOKENS
+     ═══════════════════════════════════════════════ */
+
+  /* Navigation / Header */
+  --nav-bg: var(--bg-modal);
+  --nav-border: var(--divider);
+  --nav-item-active: var(--action-primary);
+  --nav-item-hover-bg: var(--bg-hover);
+  --nav-item-active-bg: var(--brand-alpha-12);
+  --nav-text: var(--text-primary);
+  --nav-text-muted: var(--text-muted);
+
+  /* Left Sidebar */
+  --sidebar-bg: var(--bg-section);
+  --sidebar-border: var(--divider);
+  --sidebar-item-hover: var(--bg-elevated);
+  --sidebar-item-active-bg: var(--brand-alpha-12);
+  --sidebar-item-active-text: var(--action-primary);
+  --sidebar-item-active-border: var(--action-primary);
+  --sidebar-section-header: var(--text-muted);
+
+  /* Cards */
+  --card-bg: var(--bg-card);
+  --card-bg-elevated: var(--bg-elevated);
+  --card-border: var(--divider);
+  --card-hover-bg: var(--bg-hover);
+  --card-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+
+  /* Inputs / Forms */
+  --input-bg: var(--bg-input);
+  --input-border: var(--divider);
+  --input-border-focus: var(--action-primary);
+  --input-text: var(--text-primary);
+  --input-placeholder: var(--text-muted);
+  --input-label: var(--text-secondary);
+
+  /* Buttons */
+  --btn-primary-bg: var(--action-primary);
+  --btn-primary-hover: var(--action-hover);
+  --btn-primary-active: var(--action-active);
+  --btn-primary-text: var(--text-inverse);
+  --btn-secondary-bg: transparent;
+  --btn-secondary-border: var(--divider);
+  --btn-secondary-text: var(--text-muted);
+  --btn-danger-bg: var(--danger-primary);
+  --btn-danger-hover: var(--danger-bright);
+  --btn-success-bg: var(--success-primary);
+
+  /* Odds / Bet Chips */
+  --odds-default-bg: var(--bg-elevated);
+  --odds-default-border: var(--divider);
+  --odds-default-text: var(--text-primary);
+  --odds-selected-bg: var(--action-primary);
+  --odds-selected-border: var(--action-hover);
+  --odds-selected-text: var(--text-inverse);
+  --odds-up-color: var(--success-primary);
+  --odds-up-bg: var(--success-alpha-16);
+  --odds-down-color: var(--danger-primary);
+  --odds-down-bg: var(--danger-alpha-16);
+  --odds-suspended-bg: var(--bg-hover);
+  --odds-suspended-text: var(--text-disabled);
+
+  /* Badges / Status Pills */
+  --badge-live-bg: var(--live-indicator);
+  --badge-live-text: #fff;
+  --badge-win-bg: var(--success-primary);
+  --badge-win-text: #fff;
+  --badge-loss-bg: var(--danger-primary);
+  --badge-loss-text: #fff;
+  --badge-pending-bg: var(--warning-primary);
+  --badge-pending-text: #000;
+  --badge-void-bg: var(--text-muted);
+  --badge-void-text: #fff;
+  --badge-sport-bg: var(--brand-alpha-12);
+  --badge-sport-text: var(--action-primary);
+
+  /* Modals / Sheets */
+  --modal-bg: var(--bg-modal);
+  --modal-surface: var(--bg-elevated);
+  --modal-border: var(--divider);
+  --modal-overlay: var(--bg-overlay);
+  --modal-header-bg: var(--bg-card);
+
+  /* Betslip */
+  --betslip-bg: var(--bg-section);
+  --betslip-item-bg: var(--bg-card);
+  --betslip-item-border: var(--divider);
+  --betslip-input-bg: var(--bg-elevated);
+  --betslip-potential-text: var(--action-primary);
+
+  /* Tables */
+  --table-header-bg: var(--bg-elevated);
+  --table-header-text: var(--text-muted);
+  --table-row-bg: var(--bg-card);
+  --table-row-hover: var(--bg-hover);
+  --table-border: var(--divider);
+
+  /* Score / Match */
+  --score-team-text: var(--text-primary);
+  --score-score-text: var(--warning-primary);
+  --score-live-dot: var(--live-indicator);
+  --match-card-bg: var(--bg-card);
+  --match-card-hover: var(--bg-hover);
+  --market-header-bg: var(--bg-elevated);
+  --market-header-text: var(--text-secondary);
+
+  /* Wallet / Finance */
+  --wallet-deposit-color: var(--success-primary);
+  --wallet-withdraw-color: var(--danger-primary);
+  --wallet-bonus-color: var(--warning-primary);
+  --wallet-balance-text: var(--action-primary);
+
+  /* ═══════════════════════════════════════════════
+     12. BASE ALIASES
+     ═══════════════════════════════════════════════ */
+  --background: var(--bg-base);
+  --foreground: var(--text-primary);
+
+  /* ═══════════════════════════════════════════════
+     13. SHADOW / GLOW TOKENS
+     ═══════════════════════════════════════════════ */
+  --shadow-glow-gold: 0 0 24px rgba(139, 92, 246, 0.10), 0 4px 16px rgba(139, 92, 246, 0.05);
+  --shadow-glow-danger: 0 0 20px rgba(239, 68, 68, 0.30);
+  --shadow-glow-success: 0 0 16px rgba(52, 211, 153, 0.15);
+  --shadow-glow-blue: 0 0 20px rgba(99, 102, 241, 0.30);
+  --shadow-soft: 0 8px 32px rgba(0, 0, 0, 0.5);
+  --shadow-hard: 0 16px 48px rgba(0, 0, 0, 0.7);
+  --shadow-card: 0 4px 16px rgba(0, 0, 0, 0.4);
+  --shadow-modal: 0 24px 80px rgba(0, 0, 0, 0.7);
+  --shadow-betslip: 0 -8px 48px rgba(0, 0, 0, 0.85);
+}
+
+/* ══════════════════════════════════════════════
+   CRYPTO WALLET THEME  (data-wallet="crypto")
+   Swaps all brand-gold/orange → purple
+   Applied to <html> by WalletContext
+   ══════════════════════════════════════════════ */
+[data-wallet="crypto"] {
+  /* ── Core brand token override ── */
+  --action-primary: #A78BFA;        /* Purple CTA */
+  --action-hover: #C4B5FD;          /* Bright Purple Hover */
+  --action-active: #7C3AED;         /* Deep Purple Active */
+  --gold-soft: #DDD6FE;             /* Soft Purple Glow */
+  --gold-muted: #8B7BBE;            /* Muted Purple */
+  --brown-accent: #2E1A5E;          /* Dark Purple Accent */
+  --text-inverse: #FFFFFF;          /* White text on purple */
+
+  /* Brand alpha tints → purple */
+  --brand-alpha-05: rgba(167, 139, 250, 0.05);
+  --brand-alpha-08: rgba(167, 139, 250, 0.08);
+  --brand-alpha-10: rgba(167, 139, 250, 0.10);
+  --brand-alpha-12: rgba(167, 139, 250, 0.12);
+  --brand-alpha-20: rgba(167, 139, 250, 0.20);
+  --brand-alpha-25: rgba(167, 139, 250, 0.25);
+  --brand-alpha-28: rgba(167, 139, 250, 0.28);
+  --brand-alpha-30: rgba(167, 139, 250, 0.30);
+  --brand-alpha-35: rgba(167, 139, 250, 0.35);
+  --brand-alpha-40: rgba(167, 139, 250, 0.40);
+
+  /* Purple glows */
+  --shadow-glow-gold: 0 0 24px rgba(167, 139, 250, 0.08), 0 4px 16px rgba(167, 139, 250, 0.04);
+}
+
+/* ── White text on purple/colored backgrounds ──
+   When brand buttons switch to purple, any dark text
+   that was readable on gold becomes unreadable — make it white */
+[data-wallet="crypto"] .bg-brand-gold .text-text-inverse,
+[data-wallet="crypto"] .bg-brand-gold,
+[data-wallet="crypto"] .bg-orange-400,
+[data-wallet="crypto"] .bg-orange-500,
+[data-wallet="crypto"] .bg-orange-600,
+[data-wallet="crypto"] .bg-amber-400,
+[data-wallet="crypto"] .bg-amber-500,
+[data-wallet="crypto"] .bg-yellow-400,
+[data-wallet="crypto"] .bg-yellow-500 {
+  color: #ffffff !important;
+}
+
+/* text-black / text-gray-900 on branded elements → white */
+[data-wallet="crypto"] .bg-brand-gold>.text-black,
+[data-wallet="crypto"] .bg-brand-gold>.text-gray-900,
+[data-wallet="crypto"] .bg-orange-500>.text-black,
+[data-wallet="crypto"] .bg-amber-500>.text-black {
+  color: #ffffff !important;
+}
+
+/* Direct text-black on anything that's been given a purple bg override */
+[data-wallet="crypto"] .text-black {
+  color: #ffffff !important;
+}
+
+[data-wallet="crypto"] .text-gray-900 {
+  color: #f3f0ff !important;
+}
+
+/* ── Hardcoded Tailwind orange/amber/yellow → purple ──
+   Covers every component that doesn't use CSS variables.
+   Using !important to beat Tailwind specificity.         */
+
+/* text colors */
+[data-wallet="crypto"] .text-orange-200 {
+  color: #d8b4fe !important;
+}
+
+[data-wallet="crypto"] .text-orange-300 {
+  color: #c084fc !important;
+}
+
+[data-wallet="crypto"] .text-orange-400 {
+  color: #a855f7 !important;
+}
+
+[data-wallet="crypto"] .text-orange-500 {
+  color: #9333ea !important;
+}
+
+[data-wallet="crypto"] .text-amber-300 {
+  color: #d8b4fe !important;
+}
+
+[data-wallet="crypto"] .text-amber-400 {
+  color: #a855f7 !important;
+}
+
+[data-wallet="crypto"] .text-amber-500 {
+  color: #9333ea !important;
+}
+
+[data-wallet="crypto"] .text-yellow-300 {
+  color: #e9d5ff !important;
+}
+
+[data-wallet="crypto"] .text-yellow-400 {
+  color: #c084fc !important;
+}
+
+[data-wallet="crypto"] .text-yellow-500 {
+  color: #a855f7 !important;
+}
+
+/* background colors */
+[data-wallet="crypto"] .bg-orange-400 {
+  background-color: #a855f7 !important;
+}
+
+[data-wallet="crypto"] .bg-orange-500 {
+  background-color: #9333ea !important;
+}
+
+[data-wallet="crypto"] .bg-orange-600 {
+  background-color: #7e22ce !important;
+}
+
+[data-wallet="crypto"] .bg-amber-400 {
+  background-color: #a855f7 !important;
+}
+
+[data-wallet="crypto"] .bg-amber-500 {
+  background-color: #9333ea !important;
+}
+
+[data-wallet="crypto"] .bg-yellow-400 {
+  background-color: #a855f7 !important;
+}
+
+[data-wallet="crypto"] .bg-yellow-500 {
+  background-color: #9333ea !important;
+}
+
+/* border colors */
+[data-wallet="crypto"] .border-orange-400 {
+  border-color: #a855f7 !important;
+}
+
+[data-wallet="crypto"] .border-orange-500 {
+  border-color: #9333ea !important;
+}
+
+[data-wallet="crypto"] .border-amber-500 {
+  border-color: #9333ea !important;
+}
+
+[data-wallet="crypto"] .border-yellow-400 {
+  border-color: #c084fc !important;
+}
+
+[data-wallet="crypto"] .border-yellow-500 {
+  border-color: #a855f7 !important;
+}
+
+/* opacity background variants — handled via the solid color overrides above */
+
+/* ── Hardcoded hex overrides ── */
+[data-wallet="crypto"] [class*="text-[#E37D"] {
+  color: #9B59D9 !important;
+}
+
+[data-wallet="crypto"] [class*="text-[#EFA0"] {
+  color: #B47EE8 !important;
+}
+
+[data-wallet="crypto"] [class*="bg-[#E37D"] {
+  background-color: #9B59D9 !important;
+}
+
+[data-wallet="crypto"] [class*="bg-[#EFA0"] {
+  background-color: #B47EE8 !important;
+}
+
+[data-wallet="crypto"] [class*="border-[#E37D"] {
+  border-color: #9B59D9 !important;
+}
+
+/* ══════════════════════════════════════════════
+   GLOBAL PURPLE BRAND REMAP  (applies to every wallet)
+   The whole site is purple by default. Any component that
+   used hardcoded Tailwind orange/amber/yellow classes is
+   remapped to the purple scale here so no per-component
+   edits are needed. !important beats Tailwind specificity.
+   Semantic status colors (green=win/success, red=loss/danger,
+   blue=info) are intentionally left untouched.
+   ══════════════════════════════════════════════ */
+
+/* text colors */
+.text-orange-200, .text-amber-200 { color: #ddd6fe !important; }
+.text-orange-300, .text-amber-300, .text-yellow-300 { color: #c4b5fd !important; }
+.text-orange-400, .text-amber-400, .text-yellow-400 { color: #a78bfa !important; }
+.text-orange-500, .text-amber-500, .text-yellow-500 { color: #8b5cf6 !important; }
+.text-orange-600, .text-amber-600, .text-yellow-600 { color: #7c3aed !important; }
+
+/* background colors */
+.bg-orange-300, .bg-amber-300, .bg-yellow-300 { background-color: #c4b5fd !important; }
+.bg-orange-400, .bg-amber-400, .bg-yellow-400 { background-color: #a78bfa !important; }
+.bg-orange-500, .bg-amber-500, .bg-yellow-500 { background-color: #8b5cf6 !important; }
+.bg-orange-600, .bg-amber-600, .bg-yellow-600 { background-color: #7c3aed !important; }
+
+/* border colors */
+.border-orange-300, .border-amber-300, .border-yellow-300 { border-color: #c4b5fd !important; }
+.border-orange-400, .border-amber-400, .border-yellow-400 { border-color: #a78bfa !important; }
+.border-orange-500, .border-amber-500, .border-yellow-500 { border-color: #8b5cf6 !important; }
+.border-orange-600, .border-amber-600, .border-yellow-600 { border-color: #7c3aed !important; }
+
+/* ring / from / to / via gradient stops */
+.ring-orange-500, .ring-amber-500, .ring-yellow-500 { --tw-ring-color: #8b5cf6 !important; }
+.from-orange-400, .from-amber-400, .from-yellow-400 { --tw-gradient-from: #a78bfa !important; }
+.from-orange-500, .from-amber-500, .from-yellow-500 { --tw-gradient-from: #8b5cf6 !important; }
+.to-orange-500, .to-amber-500, .to-yellow-500 { --tw-gradient-to: #8b5cf6 !important; }
+.to-orange-600, .to-amber-600, .to-yellow-600 { --tw-gradient-to: #7c3aed !important; }
+.via-orange-500, .via-amber-500, .via-yellow-500 { --tw-gradient-via: #8b5cf6 !important; }
+
+/* Dark text sitting on a (now purple) branded button → white for contrast */
+.bg-brand-gold > .text-black, .bg-brand-gold > .text-gray-900,
+.bg-orange-400 > .text-black, .bg-orange-500 > .text-black, .bg-orange-600 > .text-black,
+.bg-amber-400 > .text-black, .bg-amber-500 > .text-black,
+.bg-yellow-400 > .text-black, .bg-yellow-500 > .text-black {
+  color: #ffffff !important;
+}
+
+
+
+/* Smooth color transition on all elements when theme switches */
+*,
+*::before,
+*::after {
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.2s ease, box-shadow 0.3s ease;
+}
+
+/* But DON'T transition transforms / layout properties (keeps animations snappy) */
+*[class*="animate-"],
+*[class*="transition-"] {
+  transition-property: color, background-color, border-color, box-shadow;
+}
+
+
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-dm-sans), var(--font-sora), system-ui, sans-serif;
+  --font-display: var(--font-sora), system-ui, sans-serif;
+
+  /* ── Background layers ── */
+  --color-bg-base: var(--bg-base);
+  --color-bg-section: var(--bg-section);
+  --color-bg-card: var(--bg-card);
+  --color-bg-elevated: var(--bg-elevated);
+  --color-bg-hover: var(--bg-hover);
+  --color-bg-deep: var(--bg-deep);
+  --color-bg-deep-2: var(--bg-deep-2);
+  --color-bg-deep-3: var(--bg-deep-3);
+  --color-bg-deep-4: var(--bg-deep-4);
+  --color-bg-modal: var(--bg-modal);
+  --color-bg-modal-2: var(--bg-modal-2);
+  --color-bg-modal-3: var(--bg-modal-3);
+  --color-bg-modal-4: var(--bg-modal-4);
+  --color-bg-surface: var(--bg-surface);
+  --color-bg-surface-2: var(--bg-surface-2);
+  --color-bg-surface-3: var(--bg-surface-3);
+  --color-bg-surface-4: var(--bg-surface-4);
+  --color-bg-input: var(--bg-input);
+  --color-bg-input-2: var(--bg-input-2);
+  --color-bg-well: var(--bg-well);
+  --color-bg-zeero: var(--bg-zeero);
+  --color-bg-zeero-2: var(--bg-zeero-2);
+  --color-bg-zeero-3: var(--bg-zeero-3);
+  --color-bg-glass: var(--bg-glass);
+  --color-bg-glass-hover: var(--bg-glass-hover);
+  --color-bg-glass-active: var(--bg-glass-active);
+  --color-bg-overlay: var(--bg-overlay);
+  --color-bg-overlay-medium: var(--bg-overlay-medium);
+  --color-bg-overlay-light: var(--bg-overlay-light);
+  --color-bg-game-dark: var(--bg-game-dark);
+
+  /* ── Brand / Gold ── */
+  --color-brand-gold: var(--action-primary);
+  --color-brand-gold-hover: var(--action-hover);
+  --color-brand-active: var(--action-active);
+  --color-gold-soft: var(--gold-soft);
+  --color-gold-muted: var(--gold-muted);
+  --color-brown-accent: var(--brown-accent);
+
+  /* Legacy aliases */
+  --color-brand-green: var(--action-primary);
+  --color-brand-green-hover: var(--action-hover);
+
+  /* ── Text ── */
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-muted: var(--text-muted);
+  --color-text-disabled: var(--text-disabled);
+  --color-text-inverse: var(--text-inverse);
+  --color-text-white: var(--text-white);
+  --color-text-faint: var(--text-faint);
+  --color-text-gray: var(--text-gray);
+  --color-text-gray-light: var(--text-gray-light);
+
+  /* ── Status ── */
+  --color-success: var(--success-primary);
+  --color-success-primary: var(--success-primary);
+  --color-success-bright: var(--success-bright);
+  --color-success-vivid: var(--success-vivid);
+  --color-success-soft: var(--success-soft);
+  --color-live: var(--live-indicator);
+  --color-danger: var(--danger-primary);
+  --color-danger-bright: var(--danger-bright);
+  --color-danger-vivid: var(--danger-vivid);
+  --color-danger-deep: var(--danger-deep);
+  --color-danger-soft: var(--danger-soft);
+  --color-danger-muted: var(--danger-muted);
+  --color-warning: var(--warning-primary);
+  --color-warning-primary: var(--warning-primary);
+  --color-warning-bright: var(--warning-bright);
+  --color-warning-deep: var(--warning-deep);
+  --color-warning-soft: var(--warning-soft);
+  --color-warning-alpha-08: var(--warning-alpha-08);
+  --color-warning-alpha-12: var(--warning-alpha-12);
+  --color-danger: var(--danger-primary);
+  --color-danger-primary: var(--danger-primary);
+  --color-danger-alpha-08: var(--danger-alpha-08);
+  --color-success-alpha-12: var(--success-alpha-12);
+  --color-info: var(--info-primary);
+  --color-info-bright: var(--info-bright);
+  --color-info-soft: var(--info-soft);
+
+  /* ── Border ── */
+  --color-border-subtle: var(--divider);
+  --color-card-border: var(--card-border);
+  --color-input-border: var(--input-border);
+  --color-modal-border: var(--modal-border);
+  --color-table-border: var(--table-border);
+
+  /* ── Accents ── */
+  --color-accent-blue: var(--accent-blue);
+  --color-accent-teal: var(--accent-teal);
+  --color-accent-teal-bright: var(--accent-teal-bright);
+  --color-accent-purple: var(--accent-purple);
+  --color-accent-purple-soft: var(--accent-purple-soft);
+
+  /* ── Semantic Component Tokens ── */
+  --color-nav-bg: var(--nav-bg);
+  --color-nav-border: var(--nav-border);
+  --color-nav-item-active: var(--nav-item-active);
+  --color-sidebar-bg: var(--sidebar-bg);
+  --color-sidebar-item-hover: var(--sidebar-item-hover);
+  --color-sidebar-item-active-text: var(--sidebar-item-active-text);
+  --color-card-bg: var(--card-bg);
+  --color-card-hover: var(--card-hover-bg);
+  --color-input-bg: var(--input-bg);
+  --color-input-text: var(--input-text);
+  --color-input-placeholder: var(--input-placeholder);
+  --color-btn-primary: var(--btn-primary-bg);
+  --color-btn-primary-hover: var(--btn-primary-hover);
+  --color-btn-primary-text: var(--btn-primary-text);
+  --color-odds-default: var(--odds-default-bg);
+  --color-odds-selected: var(--odds-selected-bg);
+  --color-odds-selected-text: var(--odds-selected-text);
+  --color-odds-up: var(--odds-up-color);
+  --color-odds-down: var(--odds-down-color);
+  --color-badge-live: var(--badge-live-bg);
+  --color-badge-win: var(--badge-win-bg);
+  --color-badge-loss: var(--badge-loss-bg);
+  --color-badge-pending: var(--badge-pending-bg);
+  --color-modal-bg: var(--modal-bg);
+  --color-modal-surface: var(--modal-surface);
+  --color-modal-overlay: var(--modal-overlay);
+  --color-betslip-bg: var(--betslip-bg);
+  --color-betslip-item: var(--betslip-item-bg);
+  --color-betslip-potential: var(--betslip-potential-text);
+  --color-table-header: var(--table-header-bg);
+  --color-table-row: var(--table-row-bg);
+  --color-market-header: var(--market-header-bg);
+  --color-wallet-deposit: var(--wallet-deposit-color);
+  --color-wallet-withdraw: var(--wallet-withdraw-color);
+  --color-wallet-bonus: var(--wallet-bonus-color);
+  --color-wallet-balance: var(--wallet-balance-text);
+
+  /* ── Shadows ── */
+  --shadow-soft: var(--shadow-soft);
+  --shadow-hard: var(--shadow-hard);
+  --shadow-card: var(--shadow-card);
+  --shadow-modal: var(--shadow-modal);
+  --shadow-betslip: var(--shadow-betslip);
+  --shadow-glow-gold: var(--shadow-glow-gold);
+  --shadow-glow-success: var(--shadow-glow-success);
+  --shadow-glow-danger: var(--shadow-glow-danger);
+
+  /* ── Additional bg tokens ── */
+  --color-bg-zeero-2: var(--bg-zeero-2);
+  --color-bg-zeero-3: var(--bg-zeero-3);
+  --color-bg-well: var(--bg-well);
+  --color-bg-deep-2: var(--bg-deep-2);
+  --color-bg-deep-3: var(--bg-deep-3);
+  --color-bg-deep-4: var(--bg-deep-4);
+  --color-bg-modal-2: var(--bg-modal-2);
+  --color-bg-modal-3: var(--bg-modal-3);
+  --color-bg-modal-4: var(--bg-modal-4);
+  --color-bg-input-2: var(--bg-input-2);
+  --color-bg-surface-4: var(--bg-surface-4);
+
+  /* ── Accent alpha/soft ── */
+  --color-accent-purple-alpha: var(--accent-purple-alpha);
+
+  /* ── Status soft/deep ── */
+  --color-danger-soft: var(--danger-soft);
+  --color-success-soft: var(--success-soft);
+  --color-warning-deep: var(--warning-deep);
+  --color-danger-alpha-16: var(--danger-alpha-16);
+
+  /* ── Info alpha ── */
+  --color-info-alpha-18: var(--info-alpha-18);
+  --color-info-alpha-22: var(--info-alpha-22);
+  --color-info-alpha-30: var(--info-alpha-30);
+  --color-info-bright: var(--info-bright);
+  --color-info-soft: var(--info-soft);
+
+  /* ── Success additional ── */
+  --color-success-alpha-12: var(--success-alpha-12);
+  --color-success-alpha-40: var(--success-alpha-40);
+  --color-success-primary: var(--success-primary);
+  --color-success-bright: var(--success-bright);
+  --color-success-vivid: var(--success-vivid);
+  --color-success-soft: var(--success-soft);
+
+  /* ── text-white alias ── */
+  --color-text-white: var(--text-white);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: var(--bg-base);
+    --foreground: var(--text-primary);
+  }
+}
+
+/* Custom Fonts */
+@font-face {
+  font-family: 'Adx-Bold';
+  src: url('/fonts/Adx-ExtraBold.woff2') format('woff2');
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Adx-SemiBold';
+  src: url('/fonts/Adx-SemiBold.woff2') format('woff2');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-dm-sans), 'Adx-SemiBold', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Display font for headings */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-sora), 'Adx-Bold', system-ui, sans-serif;
+  letter-spacing: -0.02em;
+}
+
+/* ── Noise texture overlay for depth ── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.018;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n' x='0' y='0'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 256px 256px;
+}
+
+.font-adx-bold {
+  font-family: 'Adx-Bold', sans-serif;
+}
+
+/* Utilities for new design system */
+
+/* Gradient Recipes */
+.bg-gradient-gold {
+  background: linear-gradient(135deg, var(--action-primary) 0%, var(--action-hover) 100%);
+}
+
+.bg-gradient-banner {
+  background: linear-gradient(120deg, var(--brown-accent) 0%, var(--gold-soft) 50%, var(--action-primary) 100%);
+}
+
+.text-gradient-gold {
+  background: linear-gradient(135deg, var(--action-primary) 0%, var(--action-hover) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Text Glows */
+.text-glow-gold {
+  text-shadow: 0 0 10px var(--brand-alpha-08);
+}
+
+/* ── Glass surfaces ── */
+.glass-surface {
+  background: rgba(15, 16, 22, 0.75);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.glass-card {
+  background: rgba(23, 25, 33, 0.6);
+  backdrop-filter: blur(12px) saturate(150%);
+  -webkit-backdrop-filter: blur(12px) saturate(150%);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* ── Section glow accents ── */
+.section-glow-gold::before {
+  content: '';
+  position: absolute;
+  top: -60px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 400px;
+  height: 120px;
+  background: radial-gradient(ellipse, var(--brand-alpha-08) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+/* ── Animated gradient border ── */
+.border-glow {
+  position: relative;
+  border: 1px solid transparent;
+  background-clip: padding-box;
+}
+
+.border-glow::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), transparent 40%, transparent 60%, rgba(167, 139, 250, 0.2));
+  z-index: -1;
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  padding: 1px;
+}
+
+
+/* Shadow Glows */
+.shadow-glow-gold {
+  box-shadow: var(--shadow-glow-gold);
+}
+
+.shadow-glow-danger {
+  box-shadow: var(--shadow-glow-danger);
+}
+
+.shadow-glow-success {
+  box-shadow: var(--shadow-glow-success);
+}
+
+.shadow-betslip {
+  box-shadow: var(--shadow-betslip);
+}
+
+.shadow-soft {
+  box-shadow: var(--shadow-soft);
+}
+
+.shadow-card {
+  box-shadow: var(--shadow-card);
+}
+
+
+.card-hover {
+  transition: all 0.3s ease;
+}
+
+.card-hover:hover {
+  background-color: var(--bg-hover);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-soft);
+}
+
+/* Auth Modal Utilities (Simple & Clean) */
+.bg-auth-base {
+  background-color: var(--bg-base);
+  color: var(--text-primary);
+}
+
+.bg-auth-action {
+  background-color: var(--action-primary);
+  color: var(--text-inverse);
+}
+
+.bg-auth-action:hover {
+  background-color: var(--action-hover);
+}
+
+.bg-auth-secondary {
+  background-color: transparent;
+  border: 1px solid var(--divider);
+  color: var(--text-muted);
+}
+
+
+/* Hide scrollbar globally but keep scrolling */
+* {
+  -ms-overflow-style: none;
+  /* IE and Edge */
+  scrollbar-width: none;
+  /* Firefox */
+}
+
+*::-webkit-scrollbar {
+  display: none;
+}
+
+/* ── Safe-area inset utilities (iPhone X+ home indicator & notch) ── */
+:root {
+  --safe-area-inset-top: env(safe-area-inset-top, 0px);
+  --safe-area-inset-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-area-inset-left: env(safe-area-inset-left, 0px);
+  --safe-area-inset-right: env(safe-area-inset-right, 0px);
+  /* Mobile bottom nav total height = 64px + safe-area */
+  --mobile-nav-height: calc(64px + env(safe-area-inset-bottom, 0px));
+}
+
+/* Ensure touch targets are responsive without 300ms delay */
+/* Also: font-size ≥ 16px prevents iOS auto-zoom on input focus */
+a,
+button,
+[role="button"],
+input,
+select,
+textarea {
+  touch-action: manipulation;
+  font-size: max(16px, 1em);
+}
+
+/* Prevent horizontal overflow on mobile */
+html,
+body {
+  overflow-x: hidden;
+  max-width: 100vw;
+  height: 100%;
+}
+
+/* Animations */
+@keyframes scroll {
+  0% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-scroll {
+  animation: scroll 30s linear infinite;
+}
+
+/* ── Shimmer / Swimmer skeleton animation ── */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* ── shimmerBar: loading bar sweep for game launcher ── */
+@keyframes shimmerBar {
+  0%   { transform: translateX(-100%); }
+  50%  { transform: translateX(100%); }
+  100% { transform: translateX(100%); }
+}
+
+.skeleton-shimmer {
+  background: linear-gradient(90deg,
+      rgba(255, 255, 255, 0.04) 0%,
+      rgba(255, 255, 255, 0.10) 40%,
+      rgba(255, 255, 255, 0.04) 80%);
+  background-size: 200% 100%;
+  animation: shimmer 1.6s ease-in-out infinite;
+}
+
+/* Skeleton base block */
+.skeleton-block {
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  overflow: hidden;
+  position: relative;
+}
+
+.skeleton-block::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.08) 40%,
+      transparent 80%);
+  background-size: 200% 100%;
+  animation: shimmer 1.6s ease-in-out infinite;
+}
+
+/* ── Betslip badge pop: snappy bounce on count increment ── */
+@keyframes badge-pop {
+  0%   { transform: scale(1); }
+  28%  { transform: scale(1.65); }
+  55%  { transform: scale(0.82); }
+  78%  { transform: scale(1.12); }
+  100% { transform: scale(1); }
+}
+
+/* ── Continuous color wave: purple shades ── */
+@keyframes badge-wave {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* ── Persistent pulse: gently throbs scale + glow while bets exist ── */
+@keyframes badge-alive {
+  0%   { transform: scale(1);    box-shadow: 0 0 0px  0px rgba(139,92,246,0); }
+  40%  { transform: scale(1.18); box-shadow: 0 0 4px  2px rgba(139,92,246,0.16); }
+  70%  { transform: scale(1.08); box-shadow: 0 0 3px  1px rgba(167,139,250,0.10); }
+  100% { transform: scale(1);    box-shadow: 0 0 0px  0px rgba(139,92,246,0); }
+}
+
+.betslip-badge-pop {
+  /* One-shot pop on mount */
+  animation: badge-pop 0.18s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+  background: linear-gradient(
+    90deg,
+    #7c3aed 0%,
+    #8b5cf6 25%,
+    #a78bfa 50%,
+    #7c3aed 75%,
+    #8b5cf6 100%
+  );
+  background-size: 250% 100%;
+  color: #fff;
+}
+
+/* Applied alongside betslip-badge-pop when count > 0 — persists until slip is empty */
+.betslip-badge-alive {
+  animation: badge-wave 1.4s ease-in-out infinite,
+             badge-alive 1.1s ease-in-out infinite;
+  background: linear-gradient(
+    90deg,
+    #7c3aed 0%,
+    #8b5cf6 25%,
+    #a78bfa 50%,
+    #7c3aed 75%,
+    #8b5cf6 100%
+  );
+  background-size: 250% 100%;
+  color: #fff;
+}
+
+/* ── Floating "+n" particle that drifts upward ── */
+@keyframes plus-float {
+  0%   { opacity: 1; transform: translateY(0) scale(1); }
+  55%  { opacity: 1; transform: translateY(-16px) scale(1.15); }
+  100% { opacity: 0; transform: translateY(-28px) scale(0.7); }
+}
+
+.betslip-plus-float {
+  animation: plus-float 0.5s ease-out forwards;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* ── Casino Grid Layout ── */
+.grid-col-3 {
+  --grid-gap: 0px;
+  --grid-column: 3;
+  --aspect-ratio: 1;
+  --grid-side: 2;
+  --grid-cols: var(--grid-column);
+  --item-width: calc((100% - var(--grid-gap) * (var(--grid-cols) - 1)) / var(--grid-cols));
+  grid-template-columns: repeat(auto-fill, var(--item-width));
+  grid-auto-columns: var(--item-width);
+  padding: 1rem;
+}
+
+@media (min-width: 640px) {
+  .grid-col-3 {
+    --grid-column: 4;
+  }
+}
+
+@media (min-width: 768px) {
+  .grid-col-3 {
+    --grid-column: 5;
+  }
+}
+
+@media (min-width: 1024px) {
+  .grid-col-3 {
+    --grid-column: 7;
+  }
+}
+
+@media (min-width: 1280px) {
+  .grid-col-3 {
+    --grid-column: 8;
+  }
+}
+
+/* ── Smooth Scroll ── */
+.smooth-scroll {
+  --scrollbar-width: 0;
+  --snap-align: start;
+  transform: translateZ(0px);
+  scroll-padding-inline: var(--scroll-padding-inline);
+}
+
+.snap-mandatory {
+  --tw-scroll-snap-strictness: mandatory;
+}

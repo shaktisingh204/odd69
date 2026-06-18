@@ -1,0 +1,825 @@
+{
+  "info": {
+    "_postman_id": "0b8dec26-4da4-4be5-a0c4-424829d29bec",
+    "name": "fantasyapi",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "27876602"
+  },
+  "item": [
+    {
+      "name": "Season API",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://62.72.41.209:3000/v2/seasons/?token=mysecrettoken123",
+          "protocol": "http",
+          "host": [
+            "62",
+            "72",
+            "41",
+            "209"
+          ],
+          "port": "3000",
+          "path": [
+            "v2",
+            "seasons",
+            ""
+          ],
+          "query": [
+            {
+              "key": "token",
+              "value": "mysecrettoken123"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "SeasonCompetitionAPI",
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://62.72.41.209:3000/v2/seasons/2026/competitions?token=mysecrettoken123&per_page=100&&paged=1",
+          "protocol": "http",
+          "host": [
+            "62",
+            "72",
+            "41",
+            "209"
+          ],
+          "port": "3000",
+          "path": [
+            "v2",
+            "seasons",
+            "2026",
+            "competitions"
+          ],
+          "query": [
+            {
+              "key": "token",
+              "value": "mysecrettoken123"
+            },
+            {
+              "key": "per_page",
+              "value": "100"
+            },
+            {
+              "key": null,
+              "value": null
+            },
+            {
+              "key": "paged",
+              "value": "1"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Competitions List API",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://62.72.41.209:3000/v2/competitions?token=mysecrettoken123&per_page=100&&paged=1&status=completed",
+          "protocol": "http",
+          "host": [
+            "62",
+            "72",
+            "41",
+            "209"
+          ],
+          "port": "3000",
+          "path": [
+            "v2",
+            "competitions"
+          ],
+          "query": [
+            {
+              "key": "token",
+              "value": "mysecrettoken123"
+            },
+            {
+              "key": "per_page",
+              "value": "100"
+            },
+            {
+              "key": null,
+              "value": null
+            },
+            {
+              "key": "paged",
+              "value": "1"
+            },
+            {
+              "key": "status",
+              "value": "completed"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Competitions Overview API",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://62.72.41.209:3000/v2/competitions/129908/?token=mysecrettoken123",
+          "protocol": "http",
+          "host": [
+            "62",
+            "72",
+            "41",
+            "209"
+          ],
+          "port": "3000",
+          "path": [
+            "v2",
+            "competitions",
+            "129908",
+            ""
+          ],
+          "query": [
+            {
+              "key": "token",
+              "value": "mysecrettoken123"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Competition Matches API",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://62.72.41.209:3000/v2/competitions/129908/matches/?token=mysecrettoken123&per_page=50&&paged=1",
+          "protocol": "http",
+          "host": [
+            "62",
+            "72",
+            "41",
+            "209"
+          ],
+          "port": "3000",
+          "path": [
+            "v2",
+            "competitions",
+            "129908",
+            "matches",
+            ""
+          ],
+          "query": [
+            {
+              "key": "token",
+              "value": "mysecrettoken123"
+            },
+            {
+              "key": "per_page",
+              "value": "50"
+            },
+            {
+              "key": null,
+              "value": null
+            },
+            {
+              "key": "paged",
+              "value": "1"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Competition Teams API",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://62.72.41.209:3000/v2/competitions/129908/teams/?token=mysecrettoken123",
+          "protocol": "http",
+          "host": [
+            "62",
+            "72",
+            "41",
+            "209"
+          ],
+          "port": "3000",
+          "path": [
+            "v2",
+            "competitions",
+            "129908",
+            "teams",
+            ""
+          ],
+          "query": [
+            {
+              "key": "token",
+              "value": "mysecrettoken123"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Competition Squads API",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://62.72.41.209:3000/v2/competitions/129908/squads/?token=mysecrettoken123",
+          "protocol": "http",
+          "host": [
+            "62",
+            "72",
+            "41",
+            "209"
+          ],
+          "port": "3000",
+          "path": [
+            "v2",
+            "competitions",
+            "129908",
+            "squads",
+            ""
+          ],
+          "query": [
+            {
+              "key": "token",
+              "value": "mysecrettoken123"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Competition Standings API",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://62.72.41.209:3000/v2/competitions/129908/standings/?token=mysecrettoken123",
+          "protocol": "http",
+          "host": [
+            "62",
+            "72",
+            "41",
+            "209"
+          ],
+          "port": "3000",
+          "path": [
+            "v2",
+            "competitions",
+            "129908",
+            "standings",
+            ""
+          ],
+          "query": [
+            {
+              "key": "token",
+              "value": "mysecrettoken123"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Competition Statistic Type API",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://62.72.41.209:3000/v2/competitions/129908/stats/batting_most_runs?token=mysecrettoken123",
+          "protocol": "http",
+          "host": [
+            "62",
+            "72",
+            "41",
+            "209"
+          ],
+          "port": "3000",
+          "path": [
+            "v2",
+            "competitions",
+            "129908",
+            "stats",
+            "batting_most_runs"
+          ],
+          "query": [
+            {
+              "key": "token",
+              "value": "mysecrettoken123"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Matches List API",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://62.72.41.209:3000/v2/matches/?status=1&token=mysecrettoken123",
+          "protocol": "http",
+          "host": [
+            "62",
+            "72",
+            "41",
+            "209"
+          ],
+          "port": "3000",
+          "path": [
+            "v2",
+            "matches",
+            ""
+          ],
+          "query": [
+            {
+              "key": "status",
+              "value": "1"
+            },
+            {
+              "key": "token",
+              "value": "mysecrettoken123"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Match Info API",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://62.72.41.209:3000/v2/matches/95854/info?token=mysecrettoken123",
+          "protocol": "http",
+          "host": [
+            "62",
+            "72",
+            "41",
+            "209"
+          ],
+          "port": "3000",
+          "path": [
+            "v2",
+            "matches",
+            "95854",
+            "info"
+          ],
+          "query": [
+            {
+              "key": "token",
+              "value": "mysecrettoken123"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Match Fantasy Points API",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://62.72.41.209:3000/v2/matches/95854/point?token=mysecrettoken123",
+          "protocol": "http",
+          "host": [
+            "62",
+            "72",
+            "41",
+            "209"
+          ],
+          "port": "3000",
+          "path": [
+            "v2",
+            "matches",
+            "95854",
+            "point"
+          ],
+          "query": [
+            {
+              "key": "token",
+              "value": "mysecrettoken123"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Match Scorecard API",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://62.72.41.209:3000/v2/matches/87016/scorecard?token=mysecrettoken123",
+          "protocol": "http",
+          "host": [
+            "62",
+            "72",
+            "41",
+            "209"
+          ],
+          "port": "3000",
+          "path": [
+            "v2",
+            "matches",
+            "87016",
+            "scorecard"
+          ],
+          "query": [
+            {
+              "key": "token",
+              "value": "mysecrettoken123"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Match Live API",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://62.72.41.209:3000/v2/matches/87016/live?token=mysecrettoken123",
+          "protocol": "http",
+          "host": [
+            "62",
+            "72",
+            "41",
+            "209"
+          ],
+          "port": "3000",
+          "path": [
+            "v2",
+            "matches",
+            "87016",
+            "live"
+          ],
+          "query": [
+            {
+              "key": "token",
+              "value": "mysecrettoken123"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Fantasy Match Squad API",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://62.72.41.209:3000/v2/competitions/87016/squads/49681?token=mysecrettoken123",
+          "protocol": "http",
+          "host": [
+            "62",
+            "72",
+            "41",
+            "209"
+          ],
+          "port": "3000",
+          "path": [
+            "v2",
+            "competitions",
+            "87016",
+            "squads",
+            "49681"
+          ],
+          "query": [
+            {
+              "key": "token",
+              "value": "mysecrettoken123"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Match Playing11 API",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://62.72.41.209:3000/v2/matches/60919/squads?token=mysecrettoken123",
+          "protocol": "http",
+          "host": [
+            "62",
+            "72",
+            "41",
+            "209"
+          ],
+          "port": "3000",
+          "path": [
+            "v2",
+            "matches",
+            "60919",
+            "squads"
+          ],
+          "query": [
+            {
+              "key": "token",
+              "value": "mysecrettoken123"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Match Statistics API",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://62.72.41.209:3000/v2/matches/60919/statistics?token=mysecrettoken123",
+          "protocol": "http",
+          "host": [
+            "62",
+            "72",
+            "41",
+            "209"
+          ],
+          "port": "3000",
+          "path": [
+            "v2",
+            "matches",
+            "60919",
+            "statistics"
+          ],
+          "query": [
+            {
+              "key": "token",
+              "value": "mysecrettoken123"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Player Search API",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://62.72.41.209:3000/v2/players?token=mysecrettoken123",
+          "protocol": "http",
+          "host": [
+            "62",
+            "72",
+            "41",
+            "209"
+          ],
+          "port": "3000",
+          "path": [
+            "v2",
+            "players"
+          ],
+          "query": [
+            {
+              "key": "token",
+              "value": "mysecrettoken123"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Player Profile API",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://62.72.41.209:3000/v2/players/119?token=mysecrettoken123",
+          "protocol": "http",
+          "host": [
+            "62",
+            "72",
+            "41",
+            "209"
+          ],
+          "port": "3000",
+          "path": [
+            "v2",
+            "players",
+            "119"
+          ],
+          "query": [
+            {
+              "key": "token",
+              "value": "mysecrettoken123"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Player Statstic API",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://62.72.41.209:3000/v2/players/119/stats?token=mysecrettoken123",
+          "protocol": "http",
+          "host": [
+            "62",
+            "72",
+            "41",
+            "209"
+          ],
+          "port": "3000",
+          "path": [
+            "v2",
+            "players",
+            "119",
+            "stats"
+          ],
+          "query": [
+            {
+              "key": "token",
+              "value": "mysecrettoken123"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Team API",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://62.72.41.209:3000/v2/teams/25?token=mysecrettoken123",
+          "protocol": "http",
+          "host": [
+            "62",
+            "72",
+            "41",
+            "209"
+          ],
+          "port": "3000",
+          "path": [
+            "v2",
+            "teams",
+            "25"
+          ],
+          "query": [
+            {
+              "key": "token",
+              "value": "mysecrettoken123"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Team Matches API",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://62.72.41.209:3000/v2/teams/25/matches?status=2&token=mysecrettoken123",
+          "protocol": "http",
+          "host": [
+            "62",
+            "72",
+            "41",
+            "209"
+          ],
+          "port": "3000",
+          "path": [
+            "v2",
+            "teams",
+            "25",
+            "matches"
+          ],
+          "query": [
+            {
+              "key": "status",
+              "value": "2"
+            },
+            {
+              "key": "token",
+              "value": "mysecrettoken123"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "ICC Ranking API",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://62.72.41.209:3000/v2/iccranks?token=mysecrettoken123",
+          "protocol": "http",
+          "host": [
+            "62",
+            "72",
+            "41",
+            "209"
+          ],
+          "port": "3000",
+          "path": [
+            "v2",
+            "iccranks"
+          ],
+          "query": [
+            {
+              "key": "token",
+              "value": "mysecrettoken123"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Teams player",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://62.72.41.209:3000/v2/teams/7047/player?token=e9a8cd857f01e5f88127787d3931b63a",
+          "protocol": "http",
+          "host": [
+            "62",
+            "72",
+            "41",
+            "209"
+          ],
+          "port": "3000",
+          "path": [
+            "v2",
+            "teams",
+            "7047",
+            "player"
+          ],
+          "query": [
+            {
+              "key": "token",
+              "value": "e9a8cd857f01e5f88127787d3931b63a"
+            }
+          ]
+        }
+      },
+      "response": []
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ]
+}

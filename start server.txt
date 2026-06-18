@@ -1,0 +1,34 @@
+DEBIAN SERVERS DEPLOYMENT SCRIPT
+Ensure PM2 is installed globally: `npm install -g pm2`
+Before starting, ensure Redis and MongoDB are installed and running on your server!
+
+---
+
+1. Start Rust Synchronization Engine (Runs infinitely pulling Live Data)
+cd /Users/harshkhandelwal/Documents/100xwins/sports-sync-rust
+cargo build --release
+pm2 start ./target/release/sports-sync-rust --name "rust-sync"
+
+2. Start NestJS Backend
+cd /Users/harshkhandelwal/Documents/100xwins/newbackend
+npm install
+npm run build
+pm2 start dist/main.js --name "newbackend"
+
+3. Start NextJS Admin Panel
+cd /Users/harshkhandelwal/Documents/100xwins/newadmin
+npm install
+npm run build
+pm2 start npm --name "newadmin" -- start
+
+4. Start NextJS User Website
+cd /Users/harshkhandelwal/Documents/100xwins/newwebsite
+npm install
+npm run build
+pm2 start npm --name "newwebsite" -- start
+
+---
+
+To Save all processes so they boot automatically on server restart:
+pm2 save
+pm2 startup

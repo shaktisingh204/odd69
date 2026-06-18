@@ -1,0 +1,485 @@
+{
+  "success": true,
+  "message": "Success",
+  "data": {
+    "odds": {
+      "675008926": [
+        {
+          "gmid": 675008926,
+          "mid": 7957229862749,
+          "pmid": null,
+          "mname": "MATCH_ODDS",
+          "rem": "",
+          "gtype": "match",
+          "status": "OPEN",
+          "rc": 2,
+          "visible": false,
+          "pid": 0,
+          "gscode": 1,
+          "maxb": 1,
+          "sno": 1,
+          "dtype": 4,
+          "ocnt": 6,
+          "m": 0,
+          "max": 2000,
+          "min": 0,
+          "biplay": true,
+          "umaxbof": 1,
+          "boplay": true,
+          "iplay": true,
+          "btcnt": 4,
+          "company": null,
+          "section": [
+            {
+              "sid": 73970,
+              "psid": 0,
+              "sno": 1,
+              "psrno": 1,
+              "gstatus": "ACTIVE",
+              "nat": "South Australia W",
+              "gscode": 1,
+              "max": 0,
+              "min": 0,
+              "rem": "",
+              "br": false,
+              "ik": 0,
+              "ikm": 0,
+              "odds": [
+                {
+                  "psid": 0,
+                  "odds": 0,
+                  "otype": "back",
+                  "oname": "back3",
+                  "tno": 2,
+                  "size": 0
+                },
+                {
+                  "psid": 0,
+                  "odds": 0,
+                  "otype": "back",
+                  "oname": "back2",
+                  "tno": 1,
+                  "size": 0
+                },
+                {
+                  "psid": 0,
+                  "odds": 0,
+                  "otype": "back",
+                  "oname": "back1",
+                  "tno": 0,
+                  "size": 0
+                },
+                {
+                  "psid": 0,
+                  "odds": 1.01,
+                  "otype": "lay",
+                  "oname": "lay1",
+                  "tno": 0,
+                  "size": 6445.46
+                },
+                {
+                  "psid": 0,
+                  "odds": 1.02,
+                  "otype": "lay",
+                  "oname": "lay2",
+                  "tno": 1,
+                  "size": 187.72
+                },
+                {
+                  "psid": 0,
+                  "odds": 1.15,
+                  "otype": "lay",
+                  "oname": "lay3",
+                  "tno": 2,
+                  "size": 2.39
+                }
+              ]
+            },
+            {
+              "sid": 803981,
+              "psid": 0,
+              "sno": 2,
+              "psrno": 2,
+              "gstatus": "ACTIVE",
+              "nat": "New South Wales W",
+              "gscode": 1,
+              "max": 0,
+              "min": 0,
+              "rem": "",
+              "br": false,
+              "ik": 0,
+              "ikm": 0,
+              "odds": [
+                {
+                  "psid": 0,
+                  "odds": 50,
+                  "otype": "back",
+                  "oname": "back3",
+                  "tno": 2,
+                  "size": 3.83
+                },
+                {
+                  "psid": 0,
+                  "odds": 100,
+                  "otype": "back",
+                  "oname": "back2",
+                  "tno": 1,
+                  "size": 65.1
+                },
+                {
+                  "psid": 0,
+                  "odds": 1000,
+                  "otype": "back",
+                  "oname": "back1",
+                  "tno": 0,
+                  "size": 17.96
+                },
+                {
+                  "psid": 0,
+                  "odds": 0,
+                  "otype": "lay",
+                  "oname": "lay1",
+                  "tno": 0,
+                  "size": 0
+                },
+                {
+                  "psid": 0,
+                  "odds": 0,
+                  "otype": "lay",
+                  "oname": "lay2",
+                  "tno": 1,
+                  "size": 0
+                },
+                {
+                  "psid": 0,
+                  "odds": 0,
+                  "otype": "lay",
+                  "oname": "lay3",
+                  "tno": 2,
+                  "size": 0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "gmid": 675008926,
+          "mid": 8328462355991,
+          "pmid": null,
+          "mname": "Bookmaker",
+          "rem": "\"UEFA Europa And Conference League\" — Football Betting Now Open!",
+          "gtype": "match1",
+          "status": "SUSPENDED",
+          "rc": 2,
+          "visible": false,
+          "pid": 0,
+          "gscode": 1,
+          "maxb": 0,
+          "sno": 2,
+          "dtype": 4,
+          "ocnt": 6,
+          "m": 0,
+          "max": 100000,
+          "min": 100,
+          "biplay": true,
+          "umaxbof": 0,
+          "boplay": true,
+          "iplay": true,
+          "btcnt": 0,
+          "company": null,
+          "section": [
+            {
+              "sid": 1,
+              "psid": 0,
+              "sno": 1,
+              "psrno": 1,
+              "gstatus": "SUSPENDED",
+              "nat": "South Australia W",
+              "gscode": 0,
+              "max": 0,
+              "min": 0,
+              "rem": "",
+              "br": false,
+              "ik": 0,
+              "ikm": 0,
+              "odds": [
+                {
+                  "psid": 0,
+                  "odds": 0,
+                  "otype": "back",
+                  "oname": "back3",
+                  "tno": 2,
+                  "size": 0
+                },
+                {
+                  "psid": 0,
+                  "odds": 0,
+                  "otype": "back",
+                  "oname": "back2",
+                  "tno": 1,
+                  "size": 0
+                },
+                {
+                  "psid": 0,
+                  "odds": 0,
+                  "otype": "back",
+                  "oname": "back1",
+                  "tno": 0,
+                  "size": 0
+                },
+                {
+                  "psid": 0,
+                  "odds": 0,
+                  "otype": "lay",
+                  "oname": "lay1",
+                  "tno": 0,
+                  "size": 0
+                },
+                {
+                  "psid": 0,
+                  "odds": 0,
+                  "otype": "lay",
+                  "oname": "lay2",
+                  "tno": 1,
+                  "size": 0
+                },
+                {
+                  "psid": 0,
+                  "odds": 0,
+                  "otype": "lay",
+                  "oname": "lay3",
+                  "tno": 2,
+                  "size": 0
+                }
+              ]
+            },
+            {
+              "sid": 2,
+              "psid": 0,
+              "sno": 2,
+              "psrno": 2,
+              "gstatus": "SUSPENDED",
+              "nat": "New South Wales W",
+              "gscode": 0,
+              "max": 0,
+              "min": 0,
+              "rem": "",
+              "br": false,
+              "ik": 0,
+              "ikm": 0,
+              "odds": [
+                {
+                  "psid": 0,
+                  "odds": 0,
+                  "otype": "back",
+                  "oname": "back3",
+                  "tno": 2,
+                  "size": 0
+                },
+                {
+                  "psid": 0,
+                  "odds": 0,
+                  "otype": "back",
+                  "oname": "back2",
+                  "tno": 1,
+                  "size": 0
+                },
+                {
+                  "psid": 0,
+                  "odds": 0,
+                  "otype": "back",
+                  "oname": "back1",
+                  "tno": 0,
+                  "size": 0
+                },
+                {
+                  "psid": 0,
+                  "odds": 0,
+                  "otype": "lay",
+                  "oname": "lay1",
+                  "tno": 0,
+                  "size": 0
+                },
+                {
+                  "psid": 0,
+                  "odds": 0,
+                  "otype": "lay",
+                  "oname": "lay2",
+                  "tno": 1,
+                  "size": 0
+                },
+                {
+                  "psid": 0,
+                  "odds": 0,
+                  "otype": "lay",
+                  "oname": "lay3",
+                  "tno": 2,
+                  "size": 0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "gmid": 675008926,
+          "mid": 4876149175204,
+          "pmid": null,
+          "mname": "TIED_MATCH",
+          "rem": "",
+          "gtype": "match",
+          "status": "OPEN",
+          "rc": 2,
+          "visible": false,
+          "pid": 0,
+          "gscode": 1,
+          "maxb": 1,
+          "sno": 7.001,
+          "dtype": 4,
+          "ocnt": 6,
+          "m": 0,
+          "max": 0,
+          "min": 0,
+          "biplay": true,
+          "umaxbof": 1,
+          "boplay": true,
+          "iplay": true,
+          "btcnt": 4,
+          "company": null,
+          "section": [
+            {
+              "sid": 793830,
+              "psid": 0,
+              "sno": 1,
+              "psrno": 1,
+              "gstatus": "ACTIVE",
+              "nat": "Yes",
+              "gscode": 1,
+              "max": 0,
+              "min": 0,
+              "rem": "",
+              "br": false,
+              "ik": 0,
+              "ikm": 0,
+              "odds": [
+                {
+                  "psid": 0,
+                  "odds": 15,
+                  "otype": "back",
+                  "oname": "back3",
+                  "tno": 2,
+                  "size": 2
+                },
+                {
+                  "psid": 0,
+                  "odds": 100,
+                  "otype": "back",
+                  "oname": "back2",
+                  "tno": 1,
+                  "size": 2
+                },
+                {
+                  "psid": 0,
+                  "odds": 200,
+                  "otype": "back",
+                  "oname": "back1",
+                  "tno": 0,
+                  "size": 3.73
+                },
+                {
+                  "psid": 0,
+                  "odds": 0,
+                  "otype": "lay",
+                  "oname": "lay1",
+                  "tno": 0,
+                  "size": 0
+                },
+                {
+                  "psid": 0,
+                  "odds": 0,
+                  "otype": "lay",
+                  "oname": "lay2",
+                  "tno": 1,
+                  "size": 0
+                },
+                {
+                  "psid": 0,
+                  "odds": 0,
+                  "otype": "lay",
+                  "oname": "lay3",
+                  "tno": 2,
+                  "size": 0
+                }
+              ]
+            },
+            {
+              "sid": 70751,
+              "psid": 0,
+              "sno": 2,
+              "psrno": 2,
+              "gstatus": "ACTIVE",
+              "nat": "No",
+              "gscode": 1,
+              "max": 0,
+              "min": 0,
+              "rem": "",
+              "br": false,
+              "ik": 0,
+              "ikm": 0,
+              "odds": [
+                {
+                  "psid": 0,
+                  "odds": 0,
+                  "otype": "back",
+                  "oname": "back3",
+                  "tno": 2,
+                  "size": 0
+                },
+                {
+                  "psid": 0,
+                  "odds": 0,
+                  "otype": "back",
+                  "oname": "back2",
+                  "tno": 1,
+                  "size": 0
+                },
+                {
+                  "psid": 0,
+                  "odds": 0,
+                  "otype": "back",
+                  "oname": "back1",
+                  "tno": 0,
+                  "size": 0
+                },
+                {
+                  "psid": 0,
+                  "odds": 1.01,
+                  "otype": "lay",
+                  "oname": "lay1",
+                  "tno": 0,
+                  "size": 197.53
+                },
+                {
+                  "psid": 0,
+                  "odds": 1.08,
+                  "otype": "lay",
+                  "oname": "lay2",
+                  "tno": 1,
+                  "size": 3.73
+                },
+                {
+                  "psid": 0,
+                  "odds": 1.22,
+                  "otype": "lay",
+                  "oname": "lay3",
+                  "tno": 2,
+                  "size": 22.37
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "missing_gmids": []
+  }
+}

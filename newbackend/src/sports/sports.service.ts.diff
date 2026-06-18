@@ -1,0 +1,60 @@
+--- /Users/harshkhandelwal/Documents/100xwins/newbackend/src/sports/sports.service.ts
++++ /Users/harshkhandelwal/Documents/100xwins/newbackend/src/sports/sports.service.ts
+@@ -1 +1 @@
+-import { Injectable, Logger, OnModuleInit, Inject, forwardRef } from '@nestjs/common';
++import { Injectable, Logger, OnModuleInit, Inject, forwardRef } from '@nestjs/common';
+@@ -38,15 +38,15 @@
+     private readonly logger = new Logger(SportsService.name);
+-    private readonly API_URL = process.env.MYZOSH_API_URL || "https://staging.myzosh.com/api";
+-    private accessToken: string | null = null;
+-
+-    private readonly AGENT_CODE = process.env.MYZOSH_AGENT_CODE || 'kuberexch';
+-    private readonly SECRET_KEY = process.env.MYZOSH_SECRET_KEY || 'default_key';
+-
+-    // Rate Limiting & Queueing
+-    private lastRequestTime = 0;
+-    private readonly REQUEST_INTERVAL_MS = 2500; // 2.5s = ~24 calls/min
+-    private requestQueue: Promise<any> = Promise.resolve();
+-
+-    // Import Deduplication & Cooldown
+-    private importLocks: Map<string, Promise<any>> = new Map();
+-    private importCooldowns: Set<string> = new Set();
+-    private readonly IMPORT_COOLDOWN_MS = 60000; // Don't retry import for same match for 1 min
+-
+-    private isSyncing = false;
++    // External API variables removed
+@@ -75,34 +75,2 @@
+-    private async respectRateLimit() {
+-        const allowed = await this.redisService.checkRateLimit('provider_api_limit', 25, 60);
+-        if (!allowed) {
+-            this.logger.warn('Rate limit exceeded. Waiting...');
+-            await new Promise(resolve => setTimeout(resolve, 2000));
+-            await this.respectRateLimit(); // Retry
+-        }
+-    }
+-
+-    private async makeApiRequest<T>(url: string, payload: any): Promise<{ data: T; status: number }> {
+-        await this.respectRateLimit();
+-
+-        // logPayload logic...
+-        const logPayload = { ...payload };
+-        if (logPayload.access_token) logPayload.access_token = '***';
+-
+-        this.logger.log(`API Request to ${url} Payload: ${JSON.stringify(logPayload)} `);
+-
+-        try {
+-            const response = await firstValueFrom(
+-                this.httpService.post<T>(url, payload)
+-            );
+-            return { data: response.data, status: response.status };
+-        } catch (error) {
+-            // Handle 401
+-            if (error.response && error.response.status === 401) {
+-                this.logger.warn(`API responded with 401. Refreshing token...`);
+-                this.accessToken = null;
+-            }
+-            throw error;
+-        }
+-    }
+-
++    

@@ -1,0 +1,55 @@
+# System
+.DS_Store
+**/.DS_Store
+*.log
+
+# Local tooling / agent caches
+.claude/
+**/.claude/
+.firecrawl/
+**/.firecrawl/
+
+# Dependencies (Root level if any)
+node_modules/
+**/node_modules/
+
+# Env files — never commit (contain secrets)
+.env
+.env.*
+!.env.example
+**/.env
+**/.env.*
+
+# Database dumps & backups — never commit
+*.dump
+backup.dump
+full_db_schema.sql
+*.bak
+
+# Build output
+.next/
+**/.next/
+dist/
+**/dist/
+build/
+out/
+**/target/
+
+# Nested ignore rules are handled by .gitignore files inside subfolders, 
+# but specifically ignore other sibling folders if not part of this deployment:
+admin/
+backend/
+client/
+
+/videos/
+# Ensure these are NOT ignored (redundant but safe)
+!newwebsite/
+!newbackend/
+/mobileapp/
+sports-sync-rust/target/
+/cashfree/
+/kuber/
+/Aviator 1.58/
+
+# Backup credentials — never commit these
+scripts/backup.env

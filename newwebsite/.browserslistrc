@@ -1,0 +1,15 @@
+# Target modern browsers only — drops ~47 KiB of legacy transpilation
+# (polyfills, down-compiled spread/async/class, etc.) per Lighthouse
+# "Legacy JavaScript" audit. These browsers cover >96% of global usage
+# as of 2026-04 and all of them ship native ES2020+, which is what
+# SWC + Next.js can safely emit without extra downleveling.
+#
+# If you need to support an older browser explicitly, add a comma-
+# separated entry here — do NOT reach for "defaults" / "last 2 versions"
+# which pull in IE11 and ancient Android WebViews.
+
+>= 1% and last 2 versions
+not dead
+not IE 11
+not op_mini all
+supports es6-module

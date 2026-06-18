@@ -1,0 +1,243 @@
+@import "tailwindcss";
+
+:root {
+  /* 1. Core Background & Dark Layers */
+  --bg-base: #201E22;
+  /* Pure Black (outer frame) */
+  --bg-section: #201E22;
+  /* Deep App Background / Main background */
+  --bg-card: #322E2F;
+  /* Card / Tile Background / Primary App Background */
+  --bg-elevated: #2A2A2E;
+  /* Secondary Background */
+  --bg-hover: #3F4044;
+  /* Hover / Active Surface */
+  --divider: #555657;
+  /* Divider / Border Subtle */
+
+  /* 2. Gold / Orange Primary Brand Colors (MOST IMPORTANT) */
+  --action-primary: #E37D32;
+  /* Primary Gold (CTA) */
+  --action-hover: #EFA05B;
+  /* Bright Gold Accent / Hover / Glow */
+  --action-active: #AE5910;
+  /* Deep Bronze Shadow */
+  --gold-soft: #EFC083;
+  /* Soft Gold Background / Banner gradients */
+  --gold-muted: #A47C4A;
+  /* Muted Gold / Icons & Highlights */
+  --brown-accent: #5D4027;
+  /* Dark Brown Accent */
+
+  /* 3. Text Hierarchy */
+  --text-primary: #E1C1B8;
+  /* Headings */
+  --text-secondary: #C9C0B8;
+  /* Secondary Text / Body */
+  --text-muted: #8D8A89;
+  /* Muted Text */
+  --text-disabled: #555657;
+  /* Disabled Text */
+  --text-inverse: #1A1208;
+  /* Inverse Text (on gold) */
+
+  /* 4. Status Colors */
+  --success-primary: #4CAF50;
+  /* Success Green */
+  --live-indicator: #2ECC71;
+  /* Live Indicator Green */
+  --success-soft: #1F3326;
+  /* Soft Success BG */
+
+  /* 5. Error / Loss / Warning */
+  --danger-primary: #E24C4C;
+  /* Danger Red */
+  --danger-soft: #2A1414;
+  /* Soft Danger BG */
+  --danger-muted: #B94A4A;
+  /* Muted Danger */
+
+  /* 6. Rare Accent Colors */
+  --accent-blue: #2D7DD2;
+  --accent-teal: #2FA4A9;
+  --accent-purple: #7B5CD6;
+
+  /* Base Variables */
+  --background: var(--bg-base);
+  --foreground: var(--text-primary);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-poppins);
+
+  /* Extending Palette */
+  --color-bg-base: var(--bg-base);
+  --color-bg-section: var(--bg-section);
+  --color-bg-card: var(--bg-card);
+  --color-bg-elevated: var(--bg-elevated);
+  --color-bg-hover: var(--bg-hover);
+
+  --color-brand-gold: var(--action-primary);
+  --color-brand-gold-hover: var(--action-hover);
+  --color-brand-active: var(--action-active);
+  --color-gold-soft: var(--gold-soft);
+  --color-gold-muted: var(--gold-muted);
+  --color-brown-accent: var(--brown-accent);
+
+  /* Keeping legacy names mapped to new colors for compatibility */
+  --color-brand-green: var(--action-primary);
+  --color-brand-green-hover: var(--action-hover);
+
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-muted: var(--text-muted);
+  --color-text-disabled: var(--text-disabled);
+  --color-text-inverse: var(--text-inverse);
+
+  --color-success: var(--success-primary);
+  --color-live: var(--live-indicator);
+  --color-danger: var(--danger-primary);
+  --color-danger-soft: var(--danger-soft);
+
+  --color-border-subtle: var(--divider);
+
+  --color-accent-blue: var(--accent-blue);
+  --color-accent-teal: var(--accent-teal);
+  --color-accent-purple: var(--accent-purple);
+
+  /* Shadows & Glows (Enhanced for Borderless) */
+  --shadow-soft: 0 8px 24px rgba(0, 0, 0, 0.4);
+  /* Softer, deeper shadow */
+  --shadow-hard: 0 12px 40px rgba(0, 0, 0, 0.6);
+
+  /* Hard shadow for elevated items */
+
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: var(--bg-base);
+    --foreground: var(--text-primary);
+  }
+}
+
+/* Custom Fonts */
+@font-face {
+  font-family: 'Adx-Bold';
+  src: url('/fonts/Adx-ExtraBold.woff2') format('woff2');
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Adx-SemiBold';
+  src: url('/fonts/Adx-SemiBold.woff2') format('woff2');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+body {
+  min-height: 100dvh;
+  background: var(--background);
+  color: var(--foreground);
+  font-family: 'Adx-SemiBold', sans-serif;
+  overflow-x: hidden;
+}
+
+.font-adx-bold {
+  font-family: 'Adx-Bold', sans-serif;
+}
+
+html {
+  overflow-x: hidden;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+.dashboard-shell {
+  overflow-x: clip;
+}
+
+.dashboard-main {
+  min-width: 0;
+}
+
+/* Utilities for new design system */
+
+/* Gradient Recipes */
+.bg-gradient-gold {
+  background: linear-gradient(135deg, var(--action-primary) 0%, var(--action-hover) 100%);
+}
+
+.bg-gradient-banner {
+  background: linear-gradient(120deg, var(--brown-accent) 0%, var(--gold-soft) 50%, var(--action-primary) 100%);
+}
+
+.text-gradient-gold {
+  background: linear-gradient(135deg, var(--action-primary) 0%, var(--action-hover) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Text Glows */
+.text-glow-gold {
+  text-shadow: 0 0 10px rgba(227, 125, 50, 0.5);
+}
+
+/* Shadow Glows */
+.shadow-glow-gold {
+  box-shadow: var(--shadow-glow-gold);
+}
+
+.card-hover {
+  transition: all 0.3s ease;
+}
+
+.card-hover:hover {
+  background-color: var(--bg-hover);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-soft);
+}
+
+/* Auth Modal Utilities (Simple & Clean) */
+.bg-auth-base {
+  background-color: var(--bg-base);
+  color: var(--text-primary);
+}
+
+.bg-auth-action {
+  background-color: var(--action-primary);
+  color: var(--text-inverse);
+}
+
+.bg-auth-action:hover {
+  background-color: var(--action-hover);
+}
+
+.bg-auth-secondary {
+  background-color: transparent;
+  border: 1px solid var(--divider);
+  color: var(--text-muted);
+}
+
+
+/* Hide scrollbar globally but keep scrolling */
+* {
+  -ms-overflow-style: none;
+  /* IE and Edge */
+  scrollbar-width: none;
+  /* Firefox */
+}
+
+*::-webkit-scrollbar {
+  display: none;
+}

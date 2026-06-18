@@ -1,0 +1,328 @@
+{
+  "_meta": {
+    "description": "Captured real responses from the Sportradar integration. Paste the actual JSON body returned by the upstream into the `response` field of each endpoint.",
+    "sourceFile": "newbackend/src/sports/sportradar.service.ts",
+    "apiWrapper": "Betnex / TurnkeyXGaming proxy (not native api.sportradar.com)",
+    "basePath": "/api/v1/sportsradar",
+    "hosts": {
+      "primary": "http://62.72.41.209:8087",
+      "primaryEnv": "SPORTRADAR_HOST_PRIMARY",
+      "secondary": "http://local.turnkeyxgaming.com:8087",
+      "secondaryEnv": "SPORTRADAR_HOST_SECONDARY"
+    },
+    "authHeader": {
+      "name": "x-betnex-key",
+      "env": "SPORTRADAR_API_KEY",
+      "hardcodedFallbackInBackend": "67f1a9c2d4e8b1a3c9f05673",
+      "adminPanelUsesDifferentKey": {
+        "host": "sportradar-api.p.rapidapi.com",
+        "header": "X-RapidAPI-Key",
+        "env": "SPORTS_API_KEY",
+        "hardcodedFallbackInAdmin": "6a9d10424b039000ab1caa11",
+        "note": "Admin hits a SECOND Sportradar provider via RapidAPI — this is a separate integration from the backend's Betnex proxy. Responses captured here should be from the Betnex backend path, not the RapidAPI admin path. If you also want to capture RapidAPI shapes, add them under `adminRapidApiSamples`."
+      }
+    },
+    "strategy": "Promise.any across both hosts, 8s timeout, 222ms Redis read-through",
+    "envelopeShape": {
+      "success": "boolean",
+      "message": "string",
+      "status": "string",
+      "errorDescription": "string",
+      "note": "Data payload varies by endpoint — see each endpoint's `expectedShape`"
+    },
+    "captureInstructions": [
+      "Trigger the endpoint against the real upstream (curl, admin tooling, or by watching a live request).",
+      "Paste the raw JSON body (no transformations) into the `response` field.",
+      "If an endpoint has multiple interesting shapes (e.g. upcoming vs. live), add extra entries to `additionalSamples` instead of overwriting `response`.",
+      "Include any non-200 responses in `errorSamples` so we can map upstream error codes."
+    ]
+  },
+
+  "endpoints": {
+    "allsports": {
+      "method": "GET",
+      "path": "/api/v1/sportsradar/allsports",
+      "queryParams": {},
+      "caller": "SportradarService.fetchAllSportsFromApi()",
+      "callerLocation": "newbackend/src/sports/sportradar.service.ts:513",
+      "purpose": "Seed betfair_sports collection and drive sports lobby.",
+      "expectedShape": {
+        "success": true,
+        "message": "",
+        "status": "",
+        "errorDescription": "",
+        "sports": [
+          {
+            "sportName": "Cricket",
+            "sportId": "sr:sport:21",
+            "status": "ACTIVE",
+            "partnerId": "..."
+          }
+        ]
+      },
+      "response": null,
+      "additionalSamples": [],
+      "errorSamples": [],
+      "notes": ""
+    },
+
+    "events-catalogue": {
+      "method": "GET",
+      "path": "/api/v1/sportsradar/events-catalogue",
+      "queryParams": {
+        "sportId": "sr:sport:21",
+        "pageNo": 1
+      },
+      "pageSize": 100,
+      "caller": "SportradarService.fetchEventsPage(sportId, pageNo)",
+      "callerLocation": "newbackend/src/sports/sportradar.service.ts:624",
+      "purpose": "Full events sync (upcoming + live merged) for a sport, paginated.",
+      "expectedShape": {
+        "success": true,
+        "message": "",
+        "status": "",
+        "errorDescription": "",
+        "sports": [
+          {
+            "eventId": "sr:match:...",
+            "eventName": "Team A vs. Team B",
+            "sportId": "sr:sport:21",
+            "sportName": "Cricket",
+            "competitionId": "sr:tournament:...",
+            "competitionName": "...",
+            "openDate": 1700000000000,
+            "status": "UPCOMING|LIVE|CLOSED",
+            "eventStatus": "",
+            "catId": "LIVE|TODAY|UPCOMING",
+            "catName": "",
+            "homeScore": 0,
+            "awayScore": 0,
+            "country": "",
+            "venue": "",
+            "winnerBlocked": false,
+            "isFavourite": false,
+            "premiumEnabled": false,
+            "thumbnail": "",
+            "co": false,
+            "sc": "",
+            "markets": {
+              "matchOddsProvider": "",
+              "matchOddsBaseUrl": "",
+              "matchOddsTopic": "",
+              "matchOdds": [
+                {
+                  "marketId": "1",
+                  "marketName": "1x2",
+                  "marketType": "MATCH_ODDS",
+                  "marketTime": 0,
+                  "status": "Active",
+                  "runners": [
+                    {
+                      "runnerId": "1",
+                      "runnerName": "...",
+                      "status": "Active",
+                      "backPrices": [{ "price": 0, "size": 0 }],
+                      "layPrices":  [{ "price": 0, "size": 0 }],
+                      "sort": "",
+                      "clothNumber": "",
+                      "stallDraw": "",
+                      "runnerIcon": "",
+                      "jockeyName": "",
+                      "trainerName": "",
+                      "runnerAge": ""
+                    }
+                  ],
+                  "limits": {
+                    "minBetValue": 0,
+                    "maxBetValue": 0,
+                    "oddsLimit": 0,
+                    "currency": ""
+                  },
+                  "category": ""
+                }
+              ],
+              "bookmakers": [],
+              "fancyMarkets": [],
+              "premiumProvider": "",
+              "premiumBaseUrl": "",
+              "premiumTopic": "",
+              "premiumSportId": "",
+              "premiumCompetitionId": "",
+              "premiumEventId": "",
+              "premiumMarkets": []
+            }
+          }
+        ],
+        "eventsCount": 0
+      },
+      "response": null,
+      "additionalSamples": [],
+      "errorSamples": [],
+      "notes": ""
+    },
+
+    "inplay-events": {
+      "method": "GET",
+      "path": "/api/v1/sportsradar/inplay-events",
+      "queryParams": {
+        "sportId": "sr:sport:21",
+        "pageNo": 1
+      },
+      "caller": "SportradarService.fetchInplayEventsPage(sportId, pageNo)",
+      "callerLocation": "newbackend/src/sports/sportradar.service.ts:681",
+      "purpose": "Live events with real homeScore/awayScore and status IN_PLAY. 30s refresh loop, Redis TTL 2s.",
+      "expectedShape": "Same envelope as events-catalogue; events have status: 'LIVE' or 'IN_PLAY' with populated homeScore/awayScore.",
+      "response": null,
+      "additionalSamples": [],
+      "errorSamples": [],
+      "notes": ""
+    },
+
+    "upcoming-events": {
+      "method": "GET",
+      "path": "/api/v1/sportsradar/upcoming-events",
+      "queryParams": {
+        "sportId": "sr:sport:21",
+        "pageNo": 1
+      },
+      "caller": "SportradarService.fetchUpcomingEventsPage(sportId, pageNo)",
+      "callerLocation": "newbackend/src/sports/sportradar.service.ts:795",
+      "purpose": "Pre-match events with status UPCOMING. Redis TTL ~180s.",
+      "expectedShape": "Same envelope as events-catalogue; events have status: 'UPCOMING'.",
+      "response": null,
+      "additionalSamples": [],
+      "errorSamples": [],
+      "notes": ""
+    },
+
+    "list-market": {
+      "method": "GET",
+      "path": "/api/v1/sportsradar/list-market",
+      "queryParams": {
+        "sportId": "sr:sport:21",
+        "eventId": "sr:match:..."
+      },
+      "caller": "SportradarService.fetchListMarket(sportId, eventId)",
+      "callerLocation": "newbackend/src/sports/sportradar.service.ts:1377",
+      "purpose": "Full market detail for a single event (matchOdds, bookmakers, fancyMarkets, premiumMarkets). Polled every 222ms by liveOddsTick.",
+      "expectedShape": {
+        "success": true,
+        "event": {
+          "eventId": "sr:match:...",
+          "eventName": "...",
+          "markets": {
+            "matchOdds": [],
+            "bookmakers": [],
+            "fancyMarkets": [],
+            "premiumMarkets": []
+          }
+        }
+      },
+      "response": null,
+      "additionalSamples": [],
+      "errorSamples": [],
+      "notes": "Critical endpoint for real-time odds. Compare premiumMarkets shape vs matchOdds — needed to decide whether to use premiumTopic WebSocket channel instead of polling."
+    },
+
+    "market-result": {
+      "method": "GET",
+      "path": "/api/v1/sportsradar/market-result",
+      "queryParams": {
+        "sportId": "sr:sport:21",
+        "eventId": "sr:match:..."
+      },
+      "caller": "SportradarService.getMarketResult(sportId, eventId)",
+      "callerLocation": "newbackend/src/sports/sportradar.service.ts:1438",
+      "purpose": "Settled markets with runner result field ('won' | 'lost' | ''). Drives bet settlement.",
+      "expectedShape": {
+        "success": true,
+        "event": {
+          "eventId": "sr:match:...",
+          "eventName": "...",
+          "markets": {
+            "matchOdds": [
+              {
+                "marketId": "878:sp:total=211.5|inningnr=1|maxovers=20",
+                "marketName": "1st innings - Iconic Super Knights total",
+                "marketType": "MATCH_ODDS",
+                "marketStatus": "OPEN|SETTLED|SUSPENDED",
+                "runners": [
+                  {
+                    "runnerId": "12",
+                    "runnerName": "over 211.5",
+                    "runnerStatus": "Active|Suspended",
+                    "result": "won|lost|"
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      },
+      "response": null,
+      "additionalSamples": [],
+      "errorSamples": [],
+      "notes": "HIGHEST risk endpoint — settlement reads runnerId + result and matches against Bet.srMarketFullId + Bet.srRunnerId. Confirm runnerId stability vs list-market's runnerId. Confirm what the API returns for void/push (is `result` ever 'void' or 'refund', or does marketStatus change to 'VOID'?)."
+    }
+  },
+
+  "adminRapidApiSamples": {
+    "_note": "The admin panel hits a DIFFERENT provider: sportradar-api.p.rapidapi.com. If you're capturing responses from the admin path, paste them here so we can diff them against the backend Betnex shapes above.",
+    "market-result": {
+      "method": "GET",
+      "url": "https://sportradar-api.p.rapidapi.com/market-result?sportId=sr:sport:21&eventId={eventId}",
+      "headers": {
+        "X-RapidAPI-Key": "<SPORTS_API_KEY env var>",
+        "X-RapidAPI-Host": "sportradar-api.p.rapidapi.com"
+      },
+      "caller": "newadmin/src/actions/internal-sportradar-settlement.ts:68 and newadmin/src/actions/internal-match-odds-settlement.ts:76",
+      "response": null,
+      "notes": ""
+    }
+  },
+
+  "socketIoSamples": {
+    "_note": "These are NOT upstream API responses — they're the shapes the backend emits over Socket.IO after transforming upstream data. Captured here so the frontend contract is documented in one place.",
+    "sportradar_odds_via_events_gateway": {
+      "event": "socket-data",
+      "room": "match:{eventId}",
+      "emitter": "newbackend/src/sports/sportradar.service.ts:368 (emitSportradarOdds)",
+      "expectedShape": {
+        "messageType": "sportradar_odds",
+        "eventId": "sr:match:...",
+        "data": [
+          {
+            "bmi": "{eventId}:{marketId}",
+            "mid": "{eventId}:{marketId}",
+            "eid": "sr:match:...",
+            "mname": "1x2",
+            "mtype": "MATCH_ODDS",
+            "ms": 1,
+            "rt": [
+              { "ri": "1", "ib": true,  "rt": 2.5, "bv": 1000, "nat": "Team A" },
+              { "ri": "1", "ib": false, "rt": 2.6, "bv": 500,  "nat": "Team A" }
+            ],
+            "runners": []
+          }
+        ],
+        "score": { "home": 0, "away": 0 },
+        "event": {}
+      },
+      "sample": null
+    },
+    "sports-match-data_via_sports_gateway": {
+      "event": "sports-match-data",
+      "room": "match:{matchId}",
+      "emitter": "newbackend/src/sports/sports.gateway.ts:199 (emitMatchData)",
+      "expectedShape": "Same as sportradar_odds but delivered on the /sports namespace, with full `event` object attached.",
+      "sample": null
+    },
+    "sports-lobby-data_via_sports_gateway": {
+      "event": "sports-lobby-data",
+      "room": "sports:lobby",
+      "emitter": "newbackend/src/sports/sports.gateway.ts:195 (emitLobbyData)",
+      "expectedShape": "Base payload without the full `event` object — used by the lobby grid.",
+      "sample": null
+    }
+  }
+}

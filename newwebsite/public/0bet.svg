@@ -1,0 +1,79 @@
+<svg width="800" height="350" viewBox="0 0 800 350" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Dark metal gradient for 0 -->
+    <linearGradient id="darkMetal" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#4a4a4a"/>
+      <stop offset="50%" stop-color="#2a2a2a"/>
+      <stop offset="100%" stop-color="#1a1a1a"/>
+    </linearGradient>
+    
+    <!-- Red gradient for Bet (like the 88) -->
+    <linearGradient id="redMetal" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ff4757"/>
+      <stop offset="50%" stop-color="#c0392b"/>
+      <stop offset="100%" stop-color="#8b0000"/>
+    </linearGradient>
+    
+    <!-- 3D Extrusion Filter -->
+    <filter id="bevel3d" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="2"/>
+      <feOffset dx="6" dy="6" result="offsetblur"/>
+      <feFlood flood-color="#000000" flood-opacity="0.5"/>
+      <feComposite in2="offsetblur" operator="in" result="shadow"/>
+      <feMerge>
+        <feMergeNode in="shadow"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    
+    <!-- Top shine gradient -->
+    <linearGradient id="shine" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.4"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="800" height="350" fill="#e8e8e8" rx="15"/>
+  
+  <!-- Main Group with Skew -->
+  <g transform="translate(200, 70) skewX(-6)">
+    
+    <!-- 0 Shadow Layer -->
+    <g transform="translate(8, 8)" opacity="0.3">
+      <ellipse cx="60" cy="100" rx="55" ry="85" fill="none" stroke="#000" stroke-width="20"/>
+    </g>
+    
+    <!-- 0 Main Body (Dark like Long Fu) -->
+    <g filter="url(#bevel3d)">
+      <ellipse cx="60" cy="100" rx="55" ry="85" fill="none" stroke="url(#darkMetal)" stroke-width="20" stroke-linecap="round"/>
+    </g>
+    
+    <!-- 0 Highlight -->
+    <ellipse cx="60" cy="95" rx="50" ry="80" fill="none" stroke="url(#shine)" stroke-width="8" opacity="0.5"/>
+    
+    <!-- Dot Shadow -->
+    <circle cx="145" cy="155" r="10" fill="#000" opacity="0.3" transform="translate(6, 6)"/>
+    
+    <!-- Dot Main (Red accent) -->
+    <circle cx="145" cy="155" r="10" fill="url(#redMetal)" filter="url(#bevel3d)"/>
+    
+    <!-- Bet Shadow Layer -->
+    <g transform="translate(8, 8)" opacity="0.3">
+      <text x="175" y="140" font-family="Impact, Arial Black, sans-serif" font-size="140" font-weight="900" fill="#000" letter-spacing="2">Bet</text>
+    </g>
+    
+    <!-- Bet Main Body (Red like 88) -->
+    <text x="175" y="140" font-family="Impact, Arial Black, sans-serif" font-size="140" font-weight="900" fill="url(#redMetal)" filter="url(#bevel3d)" letter-spacing="2">Bet</text>
+    
+    <!-- Bet Highlight -->
+    <text x="175" y="136" font-family="Impact, Arial Black, sans-serif" font-size="140" font-weight="900" fill="url(#shine)" opacity="0.4" letter-spacing="2">Bet</text>
+    
+  </g>
+  
+  <!-- Subtle corner accents -->
+  <path d="M 50 50 L 80 50 L 50 80" fill="none" stroke="#c0392b" stroke-width="3" opacity="0.3"/>
+  <path d="M 750 50 L 720 50 L 750 80" fill="none" stroke="#c0392b" stroke-width="3" opacity="0.3"/>
+</svg>
+
+
