@@ -31,7 +31,7 @@ import {
 } from "@/lib/sportsLobbyData";
 import { Lock } from "lucide-react";
 
-const API_BASE = (process.env.NEXT_PUBLIC_API_URL || "https://zeero.bet/api").replace(/\/$/, "");
+const API_BASE = (process.env.NEXT_PUBLIC_API_URL || "https://odd69.com/api").replace(/\/$/, "");
 
 // ─── Sportradar Types ─────────────────────────────────────────────────────────
 interface SrRunner {
@@ -463,7 +463,7 @@ function MatchHero({
         <div className="flex flex-col items-center gap-1 shrink-0">
           {isAuthenticated ? (
             isLive || isClosed ? (
-              <div className="flex items-center gap-1.5 md:gap-3 rounded-xl md:rounded-2xl bg-bg-zeero px-3 py-2 md:px-5 md:py-3 shadow-inner">
+              <div className="flex items-center gap-1.5 md:gap-3 rounded-xl md:rounded-2xl bg-bg-odd69 px-3 py-2 md:px-5 md:py-3 shadow-inner">
                 <span className="text-[20px] md:text-[28px] font-adx-bold tabular-nums text-text-primary">{event.homeScore ?? '-'}</span>
                 <span className="text-[14px] md:text-[20px] text-text-disabled">–</span>
                 <span className="text-[20px] md:text-[28px] font-adx-bold tabular-nums text-text-primary">{event.awayScore ?? '-'}</span>
@@ -472,7 +472,7 @@ function MatchHero({
               <span className="rounded-lg md:rounded-xl bg-bg-elevated px-3 py-1.5 md:px-4 md:py-2 text-[12px] md:text-[14px] font-adx-bold text-text-disabled">VS</span>
             )
           ) : (
-            <div className="flex items-center gap-1.5 rounded-xl bg-bg-zeero/50 px-2.5 py-2 md:px-4 md:py-3 shadow-inner border border-white/[0.04] backdrop-blur-md">
+            <div className="flex items-center gap-1.5 rounded-xl bg-bg-odd69/50 px-2.5 py-2 md:px-4 md:py-3 shadow-inner border border-white/[0.04] backdrop-blur-md">
               <Lock size={10} className="text-text-muted shrink-0" />
               <span className="text-[10px] md:text-[12px] font-adx-bold text-text-muted select-none whitespace-nowrap">Login</span>
             </div>

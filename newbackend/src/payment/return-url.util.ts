@@ -12,9 +12,9 @@ import type { PrismaService } from '../prisma.service';
  */
 
 const DEFAULT_ALLOWED_HOSTS = [
-  'zeero.bet',
-  'www.zeero.bet',
-  'admin.zeero.bet',
+  'odd69.com',
+  'www.odd69.com',
+  'admin.odd69.com',
   'kuberexchange.com',
   'www.kuberexchange.com',
   'admin.kuberexchange.com',
@@ -34,7 +34,7 @@ function parseHostList(raw: string | null | undefined): string[] {
 
 /**
  * Normalizes an entry from the admin config. Accepts either bare hostnames
- * ("zeero.bet") or full URLs ("https://zeero.bet/profile/transactions") and
+ * ("odd69.com") or full URLs ("https://odd69.com/profile/transactions") and
  * returns the lowercased hostname so the allowlist comparison is consistent.
  */
 function normalizeHostEntry(entry: string): string {

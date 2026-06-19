@@ -8,7 +8,7 @@ const nextConfig: NextConfig = {
     const backend =
       process.env.BACKEND_URL ||
       process.env.NEXT_PUBLIC_API_PROXY_URL ||
-      'https://zeero.bet/api';
+      'https://odd69.com/api';
     return [
       {
         source: '/api/:path*',

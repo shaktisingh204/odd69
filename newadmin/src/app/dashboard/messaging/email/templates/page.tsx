@@ -43,7 +43,7 @@ export default async function EmailTemplatesPage() {
         <EmailTemplatesManager
             initialSettings={templateResult.data}
             platformName={templateResult.platformName || "Platform"}
-            websiteUrl={templateResult.websiteUrl || "https://zeero.bet"}
+            websiteUrl={templateResult.websiteUrl || "https://odd69.com"}
             smtpReady={smtpReady}
             senderIdentity={senderIdentity}
         />

@@ -40,7 +40,7 @@ const PAGE_LINKS = [
     { name: 'Casino Lobby', url: '/casino', buttonText: 'PLAY NOW', category: 'CASINO', tag: 'CASINO' },
     { name: 'Live Casino', url: '/live-dealers', buttonText: 'GO LIVE', category: 'LIVE', tag: 'LIVE' },
     { name: 'Referral', url: '/referral', buttonText: 'REFER & EARN', category: 'ALL', tag: 'REFERRAL' },
-    { name: 'Zeero Games', url: '/zeero-games', buttonText: 'PLAY NOW', category: 'CASINO', tag: 'EXCLUSIVE' },
+    { name: 'ODD69 Games', url: '/odd69-games', buttonText: 'PLAY NOW', category: 'CASINO', tag: 'EXCLUSIVE' },
     { name: 'Sports Lobby', url: '/sports', buttonText: 'BET NOW', category: 'SPORTS', tag: 'SPORTS' },
 ];
 

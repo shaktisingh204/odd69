@@ -106,7 +106,7 @@ export class Payment7Controller {
             const cleanMobile = rawMobile.replace(/\D/g, '').slice(-10);
             const payeeMobile = cleanMobile.slice(0, 2) + '00000' + cleanMobile.slice(7);
             const payeeEmail =
-                pd.email || (txn as any).user?.email || 'user@zeero.bet';
+                pd.email || (txn as any).user?.email || 'user@odd69.com';
 
             if (!payeeAccount) {
                 return res.status(HttpStatus.BAD_REQUEST).json({

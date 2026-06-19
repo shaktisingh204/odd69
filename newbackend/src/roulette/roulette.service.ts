@@ -136,7 +136,7 @@ export class RouletteService {
   async play(userId: number, dto: PlayRouletteDto) {
     const {
       bets,
-      clientSeed = 'zeero',
+      clientSeed = 'odd69',
       walletType = 'fiat',
       useBonus = false,
     } = dto;

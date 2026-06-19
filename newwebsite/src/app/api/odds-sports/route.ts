@@ -6,7 +6,7 @@
 
 import { NextResponse } from 'next/server';
 
-const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL ?? 'https://zeero.bet/api';
+const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL ?? 'https://odd69.com/api';
 
 export async function GET() {
   try {

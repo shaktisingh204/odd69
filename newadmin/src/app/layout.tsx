@@ -26,8 +26,8 @@ export async function generateMetadata(): Promise<Metadata> {
   }
 
   return {
-    title: "Zeero Admin Panel",
-    description: "Zeero platform administration dashboard",
+    title: "ODD69 Admin Panel",
+    description: "ODD69 platform administration dashboard",
     icons: faviconUrl ? {
       icon: [{ url: faviconUrl, sizes: "any", type: "image/png" }],
       apple: [{ url: faviconUrl }],

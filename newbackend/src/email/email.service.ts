@@ -60,8 +60,8 @@ export class EmailService {
     }
 
     private getFrontendUrl(): string {
-        const siteUrl = (process.env.FRONTEND_URL || 'https://zeero.bet').trim();
-        return siteUrl.replace(/\/+$/, '') || 'https://zeero.bet';
+        const siteUrl = (process.env.FRONTEND_URL || 'https://odd69.com').trim();
+        return siteUrl.replace(/\/+$/, '') || 'https://odd69.com';
     }
 
     private async getEmailTemplateSettings(): Promise<ManagedEmailTemplateSettingsMap> {

@@ -85,14 +85,14 @@ export function useGameSounds() {
 
   // Persist mute pref
   useEffect(() => {
-    const saved = localStorage.getItem("zeero_sounds_muted");
+    const saved = localStorage.getItem("odd69_sounds_muted");
     if (saved === "1") { mutedRef.current = true; setMutedState(true); }
   }, []);
 
   const setMuted = useCallback((v: boolean) => {
     mutedRef.current = v;
     setMutedState(v);
-    localStorage.setItem("zeero_sounds_muted", v ? "1" : "0");
+    localStorage.setItem("odd69_sounds_muted", v ? "1" : "0");
   }, []);
 
   const toggleMute = useCallback(() => setMuted(!mutedRef.current), [setMuted]);

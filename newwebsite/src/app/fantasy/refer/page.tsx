@@ -34,7 +34,7 @@ export default function ReferEarnPage() {
 
   useEffect(() => { if (!authLoading && user) fetchData(); }, [authLoading, user, fetchData]);
 
-  const code = referralCode || user?.username || "ZEERO";
+  const code = referralCode || user?.username || "ODD69";
 
   const copyCode = async () => {
     try {
@@ -48,9 +48,9 @@ export default function ReferEarnPage() {
     if (typeof navigator !== "undefined" && navigator.share) {
       try {
         await navigator.share({
-          title: "Zeero Fantasy",
-          text: `Join me on Zeero Fantasy! Use code ${code} for $100 bonus.`,
-          url: "https://zeero.bet/fantasy",
+          title: "ODD69 Fantasy",
+          text: `Join me on ODD69 Fantasy! Use code ${code} for $100 bonus.`,
+          url: "https://odd69.com/fantasy",
         });
         return;
       } catch { /* fall through */ }

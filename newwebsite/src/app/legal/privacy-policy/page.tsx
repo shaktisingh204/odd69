@@ -3,8 +3,8 @@ import Link from 'next/link';
 import { Home, Lock } from 'lucide-react';
 
 export const metadata = {
-    title: 'Privacy Policy | Zeero',
-    description: 'Read how Zeero collects, uses, and protects your personal data.',
+    title: 'Privacy Policy | ODD69',
+    description: 'Read how ODD69 collects, uses, and protects your personal data.',
 };
 
 const SECTIONS = [
@@ -30,7 +30,7 @@ const SECTIONS = [
         title: '3. Sharing of Your Information',
         content: [
             'We do not sell your personal data to third parties. We may share your data with trusted service providers who assist us in operating our platform, subject to strict confidentiality agreements.',
-            'We may disclose personal information to regulatory authorities, law enforcement, or legal entities when required by law or to protect the rights, property, or safety of Zeero, our users, or the public.',
+            'We may disclose personal information to regulatory authorities, law enforcement, or legal entities when required by law or to protect the rights, property, or safety of ODD69, our users, or the public.',
             'In the event of a merger, acquisition, or sale of assets, your data may be transferred to the acquiring entity subject to equivalent privacy protections.',
         ]
     },
@@ -52,7 +52,7 @@ const SECTIONS = [
     {
         title: '6. Your Rights',
         content: [
-            'You have the right to access, correct, or delete your personal data held by Zeero.',
+            'You have the right to access, correct, or delete your personal data held by ODD69.',
             'You have the right to object to or restrict the processing of your data in certain circumstances.',
             'You have the right to data portability — to receive a copy of your data in a machine-readable format.',
             'To exercise any of these rights, please contact our support team at the details provided on our Support page.',
@@ -85,14 +85,14 @@ const SECTIONS = [
     {
         title: '10. Contact Us',
         content: [
-            'For privacy-related enquiries or to exercise your data rights, please contact us through our Support page or email our Data Protection Officer at privacy@zeero.bet.',
+            'For privacy-related enquiries or to exercise your data rights, please contact us through our Support page or email our Data Protection Officer at privacy@odd69.com.',
         ]
     },
 ];
 
 export default function PrivacyPolicyPage() {
     return (
-        <div className="min-h-[calc(100vh-64px)] bg-bg-zeero-3 text-white pb-24">
+        <div className="min-h-[calc(100vh-64px)] bg-bg-odd69-3 text-white pb-24">
 
             {/* Header */}
             <div className="relative overflow-hidden bg-gradient-to-b from-purple-500/6 via-[#0F1016] to-[#0C0D12] border-b border-white/[0.04]">
@@ -111,7 +111,7 @@ export default function PrivacyPolicyPage() {
                     </h1>
                     <p className="text-text-muted text-sm">Last updated: April 2026</p>
                     <p className="text-text-muted text-sm mt-2 max-w-xl mx-auto">
-                        This policy explains how Zeero (operated by BlockDance B.V.) collects, uses, and protects your personal information.
+                        This policy explains how ODD69 (operated by BlockDance B.V.) collects, uses, and protects your personal information.
                     </p>
                 </div>
             </div>

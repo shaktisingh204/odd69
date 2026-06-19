@@ -42,7 +42,7 @@ type HeaderLogo = {
 
 const DEFAULT_HEADER_LOGO: HeaderLogo = {
     imageUrl: '',
-    text: 'Zeero',
+    text: 'ODD69',
     accentText: 'Ze',
 };
 
@@ -137,7 +137,7 @@ export default function Header() {
                 />
             );
         }
-        const text = logo.text || 'Zeero';
+        const text = logo.text || 'ODD69';
         const accent = logo.accentText || '';
         const hasAccent = accent && text.toLowerCase().startsWith(accent.toLowerCase());
         return (

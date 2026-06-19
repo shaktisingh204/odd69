@@ -3,17 +3,17 @@ import Link from 'next/link';
 import { Home, BookOpen } from 'lucide-react';
 
 export const metadata = {
-    title: 'Betting Rules | Zeero',
-    description: 'Official betting and gaming rules for the Zeero platform, covering sports, casino, and general rules.',
+    title: 'Betting Rules | ODD69',
+    description: 'Official betting and gaming rules for the ODD69 platform, covering sports, casino, and general rules.',
 };
 
 const SECTIONS = [
     {
         title: '1. General Rules',
         content: [
-            'All transactions (bets, deposits, withdrawals) made on Zeero are final once confirmed, unless otherwise stated in these rules.',
-            'Bets placed on incorrect markets or at incorrect odds due to obvious errors may be voided at the discretion of Zeero.',
-            'Zeero reserves the right to limit, cancel, or reject any bet at any time without providing a reason.',
+            'All transactions (bets, deposits, withdrawals) made on ODD69 are final once confirmed, unless otherwise stated in these rules.',
+            'Bets placed on incorrect markets or at incorrect odds due to obvious errors may be voided at the discretion of ODD69.',
+            'ODD69 reserves the right to limit, cancel, or reject any bet at any time without providing a reason.',
             'In cases of discrepancy between the Platform display and official results, the official results from the relevant governing body shall take precedence.',
             'Bets placed after an event has started may be voided unless live betting is explicitly offered for that event.',
         ]
@@ -66,7 +66,7 @@ const SECTIONS = [
         content: [
             'All casino game results are final once the round is concluded. Malfunction voids play and pays.',
             'In the event of a disconnection during a live casino game, the result will be determined by the game outcome at the point of disconnection.',
-            'Progressive jackpot wins are subject to verification before payout. Zeero reserves the right to delay payment pending investigation.',
+            'Progressive jackpot wins are subject to verification before payout. ODD69 reserves the right to delay payment pending investigation.',
             'Casino bonuses count towards wagering requirements at different rates depending on the game type. Slots: 100%. Table games and live casino: as specified in the bonus terms.',
         ]
     },
@@ -74,7 +74,7 @@ const SECTIONS = [
         title: '8. Dispute Resolution',
         content: [
             'In the event of a dispute, please contact our Support team within 7 days of the event in question. Claims submitted after this period may not be considered.',
-            'All disputes will be investigated and a decision made by our Compliance team. The decision of Zeero is final in all matters relating to game outcomes and bet settlement.',
+            'All disputes will be investigated and a decision made by our Compliance team. The decision of ODD69 is final in all matters relating to game outcomes and bet settlement.',
             'If you are not satisfied with our resolution, you may refer the matter to the relevant regulatory authority based on your jurisdiction.',
         ]
     },
@@ -90,7 +90,7 @@ const SECTIONS = [
 
 export default function RulesPage() {
     return (
-        <div className="min-h-[calc(100vh-64px)] bg-bg-zeero-3 text-white pb-24">
+        <div className="min-h-[calc(100vh-64px)] bg-bg-odd69-3 text-white pb-24">
 
             {/* Header */}
             <div className="relative overflow-hidden bg-gradient-to-b from-brand-gold/6 via-[#0F1016] to-[#0C0D12] border-b border-white/[0.04]">
@@ -109,7 +109,7 @@ export default function RulesPage() {
                     </h1>
                     <p className="text-text-muted text-sm">Last updated: March 2026</p>
                     <p className="text-text-muted text-sm mt-2 max-w-xl mx-auto">
-                        Official rules governing sports betting, casino games, and dispute resolution on Zeero.
+                        Official rules governing sports betting, casino games, and dispute resolution on ODD69.
                     </p>
                 </div>
             </div>

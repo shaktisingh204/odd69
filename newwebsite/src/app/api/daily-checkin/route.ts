@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-const API_URL = process.env.API_URL || process.env.NEXT_PUBLIC_API_PROXY_URL || 'https://zeero.bet/api';
+const API_URL = process.env.API_URL || process.env.NEXT_PUBLIC_API_PROXY_URL || 'https://odd69.com/api';
 
 // GET: fetch current check-in status + streak
 export async function GET(req: NextRequest) {

@@ -167,7 +167,7 @@ export class PlinkoService {
       betAmount,
       rows,
       risk,
-      clientSeed = 'zeero-plinko',
+      clientSeed = 'odd69-plinko',
       walletType = 'fiat',
       useBonus = false,
     } = dto;

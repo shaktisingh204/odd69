@@ -80,7 +80,7 @@ export type SportsEventLiveState = 'UPCOMING' | 'LIVE' | 'IN_PLAY' | 'CLOSED';
 // Removed hardcoded SPORT_ORDER; it is now strictly fetched dynamically from admin config
 export const SPORT_ORDER: string[] = [];
 
-const BACKEND = (process.env.NEXT_PUBLIC_API_URL ?? 'https://zeero.bet/api').replace(/\/$/, '');
+const BACKEND = (process.env.NEXT_PUBLIC_API_URL ?? 'https://odd69.com/api').replace(/\/$/, '');
 
 function normalizeLiveState(value: string | undefined | null) {
   return String(value ?? '')

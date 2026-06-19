@@ -1,5 +1,5 @@
 export const EMAIL_TEMPLATE_SETTINGS_KEY = 'EMAIL_TEMPLATE_SETTINGS';
-export const DEFAULT_WEBSITE_URL = process.env.NEXT_PUBLIC_WEBSITE_URL || 'https://zeero.bet';
+export const DEFAULT_WEBSITE_URL = process.env.NEXT_PUBLIC_WEBSITE_URL || 'https://odd69.com';
 
 export const EMAIL_TEMPLATE_IDS = [
     'register-success',
@@ -295,54 +295,54 @@ const alwaysEnabledTemplateIds: EmailTemplateId[] = ['forgot-password', 'otp', '
 
 export const emailTemplateSampleTokens: Record<EmailTemplateId, Record<string, string>> = {
     'register-success': {
-        platformName: 'Zeero.bet',
+        platformName: 'odd69.com',
         username: 'Harsh',
         siteUrl: DEFAULT_WEBSITE_URL,
     },
     'deposit-success': {
-        platformName: 'Zeero.bet',
+        platformName: 'odd69.com',
         username: 'Harsh',
         amountLabel: 'INR 5,000.00',
         processedAt: '05 Apr 2026, 9:30 PM IST',
         siteUrl: DEFAULT_WEBSITE_URL,
     },
     'withdrawal-success': {
-        platformName: 'Zeero.bet',
+        platformName: 'odd69.com',
         username: 'Harsh',
         amountLabel: 'INR 2,500.00',
         processedAt: '05 Apr 2026, 9:30 PM IST',
         siteUrl: DEFAULT_WEBSITE_URL,
     },
     'withdrawal-pending': {
-        platformName: 'Zeero.bet',
+        platformName: 'odd69.com',
         username: 'Harsh',
         amountLabel: 'INR 2,500.00',
         processedAt: '07 Apr 2026, 3:00 PM IST',
         siteUrl: DEFAULT_WEBSITE_URL,
     },
     'withdrawal-processed': {
-        platformName: 'Zeero.bet',
+        platformName: 'odd69.com',
         username: 'Harsh',
         amountLabel: 'INR 2,500.00',
         processedAt: '07 Apr 2026, 3:30 PM IST',
         siteUrl: DEFAULT_WEBSITE_URL,
     },
     'withdrawal-approved': {
-        platformName: 'Zeero.bet',
+        platformName: 'odd69.com',
         username: 'Harsh',
         amountLabel: 'INR 2,500.00',
         processedAt: '07 Apr 2026, 4:00 PM IST',
         siteUrl: DEFAULT_WEBSITE_URL,
     },
     'account-suspended': {
-        platformName: 'Zeero.bet',
+        platformName: 'odd69.com',
         username: 'Harsh',
         reason: 'Multiple account violations',
         suspendedAt: '07 Apr 2026, 2:15 PM IST',
         siteUrl: DEFAULT_WEBSITE_URL,
     },
     'bonus-credited': {
-        platformName: 'Zeero.bet',
+        platformName: 'odd69.com',
         username: 'Harsh',
         amountLabel: 'INR 500.00',
         walletLabel: 'Casino Bonus',
@@ -352,7 +352,7 @@ export const emailTemplateSampleTokens: Record<EmailTemplateId, Record<string, s
         siteUrl: DEFAULT_WEBSITE_URL,
     },
     'bonus-wagered': {
-        platformName: 'Zeero.bet',
+        platformName: 'odd69.com',
         username: 'Harsh',
         bonusTitle: 'Welcome Bonus',
         bonusAmount: 'INR 500.00',
@@ -360,7 +360,7 @@ export const emailTemplateSampleTokens: Record<EmailTemplateId, Record<string, s
         siteUrl: DEFAULT_WEBSITE_URL,
     },
     'bet-refund': {
-        platformName: 'Zeero.bet',
+        platformName: 'odd69.com',
         username: 'Harsh',
         amountLabel: 'INR 1,000.00',
         eventName: 'India v Australia',
@@ -369,20 +369,20 @@ export const emailTemplateSampleTokens: Record<EmailTemplateId, Record<string, s
         siteUrl: DEFAULT_WEBSITE_URL,
     },
     'forgot-password': {
-        platformName: 'Zeero.bet',
+        platformName: 'odd69.com',
         username: 'Harsh',
         siteUrl: DEFAULT_WEBSITE_URL,
     },
     otp: {
-        platformName: 'Zeero.bet',
+        platformName: 'odd69.com',
         otpCode: '482913',
         purposeAction: 'verify your email address',
         purposeLabel: 'Account registration',
         siteUrl: DEFAULT_WEBSITE_URL,
     },
     'smtp-test': {
-        platformName: 'Zeero.bet',
-        senderEmail: 'support@zeero.bet',
+        platformName: 'odd69.com',
+        senderEmail: 'support@odd69.com',
         siteUrl: DEFAULT_WEBSITE_URL,
     },
 };

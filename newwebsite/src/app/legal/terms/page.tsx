@@ -3,8 +3,8 @@ import Link from 'next/link';
 import { Home, FileText, AlertTriangle, ShieldOff, Users, Ban } from 'lucide-react';
 
 export const metadata = {
-    title: 'Terms of Service | Zeero',
-    description: 'Read the Terms of Service governing the use of the Zeero gaming platform, including the strict single-account policy and all prohibited activities.',
+    title: 'Terms of Service | ODD69',
+    description: 'Read the Terms of Service governing the use of the ODD69 gaming platform, including the strict single-account policy and all prohibited activities.',
 };
 
 const SECTIONS = [
@@ -12,8 +12,8 @@ const SECTIONS = [
         title: '1. Acceptance of Terms',
         icon: 'FileText',
         content: [
-            'By accessing or using Zeero ("the Platform"), you agree to be bound by these Terms of Service in their entirety. If you do not agree to any part of these Terms, you must immediately cease all use of the Platform.',
-            'Zeero is operated by BlockDance B.V. (Commercial register of Curaçao no. 158182). These Terms constitute a legally binding agreement between you and BlockDance B.V.',
+            'By accessing or using ODD69 ("the Platform"), you agree to be bound by these Terms of Service in their entirety. If you do not agree to any part of these Terms, you must immediately cease all use of the Platform.',
+            'ODD69 is operated by BlockDance B.V. (Commercial register of Curaçao no. 158182). These Terms constitute a legally binding agreement between you and BlockDance B.V.',
             'These Terms apply regardless of how you access the Platform — whether via our website, mobile application, or any other interface.',
         ]
     },
@@ -34,7 +34,7 @@ const SECTIONS = [
             '⛔ Each individual person is permitted to hold ONLY ONE (1) registered account on the Platform at any time. This is a strict, non-negotiable policy.',
             'Creating, operating, or attempting to create a second or additional account — whether using the same or different credentials, email address, phone number, payment method, IP address, device, or household — constitutes a material breach of these Terms.',
             'Reasons that do NOT constitute valid grounds for creating a second account include, but are not limited to: forgetting your password, being unable to log in, receiving a different promotional offer on another email, or any other convenience-based rationale.',
-            'If two or more accounts are found to belong to the same person, Zeero will: (a) permanently ban all associated accounts without appeal; (b) forfeit all balances, bonuses, pending withdrawals, and winnings across every account; (c) restrict any future registrations linked to the same phone number, device, IP address, or payment method; and (d) report the incident to relevant regulatory and financial authorities where required.',
+            'If two or more accounts are found to belong to the same person, ODD69 will: (a) permanently ban all associated accounts without appeal; (b) forfeit all balances, bonuses, pending withdrawals, and winnings across every account; (c) restrict any future registrations linked to the same phone number, device, IP address, or payment method; and (d) report the incident to relevant regulatory and financial authorities where required.',
             'We employ advanced technical systems — including device fingerprinting, IP geo-analysis, behavioural pattern recognition, and payment method matching — to detect multi-accounting. Attempting to circumvent these systems (e.g., using VPNs, proxy servers, or emulators) is itself a violation and will expedite decisive action.',
             'Users who suspect a duplicate account error (e.g., a family member registered on the same network) must proactively notify our Support team. Concealment of shared household accounts may still lead to suspension if patterns indicate coordinated abuse.',
         ]
@@ -46,8 +46,8 @@ const SECTIONS = [
             'You must provide accurate, truthful, and complete information during registration. The submission of false, misleading, or unverifiable information constitutes a breach of these Terms and may lead to immediate account suspension and forfeiture of all funds.',
             'You are solely responsible for maintaining the confidentiality of your username, password, and any account access credentials. All activity conducted through your account will be attributed to you.',
             'You must not share, sell, transfer, or allow access to your account by any third party, including friends, family members, or professional gambling syndicates.',
-            'In the event of suspected unauthorised access to your account, you must immediately notify Zeero support. Failure to report promptly may limit our ability to recover lost funds.',
-            'Zeero reserves the right to perform identity verification (KYC) at any time, including during withdrawal, after large wins, or if suspicious activity is detected. Accounts that fail or refuse to complete KYC will be suspended and balances held pending investigation.',
+            'In the event of suspected unauthorised access to your account, you must immediately notify ODD69 support. Failure to report promptly may limit our ability to recover lost funds.',
+            'ODD69 reserves the right to perform identity verification (KYC) at any time, including during withdrawal, after large wins, or if suspicious activity is detected. Accounts that fail or refuse to complete KYC will be suspended and balances held pending investigation.',
             'Phone number verification is mandatory. Each registered phone number may only be associated with one account. Attempting to verify multiple accounts with the same phone number will trigger an automatic rejection and fraud flag.',
         ]
     },
@@ -58,9 +58,9 @@ const SECTIONS = [
             'All deposits must be made from payment methods that belong to and are registered in your own name. Deposits from third-party accounts, anonymous payment methods, or unverified sources may be seized.',
             'Withdrawals are processed only to payment instruments in your own verified name. Withdrawals to third-party accounts are strictly prohibited and may be treated as suspected money laundering.',
             'Withdrawals are subject to full wagering requirements where applicable. Bonus funds and any winnings derived from bonus play cannot be withdrawn until all active wagering conditions are satisfied.',
-            'Zeero reserves the right to apply transaction limits, request source-of-funds documentation, and perform enhanced due diligence on large transactions at its sole discretion.',
+            'ODD69 reserves the right to apply transaction limits, request source-of-funds documentation, and perform enhanced due diligence on large transactions at its sole discretion.',
             'Chargebacks, reversals, or disputed payment instructions initiated through your payment provider after depositing are considered fraudulent acts and will result in immediate account suspension, forfeiture of all balances, and referral to collection agencies and/or law enforcement.',
-            'Zeero reserves the right to void and reverse any transaction that is found to be fraudulent, duplicated, or in violation of these Terms, including any winnings accrued as a result of such a transaction.',
+            'ODD69 reserves the right to void and reverse any transaction that is found to be fraudulent, duplicated, or in violation of these Terms, including any winnings accrued as a result of such a transaction.',
         ]
     },
     {
@@ -71,7 +71,7 @@ const SECTIONS = [
             'Each bonus offer (including sign-up bonuses, deposit bonuses, free spins, and referral bonuses) is strictly limited to one per person, household, IP address, device, and payment method. Individuals found exploiting bonuses across multiple accounts or identities will have all associated accounts terminated.',
             'Referral bonuses are subject to wagering requirements and are credited to the casino bonus wallet only. Referral bonuses credited to an account found to belong to a fictitious or coordinated referral ring will be forfeited across all accounts involved.',
             'Bonus abuse — including but not limited to: multi-accounting to claim signup bonuses, creating fake referrals, placing bets that exploit bonus conditions (e.g., low-risk arbitrage strategies), or coordinating with others to cycle bonuses — is grounds for immediate and permanent account termination.',
-            'Zeero reserves the right to modify, cancel, reclaim, or retroactively adjust any bonus reward if abuse, fraud, or misrepresentation is suspected, without prior notice.',
+            'ODD69 reserves the right to modify, cancel, reclaim, or retroactively adjust any bonus reward if abuse, fraud, or misrepresentation is suspected, without prior notice.',
             'Minimum bet requirements apply to bonus wagering. Bets below $1 (or currency equivalent) do not count towards wagering progress. Wagering on excluded games does not count.',
         ]
     },
@@ -90,7 +90,7 @@ const SECTIONS = [
             '⛔ Chargeback Fraud: Disputing deposits with your bank or payment provider after receiving services from the Platform.',
             '⛔ Money Laundering: Using the Platform to deposit, move, or withdraw funds derived from illegal activities. All suspicious activities are reported to financial intelligence units in accordance with AML/CFT obligations.',
             '⛔ Hacking & Platform Manipulation: Attempting to reverse-engineer, exploit API endpoints, inject malicious code, interfere with the Platform\'s systems, or gain unauthorised access to other users\' accounts.',
-            '⛔ Harassment: Threatening, harassing, or abusing Zeero staff, other players, or support personnel in any form.',
+            '⛔ Harassment: Threatening, harassing, or abusing ODD69 staff, other players, or support personnel in any form.',
             'Confirmed violations of any category above will result in immediate account suspension, forfeiture of all balances and pending payouts, and may be referred to law enforcement and regulatory authorities.',
         ]
     },
@@ -98,20 +98,20 @@ const SECTIONS = [
         title: '8. Responsible Gaming',
         icon: 'FileText',
         content: [
-            'Zeero is committed to responsible gaming. Tools such as deposit limits, loss limits, session time limits, cooling-off periods, and self-exclusion are available in your account settings.',
+            'ODD69 is committed to responsible gaming. Tools such as deposit limits, loss limits, session time limits, cooling-off periods, and self-exclusion are available in your account settings.',
             'We urge you not to gamble more than you can afford to lose. Gambling should always be a form of entertainment, not a primary source of income or a way to recover losses.',
             'If you believe you or someone you know may have a gambling problem, please contact support or visit GambleAware (www.gambleaware.org) or BeGambleAware (www.begambleaware.org).',
-            'Zeero reserves the right to impose deposit limits, restrict access, or permanently close an account if we identify signs of problem gambling, even without a user request.',
+            'ODD69 reserves the right to impose deposit limits, restrict access, or permanently close an account if we identify signs of problem gambling, even without a user request.',
         ]
     },
     {
         title: '9. Account Suspension, Termination & Fund Forfeiture',
         icon: 'Ban',
         content: [
-            'Zeero may suspend, restrict, or permanently terminate any account at its sole discretion, including — but not limited to — cases where a violation of these Terms is suspected or confirmed.',
+            'ODD69 may suspend, restrict, or permanently terminate any account at its sole discretion, including — but not limited to — cases where a violation of these Terms is suspected or confirmed.',
             'Upon termination for cause (i.e., policy violations), all balances, bonuses, pending bets, and winnings may be forfeited in full. Users will not be entitled to any compensation.',
             'Upon voluntary account closure (i.e., no violations), any remaining balance in your account after all wagering obligations are met will be refunded to your registered payment method.',
-            'Zeero is not obligated to disclose the specific reason for account action in all circumstances, particularly where disclosure could compromise a fraud investigation.',
+            'ODD69 is not obligated to disclose the specific reason for account action in all circumstances, particularly where disclosure could compromise a fraud investigation.',
             'Appeals of account terminations may be submitted to our compliance team. However, decisions relating to confirmed fraud, multi-accounting, or money laundering are final and non-reversible.',
         ]
     },
@@ -127,17 +127,17 @@ const SECTIONS = [
         title: '11. Limitation of Liability',
         icon: 'FileText',
         content: [
-            'To the fullest extent permitted by applicable law, Zeero shall not be liable for indirect, incidental, special, consequential, or punitive damages of any kind arising from use of the Platform.',
-            'Zeero does not guarantee continuous, uninterrupted, or error-free access to the Platform and accepts no liability for losses arising from technical failures, maintenance windows, third-party outages, or circumstances beyond our reasonable control.',
-            'Zeero is not responsible for any tax obligations arising from your gambling activities. It is your responsibility to comply with all tax laws applicable in your jurisdiction.',
+            'To the fullest extent permitted by applicable law, ODD69 shall not be liable for indirect, incidental, special, consequential, or punitive damages of any kind arising from use of the Platform.',
+            'ODD69 does not guarantee continuous, uninterrupted, or error-free access to the Platform and accepts no liability for losses arising from technical failures, maintenance windows, third-party outages, or circumstances beyond our reasonable control.',
+            'ODD69 is not responsible for any tax obligations arising from your gambling activities. It is your responsibility to comply with all tax laws applicable in your jurisdiction.',
         ]
     },
     {
         title: '12. Privacy & Data',
         icon: 'FileText',
         content: [
-            'Zeero collects and processes personal data in accordance with our Privacy Policy. By using the Platform, you consent to our data practices as described therein.',
-            'Zeero may share user data with regulatory authorities, law enforcement agencies, payment processors, and fraud prevention services where legally required or where there is reasonable suspicion of criminal activity.',
+            'ODD69 collects and processes personal data in accordance with our Privacy Policy. By using the Platform, you consent to our data practices as described therein.',
+            'ODD69 may share user data with regulatory authorities, law enforcement agencies, payment processors, and fraud prevention services where legally required or where there is reasonable suspicion of criminal activity.',
             'Device fingerprinting, IP logging, and behavioural analytics data are retained for fraud detection and regulatory compliance purposes for up to seven (7) years.',
         ]
     },
@@ -145,7 +145,7 @@ const SECTIONS = [
         title: '13. Amendments',
         icon: 'FileText',
         content: [
-            'Zeero reserves the right to amend these Terms at any time, with or without notice. Material changes will be communicated via email or an in-platform notification.',
+            'ODD69 reserves the right to amend these Terms at any time, with or without notice. Material changes will be communicated via email or an in-platform notification.',
             'Continued use of the Platform following any amendment constitutes your binding acceptance of the revised Terms. It is your responsibility to review these Terms periodically.',
         ]
     },
@@ -154,8 +154,8 @@ const SECTIONS = [
         icon: 'FileText',
         content: [
             'These Terms are governed by the laws of Curaçao. Any dispute arising from or in connection with these Terms shall be submitted exclusively to the jurisdiction of the competent courts of Curaçao.',
-            'Before initiating legal proceedings, you agree to first contact Zeero support and attempt to resolve the matter in good faith within thirty (30) days.',
-            'Nothing in this clause limits Zeero\'s right to seek urgent relief in any jurisdiction to protect its intellectual property, platform integrity, or to enforce injunctions.',
+            'Before initiating legal proceedings, you agree to first contact ODD69 support and attempt to resolve the matter in good faith within thirty (30) days.',
+            'Nothing in this clause limits ODD69\'s right to seek urgent relief in any jurisdiction to protect its intellectual property, platform integrity, or to enforce injunctions.',
         ]
     },
 ];
@@ -171,7 +171,7 @@ const VIOLATION_HIGHLIGHTS = [
 
 export default function TermsPage() {
     return (
-        <div className="min-h-[calc(100vh-64px)] bg-bg-zeero-3 text-white pb-24">
+        <div className="min-h-[calc(100vh-64px)] bg-bg-odd69-3 text-white pb-24">
 
             {/* Header */}
             <div className="relative overflow-hidden bg-gradient-to-b from-brand-gold/6 via-[#0F1016] to-[#0C0D12] border-b border-white/[0.04]">

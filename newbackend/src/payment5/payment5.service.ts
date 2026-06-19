@@ -34,7 +34,7 @@ export class Payment5Service {
         return this.configService.get<string>('PAYMENT5_SECRET_KEY') || '';
     }
     private get redirectUrl(): string {
-        return this.configService.get<string>('PAYMENT5_REDIRECT_URL') || 'https://zeero.bet/profile/transactions';
+        return this.configService.get<string>('PAYMENT5_REDIRECT_URL') || 'https://odd69.com/profile/transactions';
     }
 
     private assertConfig() {
@@ -120,7 +120,7 @@ export class Payment5Service {
         postData.append('order_id', tradeNo);
         postData.append('redirect_url', this.redirectUrl);
         postData.append('remark1', 'deposit');
-        postData.append('remark2', 'zeerobet');
+        postData.append('remark2', 'odd69bet');
         postData.append('method', method);
 
         const url = `${this.baseUrl}/create-order`;

@@ -93,7 +93,7 @@ export default function CasinoBrowserModal({ isOpen, onClose, initialCategory, i
                                 setSearchQuery(e.target.value); 
                                 if (e.target.value && activeCat === 'providers') setActiveCat('all'); 
                             }}
-                            className="h-14 w-full rounded-2xl border border-white/[0.06] bg-bg-zeero py-2.5 pl-12 pr-4 text-sm font-bold text-white outline-none transition-colors placeholder:text-white/45 focus:border-brand-gold/50"
+                            className="h-14 w-full rounded-2xl border border-white/[0.06] bg-bg-odd69 py-2.5 pl-12 pr-4 text-sm font-bold text-white outline-none transition-colors placeholder:text-white/45 focus:border-brand-gold/50"
                             autoFocus
                         />
                         {searchQuery && (

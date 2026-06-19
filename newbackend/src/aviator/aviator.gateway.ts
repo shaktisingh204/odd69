@@ -107,7 +107,7 @@ export class AviatorGateway implements OnGatewayConnection, OnGatewayDisconnect,
     const userInfo = this.socketUsers.get(client.id);
     if (!userInfo) { client.emit('aviator:error', { message: 'Unauthorized. Please log in.' }); return; }
     if (!(await this.originalsAdminService.canUserPlayOriginals(userInfo.userId))) {
-      client.emit('aviator:error', { message: 'Zeero Originals access is not enabled for your account.' });
+      client.emit('aviator:error', { message: 'ODD69 Originals access is not enabled for your account.' });
       return;
     }
 

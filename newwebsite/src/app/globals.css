@@ -12,7 +12,7 @@
   --divider: #2A2D3A;           /* Divider / subtle border */
 
   /* Deep stacked layers (used in games, overlays, modals) */
-  --bg-deep: #06070B;           /* Deepest layer – zeero games, dark overlays */
+  --bg-deep: #06070B;           /* Deepest layer – odd69 games, dark overlays */
   --bg-deep-2: #090A10;         /* Second deep layer */
   --bg-deep-3: #0B0C14;         /* Third deep layer */
   --bg-deep-4: #080912;         /* Fourth deep variant */
@@ -27,9 +27,9 @@
   --bg-input: #13151E;          /* Input / form field background */
   --bg-input-2: #151720;        /* Input variant */
   --bg-well: #121A2A;           /* Blue-tinted well (info, media) */
-  --bg-zeero: #080A12;          /* Zeero originals dark base */
-  --bg-zeero-2: #0A1018;        /* Zeero deeper blue-black */
-  --bg-zeero-3: #070810;        /* Zeero panel background */
+  --bg-odd69: #080A12;          /* ODD69 originals dark base */
+  --bg-odd69-2: #0A1018;        /* ODD69 deeper blue-black */
+  --bg-odd69-3: #070810;        /* ODD69 panel background */
   --bg-game-dark: #0A0C14;      /* Game betslip / dark base (betslip, desktop panel) */
 
   /* ═══════════════════════════════════════════════
@@ -577,9 +577,9 @@
   --color-bg-input: var(--bg-input);
   --color-bg-input-2: var(--bg-input-2);
   --color-bg-well: var(--bg-well);
-  --color-bg-zeero: var(--bg-zeero);
-  --color-bg-zeero-2: var(--bg-zeero-2);
-  --color-bg-zeero-3: var(--bg-zeero-3);
+  --color-bg-odd69: var(--bg-odd69);
+  --color-bg-odd69-2: var(--bg-odd69-2);
+  --color-bg-odd69-3: var(--bg-odd69-3);
   --color-bg-glass: var(--bg-glass);
   --color-bg-glass-hover: var(--bg-glass-hover);
   --color-bg-glass-active: var(--bg-glass-active);
@@ -702,8 +702,8 @@
   --shadow-glow-danger: var(--shadow-glow-danger);
 
   /* ── Additional bg tokens ── */
-  --color-bg-zeero-2: var(--bg-zeero-2);
-  --color-bg-zeero-3: var(--bg-zeero-3);
+  --color-bg-odd69-2: var(--bg-odd69-2);
+  --color-bg-odd69-3: var(--bg-odd69-3);
   --color-bg-well: var(--bg-well);
   --color-bg-deep-2: var(--bg-deep-2);
   --color-bg-deep-3: var(--bg-deep-3);

@@ -29,7 +29,7 @@ export class OriginalsAdminController {
     return this.adminService.getConfig(game);
   }
 
-  /** GET /admin/originals/access — global access config for Zeero Originals */
+  /** GET /admin/originals/access — global access config for ODD69 Originals */
   @Get('access')
   getAccessConfig() {
     return this.adminService.getAccessConfig();
@@ -66,7 +66,7 @@ export class OriginalsAdminController {
     return this.adminService.quickToggleGame(game, false, req.user?.id);
   }
 
-  /** PATCH /admin/originals/access — update who can play Zeero Originals */
+  /** PATCH /admin/originals/access — update who can play ODD69 Originals */
   @Patch('access')
   updateAccessConfig(@Body() body: any, @Req() req: any) {
     return this.adminService.updateAccessConfig(body, req.user?.id);

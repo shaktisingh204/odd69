@@ -44,7 +44,7 @@ export default async function EmailCampaignsPage() {
         : "SMTP sender not configured yet";
 
     const platformName = templateResult.success ? templateResult.platformName || "Platform" : "Platform";
-    const websiteUrl = templateResult.success ? templateResult.websiteUrl || "https://zeero.bet" : "https://zeero.bet";
+    const websiteUrl = templateResult.success ? templateResult.websiteUrl || "https://odd69.com" : "https://odd69.com";
     const templateSettings = templateResult.success && templateResult.data ? templateResult.data : null;
 
     const enabledCount = templateSettings

@@ -38,14 +38,14 @@ const VIP_PERKS = [
 const FAQS = {
     General: [
         { q: 'How do I become a VIP?', a: 'VIP status is invitation-based. We monitor consistent play and loyalty across all our platforms. If you qualify, our VIP team will reach out to you directly via email or in-platform notification.' },
-        { q: 'What is the VIP Transfer?', a: 'If you hold VIP status at another premium gaming platform, you can transfer your status to Zeero instantly and unlock premium perks without having to start from scratch.' },
-        { q: 'What makes the Zeero VIP Club different from others?', a: 'Our VIP program is truly personalised. There are no fixed levels or wagering ladders — we evaluate your activity holistically and tailor rewards that make a real difference, including real-world experiences.' },
-        { q: 'Is there a minimum level required to apply?', a: 'No. Any player on Zeero can be considered for VIP status. We look at responsible, consistent gameplay rather than highest bets or fixed wager targets.' },
+        { q: 'What is the VIP Transfer?', a: 'If you hold VIP status at another premium gaming platform, you can transfer your status to ODD69 instantly and unlock premium perks without having to start from scratch.' },
+        { q: 'What makes the ODD69 VIP Club different from others?', a: 'Our VIP program is truly personalised. There are no fixed levels or wagering ladders — we evaluate your activity holistically and tailor rewards that make a real difference, including real-world experiences.' },
+        { q: 'Is there a minimum level required to apply?', a: 'No. Any player on ODD69 can be considered for VIP status. We look at responsible, consistent gameplay rather than highest bets or fixed wager targets.' },
     ],
     Benefits: [
         { q: 'What is Instant Lossback?', a: 'Instant Lossback is a real-time reward that returns a percentage of net losses directly to your wallet as you play — not the next day, instantly.' },
         { q: 'How do Reload Bonuses work?', a: 'VIP members receive ongoing reload bonuses that grow as your activity and loyalty increase. These are credited regularly to your account, no deposit code required.' },
-        { q: 'What are IRL VIP Events?', a: 'Real-world events exclusively for Zeero VIP members — sporting events, hospitality experiences, exclusive dinners, and merchandise gifts curated by our VIP team.' },
+        { q: 'What are IRL VIP Events?', a: 'Real-world events exclusively for ODD69 VIP members — sporting events, hospitality experiences, exclusive dinners, and merchandise gifts curated by our VIP team.' },
         { q: 'Are there truly no withdrawal fees for VIPs?', a: 'Yes — all deposits and withdrawals for VIP members are completely fee-free. This applies to all fiat payment methods and all supported cryptocurrencies.' },
     ],
 };
@@ -501,12 +501,12 @@ function VIPContent() {
                             <div className="inline-flex items-center gap-2 bg-brand-gold/10 border border-brand-gold/30 rounded-full px-4 py-1.5 mb-5 backdrop-blur-md"
                                 style={{ boxShadow: '0 2px 12px -2px rgba(139,92,246,0.02)' }}>
                                 <Crown size={14} className="text-brand-gold" />
-                                <span className="text-brand-gold text-xs font-bold uppercase tracking-widest">Zeero VIP Club</span>
+                                <span className="text-brand-gold text-xs font-bold uppercase tracking-widest">ODD69 VIP Club</span>
                             </div>
 
                             <div className="max-w-3xl">
                                 <h1 className="text-4xl md:text-5xl lg:text-6xl font-black text-text-primary leading-tight mb-3">
-                                    Only <span className="text-gradient-gold">Zeero</span> Defines
+                                    Only <span className="text-gradient-gold">ODD69</span> Defines
                                     <br /><span className="text-white">True VIP</span>
                                 </h1>
                                 <p className="text-text-secondary text-base md:text-lg leading-relaxed max-w-2xl mb-8">
@@ -627,7 +627,7 @@ function VIPContent() {
                             </div>
                             <div className="flex-1 relative">
                                 <h3 className="text-lg md:text-xl font-black text-text-primary mb-1">VIP Transfer Available</h3>
-                                <p className="text-text-secondary text-sm max-w-xl">Already a VIP somewhere else? Transfer your status to Zeero instantly. Contact our VIP team with proof of your current status and unlock premium perks immediately.</p>
+                                <p className="text-text-secondary text-sm max-w-xl">Already a VIP somewhere else? Transfer your status to ODD69 instantly. Contact our VIP team with proof of your current status and unlock premium perks immediately.</p>
                             </div>
                             {canApply ? (
                                 <button onClick={() => { setShowApplyModal(true); setShowTransferModal(true); }}
@@ -651,7 +651,7 @@ function VIPContent() {
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                             {[
                                 { icon: Users, color: 'text-brand-gold', bgColor: '#3B82F6', bg: 'from-blue-500/15 to-blue-600/5', title: 'Activity', description: 'Consistent and responsible gameplay helps you stand out as a valued player. We watch patterns, not just totals.', bullet: 'Regular, responsible play' },
-                                { icon: HeartHandshake, color: 'text-brand-gold', bgColor: '#8B5CF6', bg: 'from-amber-500/15 to-amber-600/5', title: 'Loyalty', description: 'Stable and ongoing loyalty to Zeero increases your chance of unlocking VIP service and exclusive personal support.', bullet: 'Long-term engagement' },
+                                { icon: HeartHandshake, color: 'text-brand-gold', bgColor: '#8B5CF6', bg: 'from-amber-500/15 to-amber-600/5', title: 'Loyalty', description: 'Stable and ongoing loyalty to ODD69 increases your chance of unlocking VIP service and exclusive personal support.', bullet: 'Long-term engagement' },
                                 { icon: Layers, color: 'text-success-bright', bgColor: '#10B981', bg: 'from-success-primary/15 to-success-soft', title: 'No Barriers', description: 'No fixed level or specific game requirements — every player has the opportunity to qualify for VIP regardless of what they play.', bullet: 'Open to all players' },
                             ].map((item) => {
                                 const Icon = item.icon;

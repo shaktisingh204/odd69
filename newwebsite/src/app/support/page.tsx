@@ -104,7 +104,7 @@ function FaqMediaRenderer({ media }: { media: FaqMediaItem[] }) {
                         return (
                             <div key={i} className="rounded-xl overflow-hidden border border-white/[0.04]">
                                 <img src={item.url} alt={item.caption || ''} className="w-full max-h-72 object-cover" loading="lazy" />
-                                {item.caption && <p className="text-xs text-text-muted px-3 py-2 bg-bg-zeero">{item.caption}</p>}
+                                {item.caption && <p className="text-xs text-text-muted px-3 py-2 bg-bg-odd69">{item.caption}</p>}
                             </div>
                         );
                     case 'youtube': {
@@ -120,7 +120,7 @@ function FaqMediaRenderer({ media }: { media: FaqMediaItem[] }) {
                                         loading="lazy"
                                     />
                                 </div>
-                                {item.caption && <p className="text-xs text-text-muted px-3 py-2 bg-bg-zeero">{item.caption}</p>}
+                                {item.caption && <p className="text-xs text-text-muted px-3 py-2 bg-bg-odd69">{item.caption}</p>}
                             </div>
                         ) : null;
                     }
@@ -128,13 +128,13 @@ function FaqMediaRenderer({ media }: { media: FaqMediaItem[] }) {
                         return (
                             <div key={i} className="rounded-xl overflow-hidden border border-white/[0.04]">
                                 <video src={item.url} controls className="w-full max-h-72" preload="metadata" />
-                                {item.caption && <p className="text-xs text-text-muted px-3 py-2 bg-bg-zeero">{item.caption}</p>}
+                                {item.caption && <p className="text-xs text-text-muted px-3 py-2 bg-bg-odd69">{item.caption}</p>}
                             </div>
                         );
                     case 'link':
                         return (
                             <a key={i} href={item.url} target="_blank" rel="noopener noreferrer"
-                                className="flex items-center gap-3 p-3 bg-bg-zeero border border-white/[0.04] rounded-xl text-sm hover:border-brand-gold/30 transition-all group">
+                                className="flex items-center gap-3 p-3 bg-bg-odd69 border border-white/[0.04] rounded-xl text-sm hover:border-brand-gold/30 transition-all group">
                                 <div className="p-2 rounded-lg bg-brand-gold/10 text-brand-gold group-hover:bg-brand-gold/20 transition-colors">
                                     <Link2 size={16} />
                                 </div>
@@ -159,7 +159,7 @@ function FaqItem({ faq, searchQuery = '' }: { faq: FaqEntry; searchQuery?: strin
     const [open, setOpen] = useState(!!searchQuery);
     useEffect(() => { if (searchQuery) setOpen(true); }, [searchQuery]);
     return (
-        <div className={`border border-white/[0.04] rounded-xl overflow-hidden transition-all duration-200 ${open ? 'bg-bg-modal' : 'bg-bg-zeero hover:bg-bg-modal'}`}>
+        <div className={`border border-white/[0.04] rounded-xl overflow-hidden transition-all duration-200 ${open ? 'bg-bg-modal' : 'bg-bg-odd69 hover:bg-bg-modal'}`}>
             <button onClick={() => setOpen(!open)} className="w-full flex items-center justify-between gap-3 px-5 py-4 text-left">
                 <span className="text-white font-semibold text-sm leading-snug">{highlight(faq.question, searchQuery)}</span>
                 <ChevronDown size={18} className={`text-text-muted flex-shrink-0 transition-transform duration-200 ${open ? 'rotate-180 text-brand-gold' : ''}`} />
@@ -335,7 +335,7 @@ function LiveChat({ ticket, userId, onBack }: { ticket: SupportTicket; userId: n
 
     return (
         <div className="flex flex-col bg-bg-deep rounded-2xl border border-white/[0.04] overflow-hidden" style={{ minHeight: '520px' }}>
-            <div className="flex items-center gap-3 px-4 py-3.5 border-b border-white/[0.04] bg-bg-zeero shrink-0">
+            <div className="flex items-center gap-3 px-4 py-3.5 border-b border-white/[0.04] bg-bg-odd69 shrink-0">
                 <button onClick={onBack} className="text-text-muted hover:text-white transition-colors p-1"><ArrowLeft size={18} /></button>
                 <div className="flex-1 min-w-0">
                     <p className="text-white font-bold text-sm truncate">{subject}</p>
@@ -411,7 +411,7 @@ function NewTicketForm({ onCreated }: { onCreated: (ticket: SupportTicket) => vo
             <div>
                 <label className="text-[10px] font-bold text-text-muted uppercase tracking-widest mb-1.5 block">Category</label>
                 <select value={form.category} onChange={e => setForm(p => ({ ...p, category: e.target.value }))}
-                    className="w-full bg-bg-zeero border border-white/[0.06] focus:border-brand-gold/50 rounded-xl px-4 py-3 text-sm text-white outline-none transition-all appearance-none">
+                    className="w-full bg-bg-odd69 border border-white/[0.06] focus:border-brand-gold/50 rounded-xl px-4 py-3 text-sm text-white outline-none transition-all appearance-none">
                     <option value="">General</option>
                     <option value="Account">Account & Verification</option>
                     <option value="Deposit">Deposits</option>
@@ -425,12 +425,12 @@ function NewTicketForm({ onCreated }: { onCreated: (ticket: SupportTicket) => vo
             <div>
                 <label className="text-[10px] font-bold text-text-muted uppercase tracking-widest mb-1.5 block">Subject</label>
                 <input type="text" value={form.subject} onChange={e => setForm(p => ({ ...p, subject: e.target.value }))} placeholder="Brief description of your issue" required
-                    className="w-full bg-bg-zeero border border-white/[0.06] focus:border-brand-gold/50 rounded-xl px-4 py-3 text-sm text-white placeholder:text-text-disabled outline-none transition-all" />
+                    className="w-full bg-bg-odd69 border border-white/[0.06] focus:border-brand-gold/50 rounded-xl px-4 py-3 text-sm text-white placeholder:text-text-disabled outline-none transition-all" />
             </div>
             <div>
                 <label className="text-[10px] font-bold text-text-muted uppercase tracking-widest mb-1.5 block">Message</label>
                 <textarea value={form.message} onChange={e => setForm(p => ({ ...p, message: e.target.value }))} placeholder="Describe your issue in detail..." rows={4} required
-                    className="w-full bg-bg-zeero border border-white/[0.06] focus:border-brand-gold/50 rounded-xl px-4 py-3 text-sm text-white placeholder:text-text-disabled outline-none transition-all resize-none" />
+                    className="w-full bg-bg-odd69 border border-white/[0.06] focus:border-brand-gold/50 rounded-xl px-4 py-3 text-sm text-white placeholder:text-text-disabled outline-none transition-all resize-none" />
             </div>
             <button type="submit" disabled={submitting}
                 className="w-full py-3 bg-brand-gold hover:bg-brand-gold-hover text-text-inverse font-black text-sm uppercase rounded-xl flex items-center justify-center gap-2 shadow-glow-gold transition-all disabled:opacity-70">
@@ -456,7 +456,7 @@ function MyTickets({ onOpen }: { onOpen: (ticket: SupportTicket) => void }) {
                 const lastMsg = ticket.messages?.[0];
                 return (
                     <button key={ticket.id} onClick={() => onOpen(ticket)}
-                        className="w-full flex items-center gap-4 px-4 py-3.5 rounded-xl bg-bg-zeero border border-white/[0.04] hover:bg-bg-modal hover:border-brand-gold/20 transition-all text-left">
+                        className="w-full flex items-center gap-4 px-4 py-3.5 rounded-xl bg-bg-odd69 border border-white/[0.04] hover:bg-bg-modal hover:border-brand-gold/20 transition-all text-left">
                         <div className={`w-2 h-2 rounded-full flex-shrink-0 ${ticket.status === 'OPEN' ? 'bg-green-400' : 'bg-text-muted'}`} />
                         <div className="flex-1 min-w-0">
                             <p className="text-white font-bold text-sm truncate">{subject}</p>
@@ -578,7 +578,7 @@ export default function SupportPage() {
     ];
 
     return (
-        <div className="min-h-[calc(100vh-64px)] bg-bg-zeero-3 text-white pb-24">
+        <div className="min-h-[calc(100vh-64px)] bg-bg-odd69-3 text-white pb-24">
 
             {/* ── Hero ── */}
             <div className="relative bg-gradient-to-b from-brand-gold/10 via-[#0F1016] to-[#0C0D12] border-b border-white/[0.04]">

@@ -986,7 +986,7 @@ function VerifyCasinoTxnContent() {
 
                 {/* Bottom signature / watermark */}
                 <div className="relative z-10 mt-16 pt-6 border-t border-[#2f2518] text-[9px] uppercase tracking-[0.36em] text-[#5d4a30] font-[family-name:var(--font-jb-mono)] flex items-center justify-between">
-                    <span>ZEERO // OPS · CASINO-AUDIT · v2</span>
+                    <span>ODD69 // OPS · CASINO-AUDIT · v2</span>
                     <span>◯ ◯ ◯</span>
                     <span>AUTHORITY :: HUIDU LIVE · POSTGRES MASTER</span>
                 </div>

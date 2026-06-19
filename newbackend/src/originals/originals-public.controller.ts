@@ -5,20 +5,20 @@ import { OriginalsConfig, OriginalsConfigDocument } from './schemas/originals-co
 import { Public } from '../auth/public.decorator';
 
 const GAME_DISPLAY: Record<string, { name: string; description: string; emoji: string }> = {
-  mines:  { name: 'Zeero Mines',  description: 'Dodge the mines, collect the gems.',             emoji: '💣' },
-  crash:  { name: 'Zeero Crash',  description: 'Watch the multiplier climb. Cash out in time.',  emoji: '🚀' },
-  dice:   { name: 'Zeero Dice',   description: 'Roll the dice, beat the house.',                 emoji: '🎲' },
-  limbo:  { name: 'Zeero Limbo',  description: 'Pick your multiplier and beat the bust point.',  emoji: '✈️' },
-  plinko: { name: 'Zeero Plinko', description: 'Drop the ball and chase riskier multiplier slots.', emoji: '🪙' },
-  keno:   { name: 'Zeero Keno',   description: 'Pick your lucky numbers and hit the board.',       emoji: '🔢' },
-  hilo:   { name: 'Zeero Hi-Lo',  description: 'Guess whether the next card goes higher or lower.', emoji: '🃏' },
-  roulette:{ name: 'Zeero Roulette', description: 'Cover your numbers and let the wheel decide.', emoji: '🎯' },
-  wheel:  { name: 'Zeero Wheel',  description: 'Spin a fast bonus wheel for instant multipliers.', emoji: '🎡' },
-  coinflip:{ name: 'Zeero Coinflip', description: 'Call heads or tails and settle each round instantly.', emoji: '🪙' },
-  towers: { name: 'Zeero Towers', description: 'Climb one floor at a time and cash out before you fall.', emoji: '🗼' },
-  color:  { name: 'Zeero Color', description: 'Pick a color lane and ride short, fast multiplier rounds.', emoji: '🔴' },
-  lotto:  { name: 'Zeero Lotto', description: 'Choose your ticket line and chase oversized payout grids.', emoji: '🎟️' },
-  jackpot:{ name: 'Zeero Jackpot', description: 'Snap into boosted prize pots with a high-volatility hit chase.', emoji: '👑' },
+  mines:  { name: 'ODD69 Mines',  description: 'Dodge the mines, collect the gems.',             emoji: '💣' },
+  crash:  { name: 'ODD69 Crash',  description: 'Watch the multiplier climb. Cash out in time.',  emoji: '🚀' },
+  dice:   { name: 'ODD69 Dice',   description: 'Roll the dice, beat the house.',                 emoji: '🎲' },
+  limbo:  { name: 'ODD69 Limbo',  description: 'Pick your multiplier and beat the bust point.',  emoji: '✈️' },
+  plinko: { name: 'ODD69 Plinko', description: 'Drop the ball and chase riskier multiplier slots.', emoji: '🪙' },
+  keno:   { name: 'ODD69 Keno',   description: 'Pick your lucky numbers and hit the board.',       emoji: '🔢' },
+  hilo:   { name: 'ODD69 Hi-Lo',  description: 'Guess whether the next card goes higher or lower.', emoji: '🃏' },
+  roulette:{ name: 'ODD69 Roulette', description: 'Cover your numbers and let the wheel decide.', emoji: '🎯' },
+  wheel:  { name: 'ODD69 Wheel',  description: 'Spin a fast bonus wheel for instant multipliers.', emoji: '🎡' },
+  coinflip:{ name: 'ODD69 Coinflip', description: 'Call heads or tails and settle each round instantly.', emoji: '🪙' },
+  towers: { name: 'ODD69 Towers', description: 'Climb one floor at a time and cash out before you fall.', emoji: '🗼' },
+  color:  { name: 'ODD69 Color', description: 'Pick a color lane and ride short, fast multiplier rounds.', emoji: '🔴' },
+  lotto:  { name: 'ODD69 Lotto', description: 'Choose your ticket line and chase oversized payout grids.', emoji: '🎟️' },
+  jackpot:{ name: 'ODD69 Jackpot', description: 'Snap into boosted prize pots with a high-volatility hit chase.', emoji: '👑' },
 };
 
 const ALL_GAME_KEYS = Object.keys(GAME_DISPLAY);
@@ -70,8 +70,8 @@ export class OriginalsPublicController {
 
   /**
    * GET /originals/games
-   * Returns display config for all Zeero Originals games (no auth required).
-   * Used by home page ZeeroOriginalsSection.
+   * Returns display config for all ODD69 Originals games (no auth required).
+   * Used by home page ODD69OriginalsSection.
    */
   @Get('games')
   async getAllGames() {

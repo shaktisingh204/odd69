@@ -138,7 +138,7 @@ export default function GameConfigPage() {
     try {
       const formData = new FormData();
       formData.append("file", file);
-      formData.append("folder", "zeero-originals");
+      formData.append("folder", "odd69-originals");
       const json = await uploadToCloudflare(formData);
       if (json.success && json.url) {
         update("thumbnailUrl", json.url);
@@ -467,7 +467,7 @@ export default function GameConfigPage() {
                 <input type="text" value={config.gameName || ""}
                   onChange={(e) => update("gameName", e.target.value)}
                   className="w-full bg-slate-900 border border-slate-600 focus:border-indigo-500 rounded-lg px-3 py-2 text-white text-sm outline-none"
-                  placeholder={`e.g. Zeero ${game.charAt(0).toUpperCase() + game.slice(1)}`} />
+                  placeholder={`e.g. ODD69 ${game.charAt(0).toUpperCase() + game.slice(1)}`} />
               </div>
               <div>
                 <label className="text-xs text-slate-400 mb-1 block font-bold uppercase tracking-wider">Short Description</label>

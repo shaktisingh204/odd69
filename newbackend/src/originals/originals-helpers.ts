@@ -1,5 +1,5 @@
 /**
- * Shared utilities for the new in-house Zeero Originals games
+ * Shared utilities for the new in-house ODD69 Originals games
  * (keno, hilo, roulette, wheel, coinflip, towers, color, lotto, jackpot).
  *
  * Extracted from the dice/mines/plinko services so each new game stays small.

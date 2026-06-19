@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-    baseURL: typeof window === 'undefined' ? (process.env.API_URL || 'https://zeero.bet/api') : '/api', // Relative for client (rewrites), Absolute for SSR
+    baseURL: typeof window === 'undefined' ? (process.env.API_URL || 'https://odd69.com/api') : '/api', // Relative for client (rewrites), Absolute for SSR
     headers: {
         'Content-Type': 'application/json',
     },

@@ -663,7 +663,7 @@ export class CasinoService {
 
       // Generate a dynamic callback URL to our backend webhook
       const backendDomain =
-        process.env.NEXT_PUBLIC_API_URL || 'https://zeero.bet/api';
+        process.env.NEXT_PUBLIC_API_URL || 'https://odd69.com/api';
       const callbackUrl = `${backendDomain}/casino/huidu/wallet/callback`;
 
       // ── Sanitize member_account: some providers (e.g. SEXY) reject any

@@ -610,7 +610,7 @@ export default function TransactionsPage() {
                 <div className="hidden md:block overflow-x-auto">
                     <table className="w-full text-sm">
                         <thead>
-                            <tr className="bg-bg-zeero text-white/30 text-[10px] uppercase tracking-wider">
+                            <tr className="bg-bg-odd69 text-white/30 text-[10px] uppercase tracking-wider">
                                 <th className="px-4 py-2.5 text-left font-semibold">Date</th>
                                 <th className="px-4 py-2.5 text-left font-semibold">Type</th>
                                 <th className="px-4 py-2.5 text-left font-semibold">Method</th>

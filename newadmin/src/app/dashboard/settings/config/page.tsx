@@ -17,8 +17,8 @@ type FooterSettings = {
 };
 
 const DEFAULT_FOOTER_SETTINGS: FooterSettings = {
-    businessEmail: 'business@zeero.bet',
-    partnersEmail: 'partners@zeero.bet',
+    businessEmail: 'business@odd69.com',
+    partnersEmail: 'partners@odd69.com',
     socials: {
         whatsapp:  { url: '', imageUrl: '' },
         telegram:  { url: '', imageUrl: '' },
@@ -37,7 +37,7 @@ const DEFAULT_FOOTER_SETTINGS: FooterSettings = {
 };
 
 const HIGHLIGHT_META: { key: HighlightKey; title: string; description: string; placeholderClass: string; initial: string }[] = [
-    { key: 'provablyFair',   title: 'Provably fair',   description: 'See how Zeero keeps outcomes transparent and verifiable.', placeholderClass: 'text-[#74A7FF] bg-[#74A7FF]/20',   initial: '🛡' },
+    { key: 'provablyFair',   title: 'Provably fair',   description: 'See how ODD69 keeps outcomes transparent and verifiable.', placeholderClass: 'text-[#74A7FF] bg-[#74A7FF]/20',   initial: '🛡' },
     { key: 'fastAssistance', title: 'Fast assistance', description: 'Browse guides or reach our team without leaving the footer.', placeholderClass: 'text-[#3B78FF] bg-[#3B78FF]/20', initial: '🎧' },
     { key: 'secureWallet',   title: 'Secure wallet',   description: 'Manage deposits, withdrawals, and balances with confidence.', placeholderClass: 'text-amber-400 bg-amber-400/20', initial: '👛' },
     { key: 'vipBenefits',    title: 'VIP benefits',    description: 'Explore elevated rewards, perks, and premium account care.', placeholderClass: 'text-[#C18BFF] bg-[#C18BFF]/20',  initial: '⚡' },
@@ -147,7 +147,7 @@ type HeaderLogo = {
 
 const DEFAULT_HEADER_LOGO: HeaderLogo = {
     imageUrl: '',
-    text: 'Zeero',
+    text: 'ODD69',
     accentText: 'Ze',
 };
 
@@ -1192,7 +1192,7 @@ export default function SystemConfigPage() {
                             value={siteMeta.siteTitle}
                             onChange={e => setSiteMeta(prev => ({ ...prev, siteTitle: e.target.value }))}
                             className="w-full bg-slate-900 border border-slate-700 rounded p-2.5 text-white focus:border-emerald-500 outline-none placeholder-slate-600"
-                            placeholder="Zeero - Premium Sports Betting & Casino"
+                            placeholder="ODD69 - Premium Sports Betting & Casino"
                         />
                         <p className="text-[10px] text-slate-600 mt-1">Displayed on browser tabs and as the default title in search results.</p>
                     </div>
@@ -1204,7 +1204,7 @@ export default function SystemConfigPage() {
                             value={siteMeta.siteDescription}
                             onChange={e => setSiteMeta(prev => ({ ...prev, siteDescription: e.target.value }))}
                             className="w-full bg-slate-900 border border-slate-700 rounded p-2.5 text-white focus:border-emerald-500 outline-none resize-y placeholder-slate-600"
-                            placeholder="Experience the thrill of victory with Zeero. Sports betting, live casino, and more."
+                            placeholder="Experience the thrill of victory with ODD69. Sports betting, live casino, and more."
                         />
                         <p className="text-[10px] text-slate-600 mt-1">Shown below the title in search engine results. Keep it under 160 characters for best display.</p>
                     </div>
@@ -1307,7 +1307,7 @@ export default function SystemConfigPage() {
                                 value={siteMeta.canonicalUrl}
                                 onChange={e => setSiteMeta(prev => ({ ...prev, canonicalUrl: e.target.value }))}
                                 className="w-full bg-slate-900 border border-slate-700 rounded p-2.5 text-white focus:border-emerald-500 outline-none placeholder-slate-600 font-mono text-sm"
-                                placeholder="https://zeero.bet"
+                                placeholder="https://odd69.com"
                             />
                             <p className="text-[10px] text-slate-600 mt-1">The preferred URL for search engines. Prevents duplicate content issues.</p>
                         </div>
@@ -1501,7 +1501,7 @@ export default function SystemConfigPage() {
                             type="text"
                             value={smtpConfig.fromName}
                             onChange={e => handleSmtpChange('fromName', e.target.value)}
-                            placeholder="ZeeroWin Support"
+                            placeholder="ODD69Win Support"
                             className="w-full bg-slate-900 border border-slate-700 rounded p-2.5 text-white focus:border-blue-500 outline-none placeholder-slate-600"
                         />
                     </div>
@@ -1512,7 +1512,7 @@ export default function SystemConfigPage() {
                             type="email"
                             value={smtpConfig.fromEmail}
                             onChange={e => handleSmtpChange('fromEmail', e.target.value)}
-                            placeholder="noreply@zeerowin.com"
+                            placeholder="noreply@odd69win.com"
                             className="w-full bg-slate-900 border border-slate-700 rounded p-2.5 text-white focus:border-blue-500 outline-none placeholder-slate-600"
                         />
                     </div>
@@ -1608,7 +1608,7 @@ export default function SystemConfigPage() {
                             ) : (
                                 <div className="text-xl font-extrabold italic tracking-tighter text-white">
                                     {(() => {
-                                        const text = headerLogo.text || 'Zeero';
+                                        const text = headerLogo.text || 'ODD69';
                                         const accent = headerLogo.accentText || '';
                                         const hasAccent = accent && text.toLowerCase().startsWith(accent.toLowerCase());
                                         return hasAccent ? (
@@ -1658,7 +1658,7 @@ export default function SystemConfigPage() {
                                 type="text"
                                 value={headerLogo.text}
                                 onChange={e => setHeaderLogo(prev => ({ ...prev, text: e.target.value }))}
-                                placeholder="Zeero"
+                                placeholder="ODD69"
                                 className="w-full bg-slate-950 border border-slate-700 rounded p-2 text-white text-sm focus:border-emerald-500 outline-none placeholder-slate-600"
                             />
                         </div>
@@ -1977,7 +1977,7 @@ export default function SystemConfigPage() {
                             type="email"
                             value={footerSettings.businessEmail}
                             onChange={e => setFooterSettings(prev => ({ ...prev, businessEmail: e.target.value }))}
-                            placeholder="business@zeero.bet"
+                            placeholder="business@odd69.com"
                             className="w-full bg-slate-900 border border-slate-700 rounded p-2.5 text-white focus:border-amber-500 outline-none placeholder-slate-600"
                         />
                     </div>
@@ -1991,7 +1991,7 @@ export default function SystemConfigPage() {
                             type="email"
                             value={footerSettings.partnersEmail}
                             onChange={e => setFooterSettings(prev => ({ ...prev, partnersEmail: e.target.value }))}
-                            placeholder="partners@zeero.bet"
+                            placeholder="partners@odd69.com"
                             className="w-full bg-slate-900 border border-slate-700 rounded p-2.5 text-white focus:border-amber-500 outline-none placeholder-slate-600"
                         />
                     </div>

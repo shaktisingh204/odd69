@@ -477,7 +477,7 @@ async function searchIPLT20(teamName: string): Promise<ScrapedIcon | null> {
         // Fetch the team page and extract the logo from og:image or team logo
         const url = `https://www.iplt20.com/teams/${slug}`;
         const res = await fetch(url, {
-            headers: { 'User-Agent': 'Mozilla/5.0 (compatible; ZeeroBot/1.0)' },
+            headers: { 'User-Agent': 'Mozilla/5.0 (compatible; ODD69Bot/1.0)' },
         });
         if (!res.ok) return null;
         const html = await res.text();
@@ -517,7 +517,7 @@ async function search1000Logos(teamName: string): Promise<ScrapedIcon | null> {
 
         const url = `https://1000logos.net/${slug}-logo/`;
         const res = await fetch(url, {
-            headers: { 'User-Agent': 'Mozilla/5.0 (compatible; ZeeroBot/1.0)' },
+            headers: { 'User-Agent': 'Mozilla/5.0 (compatible; ODD69Bot/1.0)' },
             redirect: 'follow',
         });
         if (!res.ok) return null;

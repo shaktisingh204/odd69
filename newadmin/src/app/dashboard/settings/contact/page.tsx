@@ -98,7 +98,7 @@ export default function ContactSettingsPage() {
                     <p className="text-slate-400 text-sm mt-1">These details appear on the public /support page.</p>
                 </div>
                 <a
-                    href={`${process.env.NEXT_PUBLIC_WEBSITE_URL || 'https://zeero.bet'}/support`}
+                    href={`${process.env.NEXT_PUBLIC_WEBSITE_URL || 'https://odd69.com'}/support`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center gap-1.5 text-xs font-bold bg-slate-700 hover:bg-slate-600 text-slate-300 hover:text-white px-3 py-2 rounded-xl transition-all whitespace-nowrap flex-shrink-0"
@@ -213,7 +213,7 @@ export default function ContactSettingsPage() {
                                 type="text"
                                 value={form.telegramHandle}
                                 onChange={e => set('telegramHandle', e.target.value)}
-                                placeholder="@ZeeroSupport"
+                                placeholder="@ODD69Support"
                                 className="w-full bg-slate-900 border border-slate-700 focus:border-sky-500/50 rounded-xl px-3 py-2 text-sm text-white placeholder:text-slate-600 outline-none transition-all"
                             />
                         </div>
@@ -223,7 +223,7 @@ export default function ContactSettingsPage() {
                                 type="text"
                                 value={form.telegramLink}
                                 onChange={e => set('telegramLink', e.target.value)}
-                                placeholder="https://t.me/ZeeroSupport"
+                                placeholder="https://t.me/ODD69Support"
                                 className="w-full bg-slate-900 border border-slate-700 focus:border-sky-500/50 rounded-xl px-3 py-2 text-sm text-white placeholder:text-slate-600 outline-none transition-all"
                             />
                         </div>
@@ -235,7 +235,7 @@ export default function ContactSettingsPage() {
                             type="text"
                             value={form.telegramChannelLink}
                             onChange={e => set('telegramChannelLink', e.target.value)}
-                            placeholder="https://t.me/ZeeroCommunity"
+                            placeholder="https://t.me/ODD69Community"
                             className="w-full bg-slate-900 border border-slate-700 focus:border-sky-500/50 rounded-xl px-3 py-2 text-sm text-white placeholder:text-slate-600 outline-none transition-all"
                         />
                         <p className="text-[9px] text-slate-600 mt-1">This link is shown as a &quot;Join Telegram&quot; card on the app home page</p>
@@ -268,7 +268,7 @@ export default function ContactSettingsPage() {
                             type="email"
                             value={form.emailAddress}
                             onChange={e => set('emailAddress', e.target.value)}
-                            placeholder="support@zeero.bet"
+                            placeholder="support@odd69.com"
                             className="w-full bg-slate-900 border border-slate-700 focus:border-blue-500/50 rounded-xl px-3 py-2 text-sm text-white placeholder:text-slate-600 outline-none transition-all"
                         />
                     </div>

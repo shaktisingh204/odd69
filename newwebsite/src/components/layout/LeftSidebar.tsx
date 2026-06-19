@@ -348,7 +348,7 @@ function LeftSidebarWithSearchParams({ selectedSportId, onSelectSport, collapsed
         let newItem = activeRailItem;
         let shouldClose = false;
         if (pathname === '/') { newItem = 'home'; shouldClose = true; }
-        else if (pathname.includes('/zeero-games')) { newItem = 'originals'; shouldClose = true; }
+        else if (pathname.includes('/odd69-games')) { newItem = 'originals'; shouldClose = true; }
         else if (pathname.includes('/casino') && !pathname.includes('type=live')) newItem = 'casino';
         else if (pathname.includes('/live-dealers') || (pathname.includes('/casino') && pathname.includes('type=live'))) newItem = 'live';
         else if (pathname.includes('/sports') || selectedSportId) newItem = 'sports';
@@ -523,7 +523,7 @@ function LeftSidebarWithSearchParams({ selectedSportId, onSelectSport, collapsed
                         </div>
                         <Link href="/" className="min-w-0">
                             <p className="text-[7px] font-bold uppercase tracking-[0.25em] text-brand-gold/60 leading-none">Play Hub</p>
-                            <p className="text-[15px] font-extrabold leading-tight tracking-[-0.04em] text-white">Zeero</p>
+                            <p className="text-[15px] font-extrabold leading-tight tracking-[-0.04em] text-white">ODD69</p>
                         </Link>
                     </div>
 

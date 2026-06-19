@@ -45,7 +45,7 @@ export class CoinflipService {
     const {
       betAmount,
       pick,
-      clientSeed = 'zeero',
+      clientSeed = 'odd69',
       walletType = 'fiat',
       useBonus = false,
     } = dto;

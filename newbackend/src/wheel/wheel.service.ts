@@ -119,7 +119,7 @@ export class WheelService {
       betAmount,
       risk = 'medium',
       segments = 30,
-      clientSeed = 'zeero',
+      clientSeed = 'odd69',
       walletType = 'fiat',
       useBonus = false,
     } = dto;

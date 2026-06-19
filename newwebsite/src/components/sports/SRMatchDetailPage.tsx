@@ -515,7 +515,7 @@ export default function SRMatchDetailPage() {
     // ─── Derived state ────────────────────────────────────────────────────────
     if (loading) {
         return (
-            <div className="flex bg-bg-zeero min-h-screen">
+            <div className="flex bg-bg-odd69 min-h-screen">
                 <div className="flex-1 pt-[84px] flex items-center justify-center">
                     <div className="w-8 h-8 border-2 border-success-primary border-t-transparent rounded-full animate-spin" />
                 </div>
@@ -526,7 +526,7 @@ export default function SRMatchDetailPage() {
 
     if (!match) {
         return (
-            <div className="flex bg-bg-zeero min-h-screen">
+            <div className="flex bg-bg-odd69 min-h-screen">
                 <div className="flex-1 pt-[84px] flex flex-col items-center justify-center gap-4">
                     <Shield size={48} className="text-white/20" />
                     <h2 className="text-lg font-bold text-white">Match Not Found</h2>
@@ -587,7 +587,7 @@ export default function SRMatchDetailPage() {
         : premiumMarketsMarkets;
 
     return (
-        <div className="h-screen overflow-hidden bg-bg-zeero text-white flex flex-col">
+        <div className="h-screen overflow-hidden bg-bg-odd69 text-white flex flex-col">
             <Header />
             <div className="flex flex-1 overflow-hidden">
                 <LeftSidebar
@@ -601,8 +601,8 @@ export default function SRMatchDetailPage() {
                     {/* ── Hero Card ─────────────────────────────────────────── */}
                     <div className="md:mx-4 md:mt-4 mb-3">
                         <div className={`relative overflow-hidden rounded-none md:rounded-2xl border ${
-                            isLive ? 'border-success-primary/20 bg-gradient-to-b from-success-soft to-bg-zeero'
-                            : isVirtual ? 'border-accent-purple/20 bg-gradient-to-b from-accent-purple-soft to-bg-zeero'
+                            isLive ? 'border-success-primary/20 bg-gradient-to-b from-success-soft to-bg-odd69'
+                            : isVirtual ? 'border-accent-purple/20 bg-gradient-to-b from-accent-purple-soft to-bg-odd69'
                             : 'border-white/[0.06] bg-bg-modal'
                         }`}>
 
@@ -680,7 +680,7 @@ export default function SRMatchDetailPage() {
                                             <span className="text-3xl md:text-4xl font-black text-white/10 tracking-widest">VS</span>
                                         )
                                     ) : (
-                                        <div className="flex items-center gap-2 rounded-2xl bg-bg-zeero/80 px-4 py-3 shadow-[0_4px_16px_rgba(0,0,0,0.4)] border border-white/[0.04] backdrop-blur-md">
+                                        <div className="flex items-center gap-2 rounded-2xl bg-bg-odd69/80 px-4 py-3 shadow-[0_4px_16px_rgba(0,0,0,0.4)] border border-white/[0.04] backdrop-blur-md">
                                             <Lock size={12} className="text-white/50" />
                                             <span className="text-[12px] font-adx-bold text-text-muted select-none">Login to view score</span>
                                         </div>

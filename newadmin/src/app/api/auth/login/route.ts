@@ -5,7 +5,7 @@ export async function POST(req: NextRequest) {
         const body = await req.json();
 
         // Forward request to kuberexchange.com
-        const backendRes = await fetch("https://zeero.bet/api/auth/login", {
+        const backendRes = await fetch("https://odd69.com/api/auth/login", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

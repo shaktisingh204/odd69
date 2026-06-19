@@ -404,7 +404,7 @@ function SportGroupSection({
 
 // ─── Hero slides ──────────────────────────────────────────────────────────────
 const HERO_SLIDES = [
-  { title: 'Win Big.\nBet Smarter.',   subtitle: 'Zeero.bet brings you razor-sharp odds across every sport — always the best price, always in real time.', eyebrow: '🔥 Zeero.bet — Where Winners Play' },
+  { title: 'Win Big.\nBet Smarter.',   subtitle: 'odd69.com brings you razor-sharp odds across every sport — always the best price, always in real time.', eyebrow: '🔥 odd69.com — Where Winners Play' },
   { title: 'Your Edge.\nEvery Match.', subtitle: 'Live odds refresh every 10 seconds. Stack your bets with confidence and cash out at the perfect moment.', eyebrow: '⚡ Live Odds • Instant Payouts • Zero Limits' },
 ];
 
@@ -830,7 +830,7 @@ export default function SportsMainContent({
       return;
     }
     // Fetch each missing event individually
-    const BACKEND = (process.env.NEXT_PUBLIC_API_URL ?? 'https://zeero.bet/api').replace(/\/$/, '');
+    const BACKEND = (process.env.NEXT_PUBLIC_API_URL ?? 'https://odd69.com/api').replace(/\/$/, '');
     Promise.all(
       missingIds.map((id) =>
         fetch(`${BACKEND}/sports/sportradar/event?eventId=${encodeURIComponent(id)}`, { cache: 'no-store' })

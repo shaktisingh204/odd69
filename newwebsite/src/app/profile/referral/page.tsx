@@ -248,12 +248,12 @@ export default function ReferralPage() {
 
     const shareWhatsApp = () => {
         if (!referralLink) return;
-        window.open(`https://wa.me/?text=${encodeURIComponent(`🎰 Join me on Zeero — the #1 betting platform! Use my link and get a bonus: ${referralLink}`)}`, '_blank');
+        window.open(`https://wa.me/?text=${encodeURIComponent(`🎰 Join me on ODD69 — the #1 betting platform! Use my link and get a bonus: ${referralLink}`)}`, '_blank');
     };
 
     const shareTwitter = () => {
         if (!referralLink) return;
-        window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(`🎰 Join Zeero with my referral link and get a signup bonus! ${referralLink}`)}`, '_blank');
+        window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(`🎰 Join ODD69 with my referral link and get a signup bonus! ${referralLink}`)}`, '_blank');
     };
 
     // Auth loading skeleton
@@ -291,7 +291,7 @@ export default function ReferralPage() {
 
                     <h2 className="text-2xl font-bold text-white mb-2">Refer &amp; Earn</h2>
                     <p className="text-text-muted text-sm leading-relaxed mb-8">
-                        Invite your friends to play on Zeero and earn real rewards.
+                        Invite your friends to play on ODD69 and earn real rewards.
                         Get bonuses every time a friend signs up and deposits!
                         <br /><br />
                         <span className="text-[#8B5CF6] font-medium">Please log in or create an account</span> to access your personal referral link and dashboard.
@@ -371,7 +371,7 @@ export default function ReferralPage() {
 
                         <h1 className="text-2xl md:text-3xl font-bold text-white mb-1.5">Refer &amp; Earn</h1>
                         <p className="text-text-muted max-w-lg mb-6 text-sm leading-relaxed">
-                            Invite your friends to play on Zeero and earn real rewards. Get bonuses every time a friend signs up and deposits!
+                            Invite your friends to play on ODD69 and earn real rewards. Get bonuses every time a friend signs up and deposits!
                         </p>
 
                         {/* Referral Link Card */}

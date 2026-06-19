@@ -112,7 +112,7 @@ export class HiloService {
   async start(userId: number, dto: StartHiloDto) {
     const {
       betAmount,
-      clientSeed = 'zeero',
+      clientSeed = 'odd69',
       walletType = 'fiat',
       useBonus = false,
     } = dto;

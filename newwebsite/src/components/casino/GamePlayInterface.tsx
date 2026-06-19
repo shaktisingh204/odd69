@@ -203,8 +203,8 @@ const GamePlayInterface: React.FC<GamePlayInterfaceProps> = ({
             <div
                 className={`flex items-center gap-3 px-4 py-3 ${
                     isEmbedded
-                        ? 'bg-bg-zeero border border-white/[0.04] rounded-t-2xl mb-0'
-                        : 'bg-bg-zeero border-b border-white/[0.04]'
+                        ? 'bg-bg-odd69 border border-white/[0.04] rounded-t-2xl mb-0'
+                        : 'bg-bg-odd69 border-b border-white/[0.04]'
                 }`}
             >
                 {/* Back / close */}
@@ -371,7 +371,7 @@ const GamePlayInterface: React.FC<GamePlayInterfaceProps> = ({
 
                 {/* Info panel overlay */}
                 {showInfo && !isFullscreen && (
-                    <div className="absolute top-0 right-0 h-full w-72 bg-bg-zeero/95 backdrop-blur-xl border-l border-white/[0.04] z-20 flex flex-col p-5 gap-4 animate-in slide-in-from-right duration-200">
+                    <div className="absolute top-0 right-0 h-full w-72 bg-bg-odd69/95 backdrop-blur-xl border-l border-white/[0.04] z-20 flex flex-col p-5 gap-4 animate-in slide-in-from-right duration-200">
                         <div className="flex items-center justify-between">
                             <h3 className="text-white font-bold text-sm">Game Info</h3>
                             <button

@@ -65,7 +65,7 @@ export class LottoService {
     const {
       betAmount,
       selected,
-      clientSeed = 'zeero',
+      clientSeed = 'odd69',
       walletType = 'fiat',
       useBonus = false,
     } = dto;

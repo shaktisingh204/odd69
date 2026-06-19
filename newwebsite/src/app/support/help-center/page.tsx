@@ -49,7 +49,7 @@ function ArticleItem({ title, body }: { title: string; body: string }) {
     const [open, setOpen] = useState(false);
     return (
         <div
-            className={`border border-white/[0.04] rounded-xl overflow-hidden transition-all duration-200 ${open ? 'bg-bg-modal' : 'bg-bg-zeero hover:bg-bg-modal'}`}
+            className={`border border-white/[0.04] rounded-xl overflow-hidden transition-all duration-200 ${open ? 'bg-bg-modal' : 'bg-bg-odd69 hover:bg-bg-modal'}`}
         >
             <button
                 onClick={() => setOpen(!open)}
@@ -107,7 +107,7 @@ export default function HelpCenterPage() {
         : CATEGORIES;
 
     return (
-        <div className="min-h-[calc(100vh-64px)] bg-bg-zeero-3 text-white pb-24">
+        <div className="min-h-[calc(100vh-64px)] bg-bg-odd69-3 text-white pb-24">
 
             {/* Hero */}
             <div className="relative overflow-hidden bg-gradient-to-b from-blue-500/8 via-[#0F1016] to-[#0C0D12] border-b border-white/[0.04]">

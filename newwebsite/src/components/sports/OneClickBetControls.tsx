@@ -178,7 +178,7 @@ export default function OneClickBetControls({ className = '' }: OneClickBetContr
 
                     {/* Custom input + apply */}
                     <div className="flex items-center gap-2">
-                        <div className="flex h-10 flex-1 items-center rounded-xl border border-white/[0.08] bg-bg-zeero px-3 focus-within:border-success-primary/30 transition-colors">
+                        <div className="flex h-10 flex-1 items-center rounded-xl border border-white/[0.08] bg-bg-odd69 px-3 focus-within:border-success-primary/30 transition-colors">
                             <span className="text-[12px] font-black text-white/35 flex-shrink-0">{activeSymbol}</span>
                             <input
                                 ref={inputRef}

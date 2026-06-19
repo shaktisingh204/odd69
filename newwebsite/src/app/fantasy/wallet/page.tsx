@@ -39,7 +39,7 @@ export default function FantasyWalletPage() {
   if (authLoading || !user) return <div className="h-screen flex items-center justify-center bg-[#f5f6f8] text-gray-400 text-sm">Loading...</div>;
 
   return (
-    <FantasyShell title="Fantasy Wallet" subtitle="Your main Zeero wallet powers fantasy" backHref="/fantasy">
+    <FantasyShell title="Fantasy Wallet" subtitle="Your main ODD69 wallet powers fantasy" backHref="/fantasy">
       {loading ? (
         <div className="flex items-center justify-center py-20"><Loader2 className="w-7 h-7 animate-spin text-[#d13239]" /></div>
       ) : (
@@ -89,7 +89,7 @@ export default function FantasyWalletPage() {
             </div>
             <div>
               <p className="text-gray-900 font-extrabold text-sm mb-0.5 tracking-tight">Same Wallet, More Fun</p>
-              <p className="text-gray-500 text-[11px] font-semibold leading-relaxed">Your main Zeero wallet powers fantasy. Deposit once, play everywhere.</p>
+              <p className="text-gray-500 text-[11px] font-semibold leading-relaxed">Your main ODD69 wallet powers fantasy. Deposit once, play everywhere.</p>
             </div>
           </div>
 

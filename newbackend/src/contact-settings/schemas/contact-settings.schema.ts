@@ -15,12 +15,12 @@ export class ContactSettings {
     whatsappDefaultMessage: string;
 
     @Prop({ default: '' })
-    telegramHandle: string; // e.g. '@ZeeroSupport'
+    telegramHandle: string; // e.g. '@ODD69Support'
 
     @Prop({ default: '' })
-    telegramLink: string; // e.g. 'https://t.me/ZeeroSupport'
+    telegramLink: string; // e.g. 'https://t.me/ODD69Support'
 
-    @Prop({ default: 'support@zeero.bet' })
+    @Prop({ default: 'support@odd69.com' })
     emailAddress: string;
 
     @Prop({ default: true })

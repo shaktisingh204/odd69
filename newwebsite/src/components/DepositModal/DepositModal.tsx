@@ -691,7 +691,7 @@ export default function DepositModal({ isOpen, onClose }: DepositModalProps) {
 
     useEffect(() => {
         const handleMessage = (event: MessageEvent) => {
-            if (event.data?.type === 'ZEERO_PAY_SUCCESS') {
+            if (event.data?.type === 'ODD69_PAY_SUCCESS') {
                 onClose();
             }
         };
@@ -1896,7 +1896,7 @@ export default function DepositModal({ isOpen, onClose }: DepositModalProps) {
             if (!iframeWindow) return;
             // This will throw a DOMException if on a cross-origin payment gateway
             const href = iframeWindow.location.href;
-            if (href && (href.includes('zeero.bet') || href.includes(window.location.host))) {
+            if (href && (href.includes('odd69.com') || href.includes(window.location.host))) {
                 onClose();
             }
         } catch {

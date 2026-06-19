@@ -12,13 +12,13 @@ import DynamicHeroSlider from '@/components/shared/DynamicHeroSlider';
 import dynamic from 'next/dynamic';
 
 // Heavy below-fold sections — code-split out of the initial bundle.
-// ZeeroOriginalsSection imports ~20 lucide icons + game cards; it's a
+// ODD69OriginalsSection imports ~20 lucide icons + game cards; it's a
 // full section that renders well below the hero. GamePlayInterface is
 // an overlay that only appears when a user clicks "play", and it
 // imports the casino game launcher machinery which is ~80 KiB on its
 // own. Both are loaded lazily to shrink the home page's JS entry.
-const ZeeroOriginalsSection = dynamic(
-    () => import('./ZeeroOriginalsSection'),
+const ODD69OriginalsSection = dynamic(
+    () => import('./ODD69OriginalsSection'),
     { ssr: false },
 );
 const GamePlayInterface = dynamic(
@@ -407,9 +407,9 @@ export default function PremiumHomeContent({
                 </section>
             )}
 
-            {/* ── 5. ZEERO ORIGINALS ── */}
+            {/* ── 5. ODD69 ORIGINALS ── */}
             <section className="px-3 md:px-0 mt-6 md:mt-8">
-                <ZeeroOriginalsSection />
+                <ODD69OriginalsSection />
             </section>
 
             {/* ── 8. NEW GAMES ── */}

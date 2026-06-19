@@ -293,7 +293,7 @@ function CodeBlock({ children }: { children: string }) {
 
 export default function ApiDocsPage() {
     return (
-        <div className="min-h-[calc(100vh-64px)] bg-bg-zeero-3 text-white pb-32 overflow-y-auto">
+        <div className="min-h-[calc(100vh-64px)] bg-bg-odd69-3 text-white pb-32 overflow-y-auto">
             {/* Hero */}
             <div className="relative overflow-hidden bg-gradient-to-b from-brand-gold/6 via-[#0F1016] to-[#0C0D12] border-b border-white/[0.04]">
                 <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_0%,rgba(139,92,246,0.06),transparent_60%)]" />

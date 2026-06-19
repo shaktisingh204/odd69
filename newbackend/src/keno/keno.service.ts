@@ -120,7 +120,7 @@ export class KenoService {
       betAmount,
       selected,
       risk = 'classic',
-      clientSeed = 'zeero',
+      clientSeed = 'odd69',
       walletType = 'fiat',
       useBonus = false,
     } = dto;

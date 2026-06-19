@@ -32,28 +32,28 @@ interface SearchResult {
 
 const STATIC_DEEP_LINKS = [
     { group: 'Pages', items: [
-        { value: 'zeero://home', label: 'Home Page', icon: Home },
-        { value: 'zeero://sports', label: 'Sports Page', icon: Trophy },
-        { value: 'zeero://casino', label: 'Casino Page', icon: Gamepad2 },
-        { value: 'zeero://profile', label: 'Profile', icon: User },
-        { value: 'zeero://promotions', label: 'Promotions', icon: Gift },
-        { value: 'zeero://notifications', label: 'Notifications', icon: Bell },
-        { value: 'zeero://vip', label: 'VIP Club', icon: Star },
-        { value: 'zeero://support', label: 'Support', icon: HelpCircle },
-        { value: 'zeero://live', label: 'Live Dealers', icon: Zap },
-        { value: 'zeero://zeero', label: 'Zeero Originals', icon: Gamepad2 },
+        { value: 'odd69://home', label: 'Home Page', icon: Home },
+        { value: 'odd69://sports', label: 'Sports Page', icon: Trophy },
+        { value: 'odd69://casino', label: 'Casino Page', icon: Gamepad2 },
+        { value: 'odd69://profile', label: 'Profile', icon: User },
+        { value: 'odd69://promotions', label: 'Promotions', icon: Gift },
+        { value: 'odd69://notifications', label: 'Notifications', icon: Bell },
+        { value: 'odd69://vip', label: 'VIP Club', icon: Star },
+        { value: 'odd69://support', label: 'Support', icon: HelpCircle },
+        { value: 'odd69://live', label: 'Live Dealers', icon: Zap },
+        { value: 'odd69://odd69', label: 'ODD69 Originals', icon: Gamepad2 },
     ]},
-    { group: 'Zeero Games', items: [
-        { value: 'zeero://game/mines', label: 'Mines', icon: Gamepad2 },
-        { value: 'zeero://game/crash', label: 'Crash', icon: Gamepad2 },
-        { value: 'zeero://game/dice', label: 'Dice', icon: Gamepad2 },
-        { value: 'zeero://game/limbo', label: 'Limbo', icon: Gamepad2 },
+    { group: 'ODD69 Games', items: [
+        { value: 'odd69://game/mines', label: 'Mines', icon: Gamepad2 },
+        { value: 'odd69://game/crash', label: 'Crash', icon: Gamepad2 },
+        { value: 'odd69://game/dice', label: 'Dice', icon: Gamepad2 },
+        { value: 'odd69://game/limbo', label: 'Limbo', icon: Gamepad2 },
     ]},
     { group: 'Legal', items: [
-        { value: 'zeero://fairness', label: 'Fairness', icon: Shield },
-        { value: 'zeero://privacyPolicy', label: 'Privacy Policy', icon: Shield },
-        { value: 'zeero://termsOfService', label: 'Terms of Service', icon: Shield },
-        { value: 'zeero://bettingRules', label: 'Betting Rules', icon: Shield },
+        { value: 'odd69://fairness', label: 'Fairness', icon: Shield },
+        { value: 'odd69://privacyPolicy', label: 'Privacy Policy', icon: Shield },
+        { value: 'odd69://termsOfService', label: 'Terms of Service', icon: Shield },
+        { value: 'odd69://bettingRules', label: 'Betting Rules', icon: Shield },
     ]},
 ];
 
@@ -387,7 +387,7 @@ export default function PushNotificationsPage() {
 
                             {/* Custom URL */}
                             {dlMode === 'custom' && (
-                                <input type="text" value={deepLink} onChange={e => setDeepLink(e.target.value)} placeholder="zeero://match/123456/4"
+                                <input type="text" value={deepLink} onChange={e => setDeepLink(e.target.value)} placeholder="odd69://match/123456/4"
                                     className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2.5 text-white text-sm font-mono focus:border-indigo-500 focus:outline-none" />
                             )}
 
@@ -446,7 +446,7 @@ export default function PushNotificationsPage() {
                                             </div>
                                             <div className="flex-1 min-w-0">
                                                 <div className="flex items-center justify-between">
-                                                    <span className="text-[9px] text-white/40 font-medium uppercase tracking-wider">Zeero</span>
+                                                    <span className="text-[9px] text-white/40 font-medium uppercase tracking-wider">ODD69</span>
                                                     <span className="text-[8px] text-white/30">now</span>
                                                 </div>
                                                 <p className="text-[11px] font-bold text-white mt-0.5 leading-tight truncate">{title || 'Notification Title'}</p>

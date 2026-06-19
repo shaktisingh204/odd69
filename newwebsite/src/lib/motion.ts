@@ -1,7 +1,7 @@
 /**
  * lib/motion.ts
  * ─────────────────────────────────────────────────────────────────────
- * Central Framer Motion variant library for the Zeero website.
+ * Central Framer Motion variant library for the ODD69 website.
  * Import from here — never define one-off transitions inline.
  *
  * Usage:

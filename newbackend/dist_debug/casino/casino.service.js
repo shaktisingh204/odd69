@@ -289,7 +289,7 @@ let CasinoService = class CasinoService {
                     id: `${userIdPrefix}${username}`,
                     currency: currency,
                     displayName: username,
-                    backUrl: "https://zeero.bet/"
+                    backUrl: "https://odd69.com/"
                 }
             };
             if (isLobby) {

@@ -127,7 +127,7 @@ export class TowersService {
     const {
       betAmount,
       difficulty = 'medium',
-      clientSeed = 'zeero',
+      clientSeed = 'odd69',
       walletType = 'fiat',
       useBonus = false,
     } = dto;

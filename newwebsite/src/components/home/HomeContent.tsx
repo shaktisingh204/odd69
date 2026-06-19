@@ -5,7 +5,7 @@ import HomeHero from './HomeHero';
 import RecentWinsTicker from './RecentWinsTicker';
 import CategoryGrid from './CategoryGrid';
 import HomeGameList from './HomeGameList';
-import ZeeroOriginalsSection from './ZeeroOriginalsSection';
+import ODD69OriginalsSection from './ODD69OriginalsSection';
 import { Flame, Star, Zap, Trophy, Crown, TrendingUp } from 'lucide-react';
 import { casinoService } from '@/services/casino';
 
@@ -71,8 +71,8 @@ export default function HomeContent() {
             <RecentWinsTicker />
             <CategoryGrid />
 
-            {/* Zeero Originals — in-house games section */}
-            <ZeeroOriginalsSection />
+            {/* ODD69 Originals — in-house games section */}
+            <ODD69OriginalsSection />
 
 
             {/* Section 1 — Exclusive Games */}

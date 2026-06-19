@@ -151,7 +151,7 @@ export class DiceService {
       betAmount,
       target,
       direction,
-      clientSeed = 'zeero',
+      clientSeed = 'odd69',
       walletType = 'fiat',
       useBonus = false,
     } = dto;

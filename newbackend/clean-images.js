@@ -16,7 +16,7 @@ async function run() {
     for (let i = 0; i < games.length; i += batchSize) {
         const batch = games.slice(i, i + batchSize);
         await Promise.all(batch.map(async (g) => {
-            const url = `https://zeero.bet/game-images/${encodeURIComponent(g.icon)}.png`;
+            const url = `https://odd69.com/game-images/${encodeURIComponent(g.icon)}.png`;
             try {
                 await axios.head(url, { timeout: 5000 });
             } catch (err) {

@@ -548,7 +548,7 @@ async function sendBetRefundEmail(
         if (!host || !user || !password) return;
 
         const platformName = platformRecord?.value?.trim() || 'Platform';
-        const siteUrl = (process.env.NEXT_PUBLIC_WEBSITE_URL || 'https://zeero.bet').replace(/\/+$/, '');
+        const siteUrl = (process.env.NEXT_PUBLIC_WEBSITE_URL || 'https://odd69.com').replace(/\/+$/, '');
         const templateSettings = mergeEmailTemplateSettings(templateRecord?.value);
         const now = new Intl.DateTimeFormat('en-IN', {
             day: '2-digit', month: 'short', year: 'numeric',

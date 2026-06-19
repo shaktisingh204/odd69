@@ -85,19 +85,19 @@ const nextConfig: NextConfig = {
       // Internal Next.js API routes — must NOT be proxied to backend
       {
         source: '/api/:path*',
-        destination: `${process.env.NEXT_PUBLIC_API_PROXY_URL || 'https://zeero.bet/api'}/:path*`, // Proxy to Backend
+        destination: `${process.env.NEXT_PUBLIC_API_PROXY_URL || 'https://odd69.com/api'}/:path*`, // Proxy to Backend
       },
       {
         source: '/api/auth/:path*',
-        destination: 'https://zeero.bet/api/auth/:path*',
+        destination: 'https://odd69.com/api/auth/:path*',
       },
       {
         source: '/api/seamless-casino/:path*',
-        destination: 'https://zeero.bet/api/seamless-casino/:path*',
+        destination: 'https://odd69.com/api/seamless-casino/:path*',
       },
       {
         source: '/api/bets/:path*',
-        destination: 'https://zeero.bet/api/bets/:path*',
+        destination: 'https://odd69.com/api/bets/:path*',
       },
     ];
   },

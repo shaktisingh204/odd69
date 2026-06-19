@@ -6,7 +6,7 @@
 // Images are stored in MongoDB (SportLeague collection) on the backend.
 // ─────────────────────────────────────────────────────────────────────────────
 
-const BACKEND = (process.env.NEXT_PUBLIC_API_URL ?? 'https://zeero.bet/api').replace(/\/$/, '');
+const BACKEND = (process.env.NEXT_PUBLIC_API_URL ?? 'https://odd69.com/api').replace(/\/$/, '');
 const ADMIN_TOKEN = process.env.ADMIN_API_TOKEN ?? '';
 
 export interface LeagueImageEntry {

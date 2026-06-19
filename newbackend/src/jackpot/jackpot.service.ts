@@ -99,7 +99,7 @@ export class JackpotService {
   async play(userId: number, dto: PlayJackpotDto) {
     const {
       betAmount,
-      clientSeed = 'zeero',
+      clientSeed = 'odd69',
       walletType = 'fiat',
       useBonus = false,
     } = dto;

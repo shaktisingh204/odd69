@@ -9,7 +9,7 @@
  *     BET_CASHOUT, BET_REFUND, BET_VOID_DEBIT, BET_SETTLEMENT_REVERT_DEBIT)
  *   • CasinoTransaction rows (all Huidu provider history)
  *   • MongoDB `bets` documents (sportsbook bets — new bets service + legacy sports service)
- *   • MongoDB `mines_games` documents (Zeero Originals)
+ *   • MongoDB `mines_games` documents (ODD69 Originals)
  *   • MongoDB `aviator_bets` documents
  *   • MongoDB `limbo_bets` documents
  *   • MongoDB `plinko_games` documents

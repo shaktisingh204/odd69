@@ -15,7 +15,7 @@ export default function LegacyGameRedirectPage() {
     }, [params, router]);
 
     return (
-        <div className="min-h-screen bg-bg-zeero-2 flex items-center justify-center">
+        <div className="min-h-screen bg-bg-odd69-2 flex items-center justify-center">
             <div className="text-white/40 text-sm animate-pulse">Loading game…</div>
         </div>
     );

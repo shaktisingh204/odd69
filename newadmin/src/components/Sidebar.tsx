@@ -94,7 +94,7 @@ const NAV: NavGroup[] = [
         title: "Casino",
         icon: Gamepad2,
         items: [
-            { name: "Zeero Originals Lobby", href: "/dashboard/originals", icon: Bomb },
+            { name: "ODD69 Originals Lobby", href: "/dashboard/originals", icon: Bomb },
             { name: "Games", href: "/dashboard/casino/games", icon: Gamepad2 },
             { name: "Providers", href: "/dashboard/casino/providers", icon: Layers },
             { name: "Categories", href: "/dashboard/casino/categories", icon: List },
@@ -327,7 +327,7 @@ export default function Sidebar() {
                         Z
                     </div>
                     <div className="min-w-0">
-                        <p className="text-[14px] font-semibold text-white leading-none tracking-tight">Zeero Admin</p>
+                        <p className="text-[14px] font-semibold text-white leading-none tracking-tight">ODD69 Admin</p>
                         {user && (
                             <p className="text-[11px] text-white/30 mt-1 capitalize tracking-wide">
                                 {user.role?.replace(/_/g, " ").toLowerCase()}

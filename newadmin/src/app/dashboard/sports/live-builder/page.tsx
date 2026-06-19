@@ -549,7 +549,7 @@ export default function SportLiveBuilderPage() {
                     <span className="h-2.5 w-2.5 rounded-full bg-rose-500/70"/>
                     <span className="h-2.5 w-2.5 rounded-full bg-amber-500/70"/>
                     <span className="h-2.5 w-2.5 rounded-full bg-emerald-500/70"/>
-                    <div className="ml-2 flex-1 rounded bg-white/[0.04] px-2 py-0.5 text-[9px] text-white/30">zeero.bet/sports</div>
+                    <div className="ml-2 flex-1 rounded bg-white/[0.04] px-2 py-0.5 text-[9px] text-white/30">odd69.com/sports</div>
                   </div>
 
                   {/* Page content */}

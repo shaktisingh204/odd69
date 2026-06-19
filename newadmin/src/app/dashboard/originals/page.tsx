@@ -196,7 +196,7 @@ export default function OriginalsAdminPage() {
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-black text-white flex items-center gap-2.5">
-            <span className="text-2xl">🎮</span> Zeero Originals
+            <span className="text-2xl">🎮</span> ODD69 Originals
           </h1>
           <p className="text-slate-500 text-sm mt-0.5">Live GGR control · Game settings · Real-time monitoring</p>
         </div>
@@ -216,7 +216,7 @@ export default function OriginalsAdminPage() {
               <div>
                 <p className="font-black text-amber-200 text-sm">Access Mode: Allow-List Only</p>
                 <p className="text-xs text-amber-300/70 mt-1">
-                  Only users on the allowlist below can play Zeero Originals. Most users will see the games as restricted or be redirected. Switch to <strong>"All Users"</strong> to open it up.
+                  Only users on the allowlist below can play ODD69 Originals. Most users will see the games as restricted or be redirected. Switch to <strong>"All Users"</strong> to open it up.
                 </p>
               </div>
             </div>
@@ -236,7 +236,7 @@ export default function OriginalsAdminPage() {
         <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/5 px-4 py-3 flex items-center gap-3">
           <Globe size={16} className="text-emerald-400 flex-shrink-0" />
           <p className="text-sm text-emerald-200 font-semibold">
-            Open to all logged-in users <span className="text-emerald-400/60 font-normal ml-1">— all accounts can access Zeero Originals</span>
+            Open to all logged-in users <span className="text-emerald-400/60 font-normal ml-1">— all accounts can access ODD69 Originals</span>
           </p>
         </div>
       )}
@@ -270,7 +270,7 @@ export default function OriginalsAdminPage() {
               Originals Player Access
             </h2>
             <p className="mt-1 text-xs text-slate-400">
-              Choose whether Zeero Originals are open to all logged-in users or only to the allow-list below.
+              Choose whether ODD69 Originals are open to all logged-in users or only to the allow-list below.
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
@@ -432,7 +432,7 @@ export default function OriginalsAdminPage() {
                       <div className={`p-1.5 rounded-lg ${gm.bg}`}>
                         <Icon size={13} className={gm.color} />
                       </div>
-                      <h3 className="text-white font-black text-sm leading-tight">Zeero {gm.name}</h3>
+                      <h3 className="text-white font-black text-sm leading-tight">ODD69 {gm.name}</h3>
                     </div>
                     <div className="flex items-center gap-2 text-[11px] text-slate-400">
                       <Users size={11} />

@@ -21,7 +21,7 @@ interface OriginalsShellProps {
 }
 
 /**
- * Shared chrome for every Zeero Originals game page. Mirrors the
+ * Shared chrome for every ODD69 Originals game page. Mirrors the
  * `mines/page.tsx` layout exactly so all the new in-house games (keno, hilo,
  * roulette, wheel, coinflip, towers, color, lotto, jackpot) feel like one app.
  *
@@ -66,12 +66,12 @@ export default function OriginalsShell({
 
   const finalTags = tags ?? [
     `# ${title}`,
-    "# Zeero Originals",
+    "# ODD69 Originals",
     "# Provably Fair",
   ];
 
   return (
-    <div className="min-h-screen md:h-screen overflow-y-auto md:overflow-hidden bg-bg-zeero flex flex-col">
+    <div className="min-h-screen md:h-screen overflow-y-auto md:overflow-hidden bg-bg-odd69 flex flex-col">
       <Header />
 
       <div className="flex flex-1 md:overflow-hidden pt-[100px] md:pt-[64px] pb-[80px] md:pb-0 max-w-[1920px] mx-auto w-full">
@@ -94,7 +94,7 @@ export default function OriginalsShell({
           <div className="flex-shrink-0 px-5 py-3 bg-bg-deep-3 border-t border-white/[0.04] flex items-center justify-between flex-wrap gap-2">
             <div>
               <span className="text-white text-sm font-black">{title}</span>
-              <span className="text-[#6b7280] text-xs ml-2">by Zeero Originals</span>
+              <span className="text-[#6b7280] text-xs ml-2">by ODD69 Originals</span>
             </div>
             <div className="flex items-center gap-2 flex-wrap">
               {finalTags.map((t) => (

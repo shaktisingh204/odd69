@@ -59,8 +59,8 @@ interface BetContextType {
 }
 
 const BetContext = createContext<BetContextType | undefined>(undefined);
-const ONE_CLICK_ENABLED_KEY = 'zeero_sports_one_click_enabled';
-const ONE_CLICK_STAKE_KEY = 'zeero_sports_one_click_stake';
+const ONE_CLICK_ENABLED_KEY = 'odd69_sports_one_click_enabled';
+const ONE_CLICK_STAKE_KEY = 'odd69_sports_one_click_stake';
 const DEFAULT_ONE_CLICK_STAKE = 100;
 
 const normalizeStake = (stake: number) => {

@@ -139,7 +139,7 @@ export class MinesService {
   }
 
   async startGame(userId: number, dto: StartMinesDto) {
-    const { betAmount, mineCount, clientSeed = 'zeero', walletType = 'fiat', useBonus = false } = dto;
+    const { betAmount, mineCount, clientSeed = 'odd69', walletType = 'fiat', useBonus = false } = dto;
 
     if (mineCount < 1 || mineCount > 24) throw new BadRequestException('Mine count must be 1–24');
     if (betAmount <= 0) throw new BadRequestException('Bet amount must be positive');

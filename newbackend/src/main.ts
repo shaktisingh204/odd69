@@ -14,8 +14,8 @@ async function bootstrap() {
     next();
   });
   const prodOrigins = [
-    'https://zeero.bet',
-    'https://admin.zeero.bet',
+    'https://odd69.com',
+    'https://admin.odd69.com',
     'https://www.kuberexchange.com',
     'https://admin.kuberexchange.com',
     // Odd69 partner domains

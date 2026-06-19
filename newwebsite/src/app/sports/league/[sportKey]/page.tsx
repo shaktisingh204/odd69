@@ -75,7 +75,7 @@ const DEFAULT_META = { emoji: '🏟️', label: 'Sports' };
 const getMeta = (id: string) => SPORT_META[id] ?? DEFAULT_META;
 
 // ─── Backend ──────────────────────────────────────────────────────────────────
-const BACKEND = (process.env.NEXT_PUBLIC_API_URL ?? 'https://zeero.bet/api').replace(/\/$/, '');
+const BACKEND = (process.env.NEXT_PUBLIC_API_URL ?? 'https://odd69.com/api').replace(/\/$/, '');
 
 async function fetchUpcomingPage(sportId: string, pageNo: number): Promise<{ data: SrEvent[]; pages: number; total: number }> {
   try {

@@ -38,7 +38,7 @@ const SPORT_FILTERS: SportFilter[] = [
     { id: 'sr:sport:1',    name: 'American Football',emoji: '🏈', color: '#8B5CF6' },
 ];
 
-// Hero card gradient colors (matching zeero.bet purple/blue/teal gradients)
+// Hero card gradient colors (matching odd69.com purple/blue/teal gradients)
 const HERO_CARD_COLORS = [
     { from: '#3b1fa8', to: '#7c3aed', accent: '#a78bfa' }, // Deep purple
     { from: '#1e3a8a', to: '#2563eb', accent: '#60a5fa' }, // Deep blue

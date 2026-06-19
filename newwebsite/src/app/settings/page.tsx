@@ -185,7 +185,7 @@ function AdminLeagueImages() {
     const [saved, setSaved] = useState<Record<string, boolean>>({});
     const [seeding, setSeeding] = useState(false);
     const [search, setSearch] = useState('');
-    const BACKEND = (process.env.NEXT_PUBLIC_API_URL ?? 'https://zeero.bet/api').replace(/\/$/, '');
+    const BACKEND = (process.env.NEXT_PUBLIC_API_URL ?? 'https://odd69.com/api').replace(/\/$/, '');
 
     const load = async () => {
         setLoading(true);

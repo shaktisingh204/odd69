@@ -99,7 +99,7 @@ export class LimboGateway implements OnGatewayConnection, OnGatewayDisconnect, O
     const userInfo = this.socketUsers.get(client.id);
     if (!userInfo) { client.emit('limbo:error', { message: 'Unauthorized. Please log in.' }); return; }
     if (!(await this.originalsAdminService.canUserPlayOriginals(userInfo.userId))) {
-      client.emit('limbo:error', { message: 'Zeero Originals access is not enabled for your account.' });
+      client.emit('limbo:error', { message: 'ODD69 Originals access is not enabled for your account.' });
       return;
     }
 

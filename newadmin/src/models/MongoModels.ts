@@ -634,7 +634,7 @@ FaqSchema.index({ isActive: 1, order: 1 });
 
 export const Faq = mongoose.models.Faq || mongoose.model<IFaq>('Faq', FaqSchema);
 
-// ─── Zeero Originals ─────────────────────────────────────────────────────────
+// ─── ODD69 Originals ─────────────────────────────────────────────────────────
 // These must match the exact collection names used by the backend (NestJS + Mongoose)
 
 // --- OriginalsConfig ---

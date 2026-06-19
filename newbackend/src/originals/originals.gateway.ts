@@ -123,7 +123,7 @@ export class OriginalsGateway implements OnGatewayConnection, OnGatewayDisconnec
     const userInfo = this.socketUsers.get(client.id);
     if (!userInfo) { client.emit('mines:error', { message: 'Unauthorized. Please log in.' }); return; }
     if (!(await this.originalsAdminService.canUserPlayOriginals(userInfo.userId))) {
-      client.emit('mines:error', { message: 'Zeero Originals access is not enabled for your account.' });
+      client.emit('mines:error', { message: 'ODD69 Originals access is not enabled for your account.' });
       return;
     }
 
@@ -224,7 +224,7 @@ export class OriginalsGateway implements OnGatewayConnection, OnGatewayDisconnec
         });
         this.server.emit('originals:big-win', {
           username: this.mask(userInfo.username), multiplier: result.multiplier,
-          payout: result.payout, game: 'Zeero Mines', ts: Date.now(),
+          payout: result.payout, game: 'ODD69 Mines', ts: Date.now(),
         });
       }
 
@@ -263,7 +263,7 @@ export class OriginalsGateway implements OnGatewayConnection, OnGatewayDisconnec
     const userInfo = this.socketUsers.get(client.id);
     if (!userInfo) { client.emit('dice:error', { message: 'Unauthorized. Please log in.' }); return; }
     if (!(await this.originalsAdminService.canUserPlayOriginals(userInfo.userId))) {
-      client.emit('dice:error', { message: 'Zeero Originals access is not enabled for your account.' });
+      client.emit('dice:error', { message: 'ODD69 Originals access is not enabled for your account.' });
       return;
     }
 
@@ -315,7 +315,7 @@ export class OriginalsGateway implements OnGatewayConnection, OnGatewayDisconnec
     const userInfo = this.socketUsers.get(client.id);
     if (!userInfo) { client.emit('plinko:error', { message: 'Unauthorized. Please log in.' }); return; }
     if (!(await this.originalsAdminService.canUserPlayOriginals(userInfo.userId))) {
-      client.emit('plinko:error', { message: 'Zeero Originals access is not enabled for your account.' });
+      client.emit('plinko:error', { message: 'ODD69 Originals access is not enabled for your account.' });
       return;
     }
 
@@ -350,7 +350,7 @@ export class OriginalsGateway implements OnGatewayConnection, OnGatewayDisconnec
         });
         this.server.emit('originals:big-win', {
           username: this.mask(userInfo.username), multiplier: result.multiplier,
-          payout: result.payout, game: 'Zeero Plinko', ts: Date.now(),
+          payout: result.payout, game: 'ODD69 Plinko', ts: Date.now(),
         });
       }
 

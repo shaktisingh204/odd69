@@ -10,7 +10,7 @@ export default function ChatwootWidget() {
       dangerouslySetInnerHTML={{
         __html: `
           (function(d,t) {
-            var BASE_URL="https://chatwoot-zeero-u27309.vm.elestio.app";
+            var BASE_URL="https://chatwoot-odd69-u27309.vm.elestio.app";
             var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
             g.src=BASE_URL+"/packs/js/sdk.js";
             g.async = true;

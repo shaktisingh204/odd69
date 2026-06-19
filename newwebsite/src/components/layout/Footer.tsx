@@ -42,8 +42,8 @@ type FooterSettings = {
 };
 
 const DEFAULT_FOOTER_SETTINGS: FooterSettings = {
-  businessEmail: "business@zeero.bet",
-  partnersEmail: "partners@zeero.bet",
+  businessEmail: "business@odd69.com",
+  partnersEmail: "partners@odd69.com",
   socials: {
     whatsapp:  { url: "", imageUrl: "" },
     telegram:  { url: "", imageUrl: "" },
@@ -169,7 +169,7 @@ const categoryColumns: FooterLink[][] = [
   [
     { label: "Live Dealers", href: "/live-dealers" },
     { label: "Sports", href: "/sports" },
-    { label: "Zeero Games", href: "/zeero-games" },
+    { label: "ODD69 Games", href: "/odd69-games" },
     { label: "Bonuses", href: "/promotions" },
   ],
   [
@@ -199,7 +199,7 @@ const highlightCards: HighlightCard[] = [
   {
     id: "provablyFair",
     title: "Provably fair",
-    description: "See how Zeero keeps outcomes transparent and verifiable.",
+    description: "See how ODD69 keeps outcomes transparent and verifiable.",
     href: "/fairness",
     Icon: Shield,
     iconClassName: "text-brand-gold bg-brand-alpha-12",
@@ -527,7 +527,7 @@ export default function Footer() {
       <div className="mx-auto max-w-[1520px] px-4 pb-24 pt-7 md:px-8 md:pb-10 md:pt-8">
         <div className="flex items-center gap-4">
           <Link href="/" className="shrink-0 text-[32px] font-extrabold italic tracking-[-0.06em] text-white md:text-[34px]">
-            Zeero
+            ODD69
           </Link>
           <div className="hidden h-px flex-1 bg-white/[0.04] md:block" />
           <div className="ml-auto">
@@ -682,7 +682,7 @@ export default function Footer() {
           </div>
 
           <div className="mt-8 flex items-end justify-between gap-4 text-sm text-white/38">
-            <p>&copy; 2026 Zeero.</p>
+            <p>&copy; 2026 ODD69.</p>
             <p className="text-[32px] font-bold leading-none text-white/34">18+</p>
           </div>
         </div>

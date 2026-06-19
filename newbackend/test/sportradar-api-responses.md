@@ -673,8 +673,8 @@ but with snake_case field aliases in a few places.
 ### Website-side env vars
 
 From `newwebsite/.env.local`:
-- `NEXT_PUBLIC_API_URL=https://zeero.bet/api` — base for all `/sportsbook/*` and `/sports/sportradar/*`.
-- `NEXT_PUBLIC_SOCKET_URL=https://zeero.bet/api` — Socket.IO.
+- `NEXT_PUBLIC_API_URL=https://odd69.com/api` — base for all `/sportsbook/*` and `/sports/sportradar/*`.
+- `NEXT_PUBLIC_SOCKET_URL=https://odd69.com/api` — Socket.IO.
 - `NEXT_PUBLIC_ADMIN_API_TOKEN=...` — **a full admin token literal is baked into the website's env file**. If this is shipped to the browser, anyone can forge admin-only API calls. **Treat as P0 security finding** and verify whether this token is actually used client-side or only in server actions.
 
 ### Direct upstream calls from the browser

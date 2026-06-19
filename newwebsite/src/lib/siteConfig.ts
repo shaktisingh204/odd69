@@ -20,7 +20,7 @@ function resolveApiUrl(): string {
   return (
     process.env.INTERNAL_API_URL ||
     process.env.API_URL ||
-    'https://zeero.bet/api'
+    'https://odd69.com/api'
   );
 }
 

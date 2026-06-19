@@ -119,8 +119,8 @@ interface WalletContextType {
 
 const WalletContext = createContext<WalletContextType | undefined>(undefined);
 
-const LS_KEY = 'zeero_selected_wallet';
-const LS_SUB_KEY = 'zeero_selected_sub_wallet';
+const LS_KEY = 'odd69_selected_wallet';
+const LS_SUB_KEY = 'odd69_selected_sub_wallet';
 
 export function WalletProvider({ children }: { children: React.ReactNode }) {
     const { isAuthenticated, token, user } = useAuth();

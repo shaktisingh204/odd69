@@ -36,7 +36,7 @@ export async function GET(req: NextRequest) {
                 eventName: e.event_name,
                 sportId: compMap[e.competition_id] || "4",
                 matchStatus: e.match_status || "",
-                deepLink: `zeero://match/${e.event_id}/${compMap[e.competition_id] || "4"}`,
+                deepLink: `odd69://match/${e.event_id}/${compMap[e.competition_id] || "4"}`,
             }));
 
             return NextResponse.json({ success: true, results });
@@ -63,7 +63,7 @@ export async function GET(req: NextRequest) {
                 name: g.name,
                 provider: g.provider,
                 icon: g.icon || g.image || "",
-                deepLink: `zeero://casino/game/${g.gameCode}`,
+                deepLink: `odd69://casino/game/${g.gameCode}`,
             }));
 
             return NextResponse.json({ success: true, results });

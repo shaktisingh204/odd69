@@ -272,7 +272,7 @@ export class Payment3Service {
         // supply. Same values are mirrored inside the encrypted payload.
         const payerName = (params.payerName || '').trim() || 'Customer';
         const payMobile = (params.payMobile || '').replace(/\D/g, '') || '9000000000';
-        const payEmail = (params.payEmail || '').trim() || 'noreply@zeero.bet';
+        const payEmail = (params.payEmail || '').trim() || 'noreply@odd69.com';
 
         innerPayload.payerName = payerName.slice(0, 50);
         innerPayload.payMobile = payMobile.slice(0, 20);

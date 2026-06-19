@@ -41,7 +41,7 @@ export function withdrawalSuccessTemplate(
                 { label: 'Processed at', value: formatEmailTimestamp(), tone: 'default' },
             ]),
             !template.utr
-                ? `<p style="margin:16px 0 0;color:#f5c563;font-size:13px;line-height:1.7;">Your UTR number will be available shortly. You can check it anytime at <a href="${siteUrl}/profile/transactions" style="color:#efc083;text-decoration:underline;">zeero.bet/profile/transactions</a></p>`
+                ? `<p style="margin:16px 0 0;color:#f5c563;font-size:13px;line-height:1.7;">Your UTR number will be available shortly. You can check it anytime at <a href="${siteUrl}/profile/transactions" style="color:#efc083;text-decoration:underline;">odd69.com/profile/transactions</a></p>`
                 : '',
             template.bodySecondary
                 ? `<p style="margin:20px 0 0;color:#9e9793;font-size:13px;line-height:1.7;">${escapeHtml(template.bodySecondary)}</p>`

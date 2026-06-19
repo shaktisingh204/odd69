@@ -53,8 +53,8 @@ export async function generateMetadata(): Promise<Metadata> {
     if (raw) siteMeta = JSON.parse(raw);
   } catch {}
 
-  const siteTitle = siteMeta.siteTitle || 'Zeero - Premium Sports Betting & Casino';
-  const siteDescription = siteMeta.siteDescription || 'Experience the thrill of victory with Zeero.';
+  const siteTitle = siteMeta.siteTitle || 'ODD69 - Premium Sports Betting & Casino';
+  const siteDescription = siteMeta.siteDescription || 'Experience the thrill of victory with ODD69.';
   const ogTitle = siteMeta.ogTitle || siteTitle;
   const ogDescription = siteMeta.ogDescription || siteDescription;
   const ogImage = siteMeta.ogImage || '';
@@ -145,7 +145,7 @@ export default async function RootLayout({
             is the largest above-the-fold element.
             imageSrcSet + imageSizes let the browser pick the right size
             variant from the preload hint itself. */}
-        {headerLogoUrl && (
+        {headerLogoUrl ? (
           // biome-ignore lint/a11y/useButtonType: <link> has no type prop
           <link
             rel="preload"
@@ -155,7 +155,7 @@ export default async function RootLayout({
             imageSizes="(max-width: 768px) 110px, 160px"
             fetchPriority="high"
           />
-        )}
+        ) : null}
       </head>
       <body className={`${sora.variable} ${dmSans.variable} ${mulish.variable}`}>
         {/* ── Google Analytics 4 ───────────────────────────────── */}

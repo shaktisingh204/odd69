@@ -35,7 +35,7 @@ function fmtBet(n: number): string {
 }
 
 /**
- * Standard left-panel content shared by every Zeero Originals page.
+ * Standard left-panel content shared by every ODD69 Originals page.
  * Mirrors the mines.page.tsx control structure 1:1 so all the new games
  * (keno, hilo, …) feel consistent. Game-specific controls are passed in
  * via `children` (rendered between the amount block and the action button).

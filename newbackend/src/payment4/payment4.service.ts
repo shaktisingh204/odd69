@@ -49,11 +49,11 @@ export class Payment4Service {
 
         const sign = this.generateSignature(params.orderNo, formattedAmount, timestamp);
 
-        const appUrl = this.configService.get<string>('APP_URL') || 'https://zeero.bet';
+        const appUrl = this.configService.get<string>('APP_URL') || 'https://odd69.com';
         const returnUrl = `${appUrl}/profile/transactions`;
         const notifyUrl = this.configService.get<string>(
             'PAYMENT4_NOTIFY_URL',
-            `${this.configService.get<string>('API_URL', 'https://zeero.bet/api')}/payment4/notify`
+            `${this.configService.get<string>('API_URL', 'https://odd69.com/api')}/payment4/notify`
         );
 
         const payload = {
@@ -187,7 +187,7 @@ export class Payment4Service {
 
         const notifyUrl = this.configService.get<string>(
             'PAYMENT4_PAYOUT_NOTIFY_URL',
-            `${this.configService.get<string>('API_URL', 'https://zeero.bet/api')}/payment4/payout/notify`,
+            `${this.configService.get<string>('API_URL', 'https://odd69.com/api')}/payment4/payout/notify`,
         );
 
         const payload = {

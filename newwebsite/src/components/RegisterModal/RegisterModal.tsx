@@ -341,7 +341,7 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ onClose, onLoginClick }) 
             }
             if (referralCode) localStorage.removeItem('referralCode');
             clearStoredUtm();
-            toast.success('Registration successful! Welcome to Zeero.');
+            toast.success('Registration successful! Welcome to ODD69.');
             if (onClose) onClose();
             // Show deposit prompt after successful signup
             setTimeout(() => {

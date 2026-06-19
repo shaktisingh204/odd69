@@ -53,7 +53,7 @@ export class TurnkeyReplicaController {
 
     /**
      * GET /api/v1/embed?url=...
-     * Renders a zeero.bet hosted page containing the original URL in a full-screen iframe.
+     * Renders a odd69.com hosted page containing the original URL in a full-screen iframe.
      * This ensures the frontend doesn't directly hit primarydiamondfeeds in the URL bar
      * while giving them a reliable embed.
      */
@@ -88,7 +88,7 @@ export class TurnkeyReplicaController {
         }
 
         // We use our internal stream-proxy inside the iframe to avoid upstream CSP blocks
-        const host = req.get('host') || 'zeero.bet';
+        const host = req.get('host') || 'odd69.com';
         const protocol = host.includes('localhost') ? 'http' : 'https';
         const proxyUrl = `${protocol}://${host}/api/sports/stream-proxy?url=${encodeURIComponent(targetUrl)}`;
 
@@ -141,7 +141,7 @@ export class TurnkeyReplicaController {
         const url = await this.sportsService.getTvUrl(sportsId, gmid);
         
         // Wrap the remote Turnkey streaming URL with our internal stream-proxy to strip iframe-ancestors
-        const host = req.get('host') || 'zeero.bet';
+        const host = req.get('host') || 'odd69.com';
         // Ensure https for production domains, but allow http for localhost dev
         const protocol = host.includes('localhost') ? 'http' : 'https';
         const proxiedUrl = url ? `${protocol}://${host}/api/v1/embed?url=${encodeURIComponent(url)}` : '';
@@ -164,7 +164,7 @@ export class TurnkeyReplicaController {
         const url = await this.sportsService.getScoreUrl(sportsId, gmid);
         
         // Wrap the remote Turnkey scorecard URL with our internal stream-proxy to strip iframe-ancestors
-        const host = req.get('host') || 'zeero.bet';
+        const host = req.get('host') || 'odd69.com';
         const protocol = host.includes('localhost') ? 'http' : 'https';
         const proxiedUrl = url ? `${protocol}://${host}/api/v1/embed?url=${encodeURIComponent(url)}` : '';
 
@@ -180,7 +180,7 @@ export class TurnkeyReplicaController {
      * ALL /api/v1/* (WILDCARD PROXY - INCLUDING RESULTS/SETTLEMENT)
      * Catches any other request (like /api/v1/result, /api/v1/settlement)
      * and forwards it directly to the real Turnkey Gaming API so odd69 
-     * loses absolutely zero functionality by using zeero.bet as a drop-in.
+     * loses absolutely zero functionality by using odd69.com as a drop-in.
      */
     @All('*path')
     async turnkeyWildcardProxy(@Param('path') path: string, @Req() req: Request) {

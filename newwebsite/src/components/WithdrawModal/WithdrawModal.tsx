@@ -310,7 +310,7 @@ const WithdrawModal: React.FC<WithdrawModalProps> = ({ onClose }) => {
             <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center sm:p-4 pointer-events-none">
                 <div
                     className="pointer-events-auto w-full sm:max-w-5xl max-h-[95dvh] sm:max-h-[90vh] flex flex-col rounded-t-3xl sm:rounded-3xl overflow-hidden shadow-xl border border-white/[0.05] relative"
-                    style={{ background: 'linear-gradient(155deg, var(--bg-zeero-2) 0%, var(--bg-deep-3) 60%, #0a0a12 100%)' }}
+                    style={{ background: 'linear-gradient(155deg, var(--bg-odd69-2) 0%, var(--bg-deep-3) 60%, #0a0a12 100%)' }}
                 >
                     {/* Ambient glow accents */}
                     <div className="pointer-events-none absolute -top-24 -right-24 w-72 h-72 rounded-full opacity-20 blur-3xl" style={{ background: 'radial-gradient(circle, var(--brand-gold) 0%, transparent 70%)' }} />
@@ -325,7 +325,7 @@ const WithdrawModal: React.FC<WithdrawModalProps> = ({ onClose }) => {
                             <div className="relative w-11 h-11 rounded-2xl flex items-center justify-center shrink-0"
                                 style={{ background: 'linear-gradient(135deg, var(--warning-alpha-12) 0%, rgba(249,115,22,0.08) 100%)', boxShadow: 'inset 0 0 0 1px rgba(251,146,60,0.25)' }}>
                                 <ArrowDownLeft className="w-5 h-5 text-warning" />
-                                <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-warning ring-2 ring-[var(--bg-zeero-2)]" />
+                                <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-warning ring-2 ring-[var(--bg-odd69-2)]" />
                             </div>
                             <div>
                                 <h2 className="text-lg sm:text-xl font-extrabold text-white leading-tight tracking-tight">Withdraw Funds</h2>

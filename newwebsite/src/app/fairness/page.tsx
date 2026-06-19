@@ -3,8 +3,8 @@ import Link from 'next/link';
 import { Shield, CheckCircle, Lock, BarChart2, RefreshCw, Home, ExternalLink } from 'lucide-react';
 
 export const metadata = {
-    title: 'Fairness & Provably Fair | Zeero',
-    description: 'Learn how Zeero ensures fair and transparent gaming through provably fair algorithms, certified RNG, and independent audits.',
+    title: 'Fairness & Provably Fair | ODD69',
+    description: 'Learn how ODD69 ensures fair and transparent gaming through provably fair algorithms, certified RNG, and independent audits.',
 };
 
 const SECTIONS = [
@@ -15,9 +15,9 @@ const SECTIONS = [
         border: 'border-brand-gold/20',
         title: 'Provably Fair System',
         body: [
-            'Zeero uses a cryptographically provably fair system for all casino games. This means every game result is determined by a verifiable algorithm rather than a centralized server decision.',
+            'ODD69 uses a cryptographically provably fair system for all casino games. This means every game result is determined by a verifiable algorithm rather than a centralized server decision.',
             'Before each game round, the server generates a secret seed (hashed) which is shared with  you. After the round, the server reveals the original seed so you can independently verify the result using our open-source verification tool.',
-            'This ensures that neither the player nor Zeero can predict or manipulate the outcome of any game in advance.',
+            'This ensures that neither the player nor ODD69 can predict or manipulate the outcome of any game in advance.',
         ]
     },
     {
@@ -27,7 +27,7 @@ const SECTIONS = [
         border: 'border-teal-400/20',
         title: 'Certified Random Number Generator (RNG)',
         body: [
-            'All games powered by Zeero\'s original game engine use a certified RNG that produces statistically random outcomes. Our RNG is audited periodically by an independent third-party testing laboratory.',
+            'All games powered by ODD69\'s original game engine use a certified RNG that produces statistically random outcomes. Our RNG is audited periodically by an independent third-party testing laboratory.',
             'The RNG meets international standards including ISO/IEC 17020 and is compliant with requirements set by leading iGaming regulatory authorities.',
             'Third-party casino game providers integrated on our platform are required to provide their own RNG certifications, which are reviewed by our compliance team.',
         ]
@@ -39,7 +39,7 @@ const SECTIONS = [
         border: 'border-purple-400/20',
         title: 'Return to Player (RTP)',
         body: [
-            'Each game on Zeero has a published Return to Player (RTP) percentage. This indicates the theoretical average payout over a statistically significant number of rounds.',
+            'Each game on ODD69 has a published Return to Player (RTP) percentage. This indicates the theoretical average payout over a statistically significant number of rounds.',
             'For example, a game with a 96% RTP will return $96 for every $100 wagered on average over time. The RTP is a long-term statistical measure, not a guarantee for individual sessions.',
             'RTP values are verified by independent auditors and are displayed on each game\'s information page.',
         ]
@@ -51,9 +51,9 @@ const SECTIONS = [
         border: 'border-green-400/20',
         title: 'Data Security & Encryption',
         body: [
-            'All data transmitted between your device and Zeero\'s servers is protected using TLS 1.3 encryption, the industry standard for secure data transmission.',
+            'All data transmitted between your device and ODD69\'s servers is protected using TLS 1.3 encryption, the industry standard for secure data transmission.',
             'Player funds and sensitive data are stored in isolated, encrypted environments. We perform regular security audits and penetration testing to protect against vulnerabilities.',
-            'Zeero will never share your personal data with third parties without your explicit consent, except where required by law. See our Privacy Policy for full details.',
+            'ODD69 will never share your personal data with third parties without your explicit consent, except where required by law. See our Privacy Policy for full details.',
         ]
     },
     {
@@ -63,7 +63,7 @@ const SECTIONS = [
         border: 'border-brand-gold/20',
         title: 'Independent Audits & Compliance',
         body: [
-            'Zeero undergoes regular audits by independent testing agencies to verify fairness, security, and regulatory compliance. Audit certificates are available upon request through our support team.',
+            'ODD69 undergoes regular audits by independent testing agencies to verify fairness, security, and regulatory compliance. Audit certificates are available upon request through our support team.',
             'We are licensed and regulated under the laws of Curaçao (operated by BlockDance B.V., Registration No. 158182). Our license number is available in the footer of every page.',
             'Our compliance team continuously monitors for responsible gaming concerns and fraud. Any player found attempting to manipulate game outcomes will have their account suspended.',
         ]
@@ -72,7 +72,7 @@ const SECTIONS = [
 
 export default function FairnessPage() {
     return (
-        <div className="min-h-[calc(100vh-64px)] bg-bg-zeero-3 text-white pb-24">
+        <div className="min-h-[calc(100vh-64px)] bg-bg-odd69-3 text-white pb-24">
 
             {/* Hero */}
             <div className="relative overflow-hidden bg-gradient-to-b from-green-500/8 via-[#0F1016] to-[#0C0D12] border-b border-white/[0.04]">
@@ -90,7 +90,7 @@ export default function FairnessPage() {
                         Fairness & <span className="text-brand-gold">Transparency</span>
                     </h1>
                     <p className="text-text-muted text-sm max-w-xl mx-auto">
-                        Zeero is committed to providing a fair, transparent, and secure gaming experience. Learn how we guarantee integrity across every game and transaction.
+                        ODD69 is committed to providing a fair, transparent, and secure gaming experience. Learn how we guarantee integrity across every game and transaction.
                     </p>
                 </div>
             </div>
