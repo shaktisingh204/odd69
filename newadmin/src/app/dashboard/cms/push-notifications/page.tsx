@@ -442,7 +442,7 @@ export default function PushNotificationsPage() {
                                     <div className="bg-[#2a2a3e] rounded-2xl p-3 border border-white/[0.06] shadow-lg">
                                         <div className="flex items-start gap-2.5">
                                             <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center flex-shrink-0">
-                                                <span className="text-white text-[10px] font-black">Z</span>
+                                                <span className="text-white text-[10px] font-black">O</span>
                                             </div>
                                             <div className="flex-1 min-w-0">
                                                 <div className="flex items-center justify-between">

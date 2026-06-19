@@ -70,7 +70,7 @@ const SignupDepositPrompt: React.FC = () => {
 
                             {/* Congratulations text */}
                             <h2 className="text-2xl font-black text-white mb-1 tracking-tight">
-                                Welcome to <span className="text-brand-gold">Ze</span>ero!
+                                Welcome to <span className="text-brand-gold">ODD</span>69!
                             </h2>
                             <p className="text-white/50 text-sm mb-6 max-w-[280px]">
                                 Your account is ready. Make your first deposit and start winning today!
@@ -153,7 +153,7 @@ const SignupDepositPrompt: React.FC = () => {
                             </div>
 
                             <h2 className="text-xl font-black text-white mb-1 tracking-tight">
-                                Welcome to <span className="text-brand-gold">Ze</span>ero!
+                                Welcome to <span className="text-brand-gold">ODD</span>69!
                             </h2>
                             <p className="text-white/50 text-sm mb-5 max-w-[260px]">
                                 Your account is ready. Deposit now and start winning!

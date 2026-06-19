@@ -183,7 +183,7 @@ export default function ResetPasswordPage() {
                 <div className="bg-auth-base border border-divider rounded-2xl p-8 shadow-xl">
                     <div className="text-center mb-8">
                         <span className="text-3xl font-extrabold italic">
-                            <span className="text-brand-gold">Ze</span>ero
+                            <span className="text-brand-gold">ODD</span>69
                         </span>
                     </div>
 

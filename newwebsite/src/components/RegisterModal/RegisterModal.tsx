@@ -379,7 +379,7 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ onClose, onLoginClick }) 
                             <Trophy size={64} className="text-brand-gold opacity-60" />
                         </div>
                         <div className="text-4xl font-extrabold italic tracking-tight mt-2">
-                            <span className="text-brand-gold">Ze</span>ero
+                            <span className="text-brand-gold">ODD</span>69
                         </div>
                         <h2 className="text-3xl font-black text-text-primary italic uppercase tracking-tighter">
                             JOIN NOW
@@ -403,7 +403,7 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ onClose, onLoginClick }) 
                         {/* Mobile logo */}
                         <div className="md:hidden text-center mb-4">
                             <span className="text-3xl font-black italic tracking-tight">
-                                <span className="text-brand-gold">Ze</span><span className="text-white">ero</span>
+                                <span className="text-brand-gold">ODD</span><span className="text-white">69</span>
                             </span>
                             <p className="text-xs text-white/35 mt-1 font-medium tracking-wide">SPORTS · CASINO · ORIGINALS</p>
                         </div>

@@ -231,7 +231,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ onClose, onRegisterClick }) => 
                     {/* Logo */}
                     <div className="text-center mb-6">
                         <span className="text-3xl font-extrabold italic tracking-[-0.04em]">
-                            <span className="text-brand-gold">Ze</span><span className="text-white">ero</span>
+                            <span className="text-brand-gold">ODD</span><span className="text-white">69</span>
                         </span>
                         <p className="text-xs text-white/35 mt-1 font-medium tracking-wide">SPORTS · CASINO · ORIGINALS</p>
                     </div>

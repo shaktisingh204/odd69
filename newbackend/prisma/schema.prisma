@@ -96,7 +96,7 @@ model User {
   // Support
   supportTickets  SupportTicket[]
 
-  // Zeero Originals
+  // ODD69 Originals
   minesGames                 MinesGame[]
   originalsSessions          OriginalsSession[]
   originalsEngagementEvents  OriginalsEngagementEvent[]
@@ -312,7 +312,7 @@ model Notification {
   userId    Int
   title     String
   body      String
-  deepLink  String?  // deep link URL e.g. "zeero://match/12345/4"
+  deepLink  String?  // deep link URL e.g. "odd69://match/12345/4"
   isRead    Boolean  @default(false)
   createdAt DateTime @default(now())
   user      User     @relation(fields: [userId], references: [id])
@@ -326,7 +326,7 @@ model PushNotification {
   title       String
   body        String
   imageUrl    String?
-  deepLink    String?           // e.g. "zeero://match/12345/4"
+  deepLink    String?           // e.g. "odd69://match/12345/4"
   segment     String?           // ALL, VIP, NEW, ACTIVE, CHURNED
   targetUserIds Int[]           // specific user IDs (empty = all in segment)
   sentBy      Int               // admin user ID
@@ -413,7 +413,7 @@ model PasswordResetToken {
   user      User     @relation(fields: [userId], references: [id])
 }
 
-// ─── Zeero Originals: Mines Game ─────────────────────────────────────────────
+// ─── ODD69 Originals: Mines Game ─────────────────────────────────────────────
 enum MinesGameStatus {
   ACTIVE
   CASHEDOUT
@@ -431,7 +431,7 @@ model MinesGame {
   // Provably fair seeds
   serverSeed      String          // stored in plain, shown after game ends
   serverSeedHash  String          // SHA-256 of serverSeed shown before game starts
-  clientSeed      String          @default("zeero")
+  clientSeed      String          @default("odd69")
   nonce           Int             @default(0)
 
   // Game state (persisted so sessions can reconnect)
@@ -461,7 +461,7 @@ model MinesGame {
   @@index([createdAt])
 }
 
-// ─── Zeero Originals: Admin Config per Game ──────────────────────────────────
+// ─── ODD69 Originals: Admin Config per Game ──────────────────────────────────
 enum EngagementMode {
   OFF
   SOFT
@@ -512,7 +512,7 @@ model OriginalsConfig {
 
   // Home page display (Cloudflare Images URL set by admin)
   thumbnailUrl        String?                           // Cloudflare Images URL
-  gameName            String?                           // Display name (e.g. "Zeero Mines")
+  gameName            String?                           // Display name (e.g. "ODD69 Mines")
   gameDescription     String?                           // Short description shown on home card
   fakePlayerMin       Int            @default(200)      // min of random "playing now" count
   fakePlayerMax       Int            @default(300)      // max of random "playing now" count
@@ -612,7 +612,7 @@ model EmailOtp {
 
 model ChatwootConfig {
   id              Int       @id @default(autoincrement())
-  instanceUrl     String    // e.g. https://chat.zeero.bet
+  instanceUrl     String    // e.g. https://chat.odd69.com
   apiToken        String    // Chatwoot user/admin API access token
   accountId       Int       // Chatwoot account ID
   agentBotToken   String?   // Agent bot access token
