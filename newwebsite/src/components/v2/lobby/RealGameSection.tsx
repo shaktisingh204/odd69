@@ -25,10 +25,10 @@ export default function RealGameSection({ title, section, href = "/casino" }: { 
       try {
         let g = await casinoService.getSectionGames(section);
         if (!g || g.length === 0) {
-          const res = await casinoService.getGames(undefined, CATEGORY_FALLBACK[section], undefined, 1, 12);
+          const res = await casinoService.getGames(undefined, CATEGORY_FALLBACK[section], undefined, 1, 18);
           g = res.games || [];
         }
-        if (alive) setGames(g.slice(0, 12));
+        if (alive) setGames(g.slice(0, 18));
       } catch {
         if (alive) setGames([]);
       } finally {
@@ -51,9 +51,10 @@ export default function RealGameSection({ title, section, href = "/casino" }: { 
           View all <ChevronRight className="h-4 w-4" strokeWidth={2.4} />
         </a>
       </div>
-      <div className="grid grid-cols-3 gap-3 sm:grid-cols-4 lg:grid-cols-6">
+      {/* ~30% smaller tiles: auto-fill packs more, smaller cards per row */}
+      <div className="grid gap-3 grid-cols-[repeat(auto-fill,minmax(96px,1fr))] sm:grid-cols-[repeat(auto-fill,minmax(116px,1fr))] lg:grid-cols-[repeat(auto-fill,minmax(136px,1fr))]">
         {loading
-          ? Array.from({ length: 6 }).map((_, i) => <div key={i} className="aspect-[3/4] rounded-2xl skeleton-block" />)
+          ? Array.from({ length: 12 }).map((_, i) => <div key={i} className="aspect-[3/4] rounded-2xl skeleton-block" />)
           : games.map((g, i) => <GameCard key={g.id || g.gameCode || i} game={g} />)}
       </div>
     </section>
