@@ -70,24 +70,24 @@
   /* ═══════════════════════════════════════════════
      2. BRAND / PURPLE (MOST IMPORTANT)
      ═══════════════════════════════════════════════ */
-  --action-primary: #8B5CF6;    /* Primary purple CTA */
-  --action-hover: #A78BFA;      /* Bright purple hover */
-  --action-active: #7C3AED;     /* Deep purple – pressed state */
-  --gold-soft: #C4B5FD;         /* Soft purple for banners / gradients */
-  --gold-muted: #9D7BD8;        /* Muted purple – icons & highlights */
-  --brown-accent: #2E1065;      /* Dark purple accent */
+  --action-primary: #ff7a1a;    /* Primary ODD69 orange CTA (v2) */
+  --action-hover: #ff9a3d;      /* Bright orange hover */
+  --action-active: #e85f00;     /* Deep orange – pressed state */
+  --gold-soft: #ffb778;         /* Soft orange for banners / gradients */
+  --gold-muted: #d98a3a;        /* Muted orange – icons & highlights */
+  --brown-accent: #3a1c08;      /* Dark warm accent */
 
   /* Brand alpha tints (semi-transparent brand over dark surfaces) */
-  --brand-alpha-05: rgba(139, 92, 246, 0.05);
-  --brand-alpha-08: rgba(139, 92, 246, 0.08);
-  --brand-alpha-10: rgba(139, 92, 246, 0.10);
-  --brand-alpha-12: rgba(139, 92, 246, 0.12);
-  --brand-alpha-20: rgba(139, 92, 246, 0.20);
-  --brand-alpha-25: rgba(139, 92, 246, 0.25);
-  --brand-alpha-28: rgba(139, 92, 246, 0.28);
-  --brand-alpha-30: rgba(139, 92, 246, 0.30);
-  --brand-alpha-35: rgba(139, 92, 246, 0.35);
-  --brand-alpha-40: rgba(139, 92, 246, 0.40);
+  --brand-alpha-05: rgba(255, 122, 26, 0.05);
+  --brand-alpha-08: rgba(255, 122, 26, 0.08);
+  --brand-alpha-10: rgba(255, 122, 26, 0.10);
+  --brand-alpha-12: rgba(255, 122, 26, 0.12);
+  --brand-alpha-20: rgba(255, 122, 26, 0.20);
+  --brand-alpha-25: rgba(255, 122, 26, 0.25);
+  --brand-alpha-28: rgba(255, 122, 26, 0.28);
+  --brand-alpha-30: rgba(255, 122, 26, 0.30);
+  --brand-alpha-35: rgba(255, 122, 26, 0.35);
+  --brand-alpha-40: rgba(255, 122, 26, 0.40);
 
   /* ═══════════════════════════════════════════════
      3. TEXT HIERARCHY
@@ -169,7 +169,7 @@
   --accent-teal-bright: #2DD4BF;  /* Tether/USDT green-teal */
   --accent-purple: #8B5CF6;
   --accent-purple-soft: #12101F;  /* Purple background */
-  --accent-purple-alpha: rgba(139, 92, 246, 0.30);
+  --accent-purple-alpha: rgba(255, 122, 26, 0.30);
   --accent-cyan: #06B6D4;         /* New: cyan for contrast accents */
 
   /* ═══════════════════════════════════════════════
@@ -331,7 +331,7 @@
   /* ═══════════════════════════════════════════════
      13. SHADOW / GLOW TOKENS
      ═══════════════════════════════════════════════ */
-  --shadow-glow-gold: 0 0 24px rgba(139, 92, 246, 0.10), 0 4px 16px rgba(139, 92, 246, 0.05);
+  --shadow-glow-gold: 0 0 24px rgba(255, 122, 26, 0.10), 0 4px 16px rgba(255, 122, 26, 0.05);
   --shadow-glow-danger: 0 0 20px rgba(239, 68, 68, 0.30);
   --shadow-glow-success: 0 0 16px rgba(52, 211, 153, 0.15);
   --shadow-glow-blue: 0 0 20px rgba(99, 102, 241, 0.30);
@@ -358,19 +358,19 @@
   --text-inverse: #FFFFFF;          /* White text on purple */
 
   /* Brand alpha tints → purple */
-  --brand-alpha-05: rgba(167, 139, 250, 0.05);
-  --brand-alpha-08: rgba(167, 139, 250, 0.08);
-  --brand-alpha-10: rgba(167, 139, 250, 0.10);
-  --brand-alpha-12: rgba(167, 139, 250, 0.12);
-  --brand-alpha-20: rgba(167, 139, 250, 0.20);
-  --brand-alpha-25: rgba(167, 139, 250, 0.25);
-  --brand-alpha-28: rgba(167, 139, 250, 0.28);
-  --brand-alpha-30: rgba(167, 139, 250, 0.30);
-  --brand-alpha-35: rgba(167, 139, 250, 0.35);
-  --brand-alpha-40: rgba(167, 139, 250, 0.40);
+  --brand-alpha-05: rgba(255, 154, 61, 0.05);
+  --brand-alpha-08: rgba(255, 154, 61, 0.08);
+  --brand-alpha-10: rgba(255, 154, 61, 0.10);
+  --brand-alpha-12: rgba(255, 154, 61, 0.12);
+  --brand-alpha-20: rgba(255, 154, 61, 0.20);
+  --brand-alpha-25: rgba(255, 154, 61, 0.25);
+  --brand-alpha-28: rgba(255, 154, 61, 0.28);
+  --brand-alpha-30: rgba(255, 154, 61, 0.30);
+  --brand-alpha-35: rgba(255, 154, 61, 0.35);
+  --brand-alpha-40: rgba(255, 154, 61, 0.40);
 
   /* Purple glows */
-  --shadow-glow-gold: 0 0 24px rgba(167, 139, 250, 0.08), 0 4px 16px rgba(167, 139, 250, 0.04);
+  --shadow-glow-gold: 0 0 24px rgba(255, 154, 61, 0.08), 0 4px 16px rgba(255, 154, 61, 0.04);
 }
 
 /* ── White text on purple/colored backgrounds ──
@@ -895,7 +895,7 @@ body::before {
   position: absolute;
   inset: -1px;
   border-radius: inherit;
-  background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), transparent 40%, transparent 60%, rgba(167, 139, 250, 0.2));
+  background: linear-gradient(135deg, rgba(255, 122, 26, 0.2), transparent 40%, transparent 60%, rgba(255, 154, 61, 0.2));
   z-index: -1;
   mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
@@ -1084,10 +1084,10 @@ body {
 
 /* ── Persistent pulse: gently throbs scale + glow while bets exist ── */
 @keyframes badge-alive {
-  0%   { transform: scale(1);    box-shadow: 0 0 0px  0px rgba(139,92,246,0); }
-  40%  { transform: scale(1.18); box-shadow: 0 0 4px  2px rgba(139,92,246,0.16); }
-  70%  { transform: scale(1.08); box-shadow: 0 0 3px  1px rgba(167,139,250,0.10); }
-  100% { transform: scale(1);    box-shadow: 0 0 0px  0px rgba(139,92,246,0); }
+  0%   { transform: scale(1);    box-shadow: 0 0 0px  0px rgba(255, 122, 26,0); }
+  40%  { transform: scale(1.18); box-shadow: 0 0 4px  2px rgba(255, 122, 26,0.16); }
+  70%  { transform: scale(1.08); box-shadow: 0 0 3px  1px rgba(255, 154, 61,0.10); }
+  100% { transform: scale(1);    box-shadow: 0 0 0px  0px rgba(255, 122, 26,0); }
 }
 
 .betslip-badge-pop {
