@@ -1,7 +1,7 @@
 "use client";
 
 import LobbyTopBar from "./LobbyTopBar";
-import LeftSidebar from "@/components/layout/LeftSidebar";
+import LobbySidebar from "./LobbySidebar";
 import RecentWinsTicker from "@/components/home/RecentWinsTicker";
 import PromoBanners from "./PromoBanners";
 import RealGameSection from "./RealGameSection";
@@ -15,8 +15,8 @@ export default function LobbyPage() {
       <LobbyTopBar />
 
       <div className="flex min-h-0 flex-1">
-        {/* real homepage sidebar (desktop column + its own mobile drawer) */}
-        <LeftSidebar selectedSportId={null} onSelectSport={() => {}} activeTab="live" onTabChange={() => {}} />
+        {/* orange VaultBlaze-style sidebar (desktop column + mobile drawer) */}
+        <LobbySidebar />
 
         <main className="v2-no-scrollbar min-h-0 flex-1 overflow-y-auto overflow-x-hidden">
           {/* real winners container from the current homepage */}
