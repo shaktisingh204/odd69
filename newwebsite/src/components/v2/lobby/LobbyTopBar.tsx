@@ -72,7 +72,7 @@ export default function LobbyTopBar() {
             <button onClick={openWithdraw} className="hidden rounded-xl bg-white/[0.06] px-4 py-2 text-sm font-bold text-white hover:bg-white/[0.1] md:block">Withdraw</button>
             <button onClick={openDeposit} className="rounded-xl px-4 py-2 text-sm font-bold text-white shadow-[0_8px_24px_-8px_rgba(255,106,0,0.7)] active:scale-[0.97]" style={{ background: "linear-gradient(135deg,#ff9a3d,#ff6a00)" }}>Deposit</button>
             <button className="ml-1 hidden items-center gap-2 rounded-xl bg-white/[0.04] py-1.5 pl-1.5 pr-2.5 md:flex">
-              <span className="grid h-8 w-8 place-items-center rounded-lg bg-gradient-to-br from-[#ff9a3d] to-[#7c3aed] text-xs font-bold">{initials}</span>
+              <span className="grid h-8 w-8 place-items-center rounded-lg bg-gradient-to-br from-[#e8650e] to-[#6d28d9] text-xs font-bold text-white [text-shadow:0_1px_2px_rgba(0,0,0,0.55)]">{initials}</span>
               <span className="max-w-[120px] truncate text-sm font-bold text-white">{name}</span>
               <ChevronDown className="h-4 w-4 text-white/50" strokeWidth={2.4} />
             </button>

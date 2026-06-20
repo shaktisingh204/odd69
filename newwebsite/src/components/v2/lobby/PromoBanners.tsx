@@ -40,7 +40,7 @@ export default function PromoBanners() {
           <span className="mt-3 inline-block rounded-full bg-[#ff5ca0] px-4 py-1 text-sm font-bold text-white">on loose</span>
         </div>
         <div className="pointer-events-none mx-auto -my-2">
-          <Image src="/odd69/icons-3d/moneybag.png" alt="" width={120} height={120} className="v2-float" style={{ width: 110, height: 110 }} />
+          <Image src="/odd69/icons-3d/moneybag.png" alt="" aria-hidden="true" width={120} height={120} className="v2-float" style={{ width: 110, height: 110 }} />
         </div>
         <p className="whitespace-pre-line text-sm font-medium leading-snug text-white/70">{BANNERS[1].foot}</p>
       </div>
@@ -52,9 +52,9 @@ export default function PromoBanners() {
           <p className="mt-1 text-sm font-semibold text-white/85">Get 100% rakeback</p>
         </div>
         <div className="pointer-events-none mx-auto">
-          <Image src="/odd69/icons-3d/moneybag.png" alt="" width={130} height={130} className="v2-float" style={{ width: 120, height: 120, filter: "hue-rotate(-12deg) saturate(1.3)" }} />
+          <Image src="/odd69/icons-3d/moneybag.png" alt="" aria-hidden="true" width={130} height={130} className="v2-float" style={{ width: 120, height: 120, filter: "hue-rotate(-12deg) saturate(1.3)" }} />
         </div>
-        <button className="mx-auto w-fit rounded-xl bg-black/35 px-6 py-2.5 text-sm font-bold text-white backdrop-blur-sm hover:bg-black/45 active:scale-[0.97]">
+        <button onClick={openDeposit} className="mx-auto w-fit rounded-xl bg-black/35 px-6 py-2.5 text-sm font-bold text-white backdrop-blur-sm hover:bg-black/45 active:scale-[0.97]">
           Hunt now
         </button>
       </div>

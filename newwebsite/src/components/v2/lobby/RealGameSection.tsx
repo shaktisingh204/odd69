@@ -54,7 +54,7 @@ export default function RealGameSection({ title, section, href = "/casino" }: { 
       <div className="grid grid-cols-3 gap-3 sm:grid-cols-4 lg:grid-cols-6">
         {loading
           ? Array.from({ length: 6 }).map((_, i) => <div key={i} className="aspect-[3/4] rounded-2xl skeleton-block" />)
-          : games.map((g) => <GameCard key={g.id || g.gameCode} game={g} />)}
+          : games.map((g, i) => <GameCard key={g.id || g.gameCode || i} game={g} />)}
       </div>
     </section>
   );
