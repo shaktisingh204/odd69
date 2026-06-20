@@ -46,15 +46,25 @@ export interface SliderConfig {
     slides: SlideData[];
 }
 
-// ─── CTA style map — mirrors admin panel ─────────────────────────────────────
+// ─── CTA style map — v2 warm/orange accent ──────────────────────────────────
+// One accent = orange. The "primary" styles (gold/success) use the v2 orange
+// gradient supplied via `style` (see ORANGE_GRADIENT) so the single accent
+// reads clearly; the rest stay neutral/glass.
+const ORANGE_GRADIENT = "linear-gradient(135deg,#ff9a3d,#ff6a00)";
 const CTA_STYLES: Record<string, string> = {
-    gold:    "bg-warning-deep hover:bg-warning-bright text-text-inverse font-black shadow-lg shadow-[#7C3AED]/30",
-    outline: "bg-transparent border-2 border-white text-white hover:bg-white hover:text-text-inverse font-bold",
+    gold:    "text-white font-black shadow-[0_10px_24px_-8px_rgba(255,106,0,0.8)]",
+    outline: "bg-transparent border-2 border-white/80 text-white hover:border-white hover:bg-white/10 font-bold",
     ghost:   "bg-white/[0.08] hover:bg-white/[0.16] text-white font-bold backdrop-blur-md border border-white/[0.12]",
     danger:  "bg-red-500 hover:bg-red-400 text-white font-bold shadow-glow-danger",
-    success: "bg-brand-gold hover:bg-brand-gold-hover text-white font-bold",
+    success: "text-white font-black shadow-[0_10px_24px_-8px_rgba(255,106,0,0.8)]",
 };
 const getCtaClass = (style: string) => CTA_STYLES[style] ?? CTA_STYLES.gold;
+// Whether the resolved CTA style is a "primary" one that should carry the
+// orange gradient background (applied via inline style, not className).
+const isPrimaryCta = (style: string) => {
+    const resolved = CTA_STYLES[style] ? style : "gold";
+    return resolved === "gold" || resolved === "success";
+};
 
 // ─── Single Slide ─────────────────────────────────────────────────────────────
 // (useIsMobile removed — responsive height is now CSS-driven via Tailwind
@@ -161,9 +171,12 @@ function Slide({ slide, active, effect, isFirst, onGameLaunch, launchingId }: Sl
                 style={{ color: slide.textColor || "#ffffff" }}
             >
                 <div className="max-w-xl w-full">
-                    {/* Gold tag pill — like PromoCard.tag */}
+                    {/* Orange accent tag pill */}
                     {slide.tag && (
-                        <span className="inline-block py-0.5 px-3 rounded-full bg-warning-deep/90 text-text-inverse text-[10px] md:text-xs font-black uppercase tracking-widest mb-2 shadow shadow-[#7C3AED]/30">
+                        <span
+                            className="inline-block py-0.5 px-3 rounded-full text-white text-[10px] md:text-xs font-black uppercase tracking-widest mb-2 shadow-[0_6px_16px_-6px_rgba(255,106,0,0.8)]"
+                            style={{ background: ORANGE_GRADIENT }}
+                        >
                             {slide.tag}
                         </span>
                     )}
@@ -208,7 +221,8 @@ function Slide({ slide, active, effect, isFirst, onGameLaunch, launchingId }: Sl
                                         type="button"
                                         disabled={isLaunching}
                                         onClick={() => onGameLaunch!(slide.gameCode, slide.gameProvider)}
-                                        className={`inline-flex items-center gap-2 px-5 md:px-6 py-2.5 rounded-xl text-sm transition-all hover:scale-105 active:scale-95 disabled:opacity-70 disabled:cursor-not-allowed disabled:transform-none ${getCtaClass(slide.ctaStyle)}`}
+                                        className={`inline-flex items-center gap-2 px-5 md:px-6 py-2.5 rounded-full text-sm transition-transform duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] hover:scale-[1.04] active:scale-[0.97] motion-reduce:transition-none motion-reduce:hover:scale-100 motion-reduce:active:scale-100 disabled:opacity-70 disabled:cursor-not-allowed disabled:scale-100 ${getCtaClass(slide.ctaStyle)}`}
+                                        style={isPrimaryCta(slide.ctaStyle) ? { background: ORANGE_GRADIENT } : undefined}
                                     >
                                         {isLaunching ? (
                                             <><Loader2 size={14} className="animate-spin" /> Launching…</>
@@ -219,7 +233,8 @@ function Slide({ slide, active, effect, isFirst, onGameLaunch, launchingId }: Sl
                                 ) : (
                                     <Link
                                         href={slide.ctaLink || "/"}
-                                        className={`inline-flex items-center gap-2 px-5 md:px-6 py-2.5 rounded-xl text-sm transition-all hover:scale-105 active:scale-95 ${getCtaClass(slide.ctaStyle)}`}
+                                        className={`inline-flex items-center gap-2 px-5 md:px-6 py-2.5 rounded-full text-sm transition-transform duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] hover:scale-[1.04] active:scale-[0.97] motion-reduce:transition-none motion-reduce:hover:scale-100 motion-reduce:active:scale-100 ${getCtaClass(slide.ctaStyle)}`}
+                                        style={isPrimaryCta(slide.ctaStyle) ? { background: ORANGE_GRADIENT } : undefined}
                                     >
                                         {slide.ctaText}
                                     </Link>
@@ -228,7 +243,7 @@ function Slide({ slide, active, effect, isFirst, onGameLaunch, launchingId }: Sl
                             {slide.ctaSecondaryText && (
                                 <Link
                                     href={slide.ctaSecondaryLink || "/"}
-                                    className="inline-flex items-center gap-2 px-5 md:px-6 py-2.5 rounded-xl text-sm font-bold bg-white/[0.08] hover:bg-white/[0.16] backdrop-blur-md transition-all hover:scale-105 active:scale-95 border border-white/[0.12]"
+                                    className="inline-flex items-center gap-2 px-5 md:px-6 py-2.5 rounded-full text-sm font-bold bg-white/[0.08] hover:bg-white/[0.16] backdrop-blur-md transition-transform duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] hover:scale-[1.04] active:scale-[0.97] motion-reduce:transition-none motion-reduce:hover:scale-100 motion-reduce:active:scale-100 border border-white/[0.12]"
                                     style={{ color: slide.textColor || "#ffffff" }}
                                 >
                                     {slide.ctaSecondaryText}
@@ -364,7 +379,7 @@ export default function DynamicHeroSlider({
     if (loading) {
         return (
             <div
-                className={`w-full overflow-hidden bg-brown-accent animate-pulse rounded-2xl h-[212px] md:h-[252px] ${className}`}
+                className={`w-full overflow-hidden bg-bg-card animate-pulse rounded-3xl ring-1 ring-white/[0.06] h-[212px] md:h-[252px] ${className}`}
             />
         );
     }
@@ -374,11 +389,13 @@ export default function DynamicHeroSlider({
         return fallback ? <>{fallback}</> : null;
     }
 
-    const br = config.borderRadius ?? 16;
+    // v2 banner shape: default to a rounded-3xl (24px) radius when the admin
+    // hasn't set one. An explicitly-configured borderRadius still wins.
+    const br = config.borderRadius ?? 24;
 
     return (
         <div
-            className={`group relative w-full overflow-hidden shrink-0 h-[212px] md:h-[252px] ${className}`}
+            className={`group relative w-full overflow-hidden shrink-0 h-[212px] md:h-[252px] ring-1 ring-white/[0.06] ${className}`}
             style={{ borderRadius: br }}
         >
             {/* Slides */}
@@ -401,7 +418,7 @@ export default function DynamicHeroSlider({
                         type="button"
                         onClick={prev}
                         aria-label="Previous slide"
-                        className="absolute left-3 top-1/2 -translate-y-1/2 z-30 size-9 md:size-11 bg-black/50 hover:bg-black/80 border border-white/[0.06] rounded-full flex items-center justify-center text-white backdrop-blur-md transition-all md:opacity-0 md:group-hover:opacity-100 hover:scale-110"
+                        className="absolute left-3 top-1/2 z-30 size-9 md:size-11 bg-black/45 hover:bg-black/70 border border-white/[0.08] hover:border-[#ff7a1a]/60 hover:text-[#ff9a3d] rounded-full flex items-center justify-center text-white backdrop-blur-md origin-center -translate-y-1/2 transition-[transform,opacity,background-color,border-color,color] duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] md:opacity-0 md:group-hover:opacity-100 hover:scale-110 active:scale-[0.95] motion-reduce:transition-none motion-reduce:hover:scale-100 motion-reduce:active:scale-100"
                     >
                         <ChevronLeft size={20} />
                     </button>
@@ -409,14 +426,14 @@ export default function DynamicHeroSlider({
                         type="button"
                         onClick={next}
                         aria-label="Next slide"
-                        className="absolute right-3 top-1/2 -translate-y-1/2 z-30 size-9 md:size-11 bg-black/50 hover:bg-black/80 border border-white/[0.06] rounded-full flex items-center justify-center text-white backdrop-blur-md transition-all md:opacity-0 md:group-hover:opacity-100 hover:scale-110"
+                        className="absolute right-3 top-1/2 z-30 size-9 md:size-11 bg-black/45 hover:bg-black/70 border border-white/[0.08] hover:border-[#ff7a1a]/60 hover:text-[#ff9a3d] rounded-full flex items-center justify-center text-white backdrop-blur-md origin-center -translate-y-1/2 transition-[transform,opacity,background-color,border-color,color] duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] md:opacity-0 md:group-hover:opacity-100 hover:scale-110 active:scale-[0.95] motion-reduce:transition-none motion-reduce:hover:scale-100 motion-reduce:active:scale-100"
                     >
                         <ChevronRight size={20} />
                     </button>
                 </>
             )}
 
-            {/* Dot indicators — gold style like PromoCardSlider */}
+            {/* Dot indicators — orange accent, Emil ease-out */}
             {config.slides.length > 1 && (
                 <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-30 flex items-center gap-2">
                     {config.slides.map((_, i) => (
@@ -425,11 +442,13 @@ export default function DynamicHeroSlider({
                             type="button"
                             onClick={() => goTo(i)}
                             aria-label={`Go to slide ${i + 1}`}
-                            className={`rounded-full transition-all duration-300 ${
+                            aria-current={i === current}
+                            className={`h-2 rounded-full transition-[width,background-color,opacity] duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] active:scale-[0.92] motion-reduce:transition-none motion-reduce:active:scale-100 ${
                                 i === current
-                                    ? "bg-warning-deep w-7 h-2"
-                                    : "bg-white/30 hover:bg-white/60 w-2 h-2"
+                                    ? "w-7 shadow-[0_2px_8px_-2px_rgba(255,106,0,0.9)]"
+                                    : "w-2 bg-white/35 hover:bg-white/65"
                             }`}
+                            style={i === current ? { background: ORANGE_GRADIENT } : undefined}
                         />
                     ))}
                 </div>

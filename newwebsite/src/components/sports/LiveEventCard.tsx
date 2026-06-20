@@ -22,27 +22,27 @@ function getFlagUrl(code?: string) {
 function TeamAvatar({ team }: { team?: TeamRow }) {
   if (!team) {
     return (
-      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/[0.12] bg-white/[0.06] text-[10px] font-adx-bold text-white/60 backdrop-blur-sm">
+      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full ring-1 ring-white/[0.1] bg-white/[0.06] text-[10px] font-adx-bold text-white/55 backdrop-blur-sm">
         ??
       </div>
     );
   }
   if (team.iconUrl) {
     return (
-      <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full border border-white/[0.12] bg-white/[0.06] backdrop-blur-sm">
+      <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full ring-1 ring-white/[0.1] bg-white/[0.06] backdrop-blur-sm">
         <img src={team.iconUrl} alt={team.name} className="h-full w-full object-cover" loading="lazy" />
       </div>
     );
   }
   if (team.flag) {
     return (
-      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/[0.12] bg-white/[0.06] text-lg leading-none backdrop-blur-sm">
+      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full ring-1 ring-white/[0.1] bg-white/[0.06] text-lg leading-none backdrop-blur-sm">
         {team.flag}
       </div>
     );
   }
   return (
-    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/[0.12] bg-white/[0.06] text-[10px] font-adx-bold text-white/60 backdrop-blur-sm">
+    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full ring-1 ring-white/[0.1] bg-white/[0.06] text-[10px] font-adx-bold text-white/55 backdrop-blur-sm">
       {team.initials ?? '??'}
     </div>
   );
@@ -104,9 +104,9 @@ function OddsChip({
     <button
       type="button"
       onClick={onClick}
-      className="flex flex-1 items-center justify-center gap-1.5 rounded-lg bg-black/30 backdrop-blur-sm px-2 py-2 transition-all hover:bg-black/40 active:scale-[0.97] border border-white/[0.08]"
+      className="group/odd flex flex-1 items-center justify-center gap-1.5 rounded-xl bg-black/35 backdrop-blur-sm px-2 py-2 ring-1 ring-white/[0.08] transition-[transform,box-shadow,background-color] duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] hover:bg-[#ff7a1a]/[0.12] hover:ring-[#ff7a1a]/60 active:scale-[0.97] motion-reduce:transition-none motion-reduce:active:scale-100"
     >
-      <span className="text-[11px] font-semibold text-brand-gold">{label}</span>
+      <span className="text-[11px] font-semibold text-[#ff7a1a]">{label}</span>
       <span className="text-[13px] font-adx-bold tabular-nums text-white">
         {value === '-' ? '—' : value}
       </span>
@@ -119,7 +119,7 @@ function ExtraChip({ value, onClick }: { value: string; onClick?: () => void }) 
     <button
       type="button"
       onClick={onClick}
-      className="flex items-center justify-center rounded-lg bg-black/30 backdrop-blur-sm px-3 py-2 text-[13px] font-adx-bold text-white transition-all hover:bg-black/40 active:scale-[0.97] border border-white/[0.08]"
+      className="flex items-center justify-center rounded-xl bg-black/35 backdrop-blur-sm px-3 py-2 text-[13px] font-adx-bold text-white ring-1 ring-white/[0.08] transition-[transform,box-shadow,background-color] duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] hover:bg-[#ff7a1a]/[0.12] hover:ring-[#ff7a1a]/60 active:scale-[0.97] motion-reduce:transition-none motion-reduce:active:scale-100"
     >
       {value}
     </button>
@@ -182,13 +182,13 @@ export default function LiveEventCard({ event, onCardClick, onOddsClick, variant
       onClick={() => onCardClick?.(event.matchId)}
       className={`${
         variant === 'grid' ? gridClasses : railClasses
-      } relative cursor-pointer overflow-hidden rounded-xl border border-white/[0.06] shadow-card transition-all duration-150 hover:border-white/[0.14] active:scale-[0.985]`}
+      } group relative cursor-pointer overflow-hidden rounded-2xl ring-1 ring-white/[0.06] shadow-card transition-transform duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] hover:-translate-y-1 active:scale-[0.985] motion-reduce:transition-none motion-reduce:hover:translate-y-0 motion-reduce:active:scale-100`}
     >
       {/* ── Background layer ── */}
       {cardBg.type === 'split' ? (
         <>
           {/* Player images pinned to bottom-left and bottom-right */}
-          <div className="absolute inset-0 bg-gradient-to-b from-[#2a1a3e] to-[#1a1225]" />
+          <div className="absolute inset-0 bg-gradient-to-b from-[#241a12] to-[#160f0a]" />
           <div className="absolute bottom-0 left-0 h-[70%] w-[35%]">
             <img src={cardBg.img1} alt="" className="h-full w-full object-cover object-top" loading="lazy" />
           </div>
@@ -218,12 +218,18 @@ export default function LiveEventCard({ event, onCardClick, onOddsClick, variant
             <span className="text-[80px] blur-[2px] select-none">{homeFlag}</span>
             <span className="text-[80px] blur-[2px] select-none">{awayFlag}</span>
           </div>
-          <div className="absolute inset-0 bg-[#1c1f24]/90" />
+          <div className="absolute inset-0 bg-bg-card/90" />
         </>
       ) : (
-        /* Default dark background */
-        <div className="absolute inset-0 bg-[#1c1f24]" />
+        /* Default warm dark background */
+        <div className="absolute inset-0 bg-bg-card" />
       )}
+
+      {/* orange inset ring on hover / keyboard focus */}
+      <div
+        className="pointer-events-none absolute inset-0 z-10 rounded-2xl opacity-0 transition-opacity duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] group-hover:opacity-100 group-focus-within:opacity-100 motion-reduce:transition-none"
+        style={{ boxShadow: 'inset 0 0 0 2px rgba(255,122,26,0.85)' }}
+      />
 
       {/* ── Content (above bg) ── */}
       <div className="relative z-10 flex flex-col h-full">
@@ -234,14 +240,14 @@ export default function LiveEventCard({ event, onCardClick, onOddsClick, variant
             <span className="shrink-0 text-[11px] font-bold text-white/80 leading-none">{event.sport}</span>
             <span className="shrink-0 text-white/20 text-[10px] leading-none">•</span>
             <span className="text-[11px] shrink-0 leading-none">{compBadge}</span>
-            <span className="truncate text-[11px] font-medium text-white/50 leading-none">
+            <span className="truncate text-[11px] font-medium text-white/55 leading-none">
               {compName}
             </span>
           </div>
           {(isLive || isInPlay) && (
-            <div className="relative z-10 flex items-center gap-1 ml-1.5 shrink-0 rounded-full bg-red-500/15 border border-red-500/25 px-2 py-0.5">
+            <div className="relative z-10 flex items-center gap-1 ml-1.5 shrink-0 rounded-full bg-red-500/15 ring-1 ring-red-500/25 px-2 py-0.5">
               <span className="relative flex h-1.5 w-1.5">
-                <span className="absolute inset-0 animate-ping rounded-full bg-red-400 opacity-60" />
+                <span className="absolute inset-0 animate-ping rounded-full bg-red-400 opacity-60 motion-reduce:animate-none" />
                 <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-red-500" />
               </span>
               <span className="text-[10px] font-bold text-red-400">Live</span>
@@ -271,7 +277,7 @@ export default function LiveEventCard({ event, onCardClick, onOddsClick, variant
                   {awayTeam?.pill?.trim() || '0'}
                 </span>
               </div>
-              <span className="text-[10px] font-medium text-white/50">
+              <span className="text-[10px] font-medium text-white/55">
                 {event.status}
               </span>
             </div>

@@ -1,12 +1,11 @@
 'use client';
 
 import React, { useRef, useState } from 'react';
-import { Play, Loader2, X, RefreshCw, Maximize2, Minimize2, ChevronLeft, ChevronRight, Heart } from 'lucide-react';
+import { Play, Loader2, X, RefreshCw, Maximize2, Minimize2, ChevronLeft, ChevronRight, Heart, Star } from 'lucide-react';
 import { casinoService } from '@/services/casino';
 import { useAuth } from '@/context/AuthContext';
 import { useModal } from '@/context/ModalContext';
 import { useWallet } from '@/context/WalletContext';
-import SkeletonGameRow from '@/components/shared/SkeletonGameRow';
 import { getCasinoWalletModeFromSubWallet } from '@/utils/casinoWalletMode';
 import { cfImage, cfImageSrcSet } from '@/utils/cfImages';
 
@@ -20,64 +19,82 @@ function GameCardBC({ game, onPlay }: GameCardBCProps) {
     const [imgFailed, setImgFailed] = useState(false);
     const [loading, setLoading] = useState(false);
     const imgSrc = game.image || game.banner || '';
+    const name = game.name || game.gameName || 'Game';
+    const provider = (game.providerSlug || game.provider || game.providerCode || '').toString();
 
     return (
-        <div
-            className="relative shrink-0 cursor-pointer group w-[calc((100vw-40px)/3.1)] md:w-[155px] aspect-[3/4]"
+        <button
+            type="button"
+            aria-label={`Play ${name}`}
             onClick={() => { setLoading(true); onPlay(game); }}
+            className="group relative block w-full cursor-pointer text-left outline-none active:scale-[0.97] transition-transform duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] motion-reduce:transition-none motion-reduce:active:scale-100"
         >
-            {/* Card — premium rounded with glow on hover */}
-            <div className="relative w-full h-full rounded-xl overflow-hidden bg-bg-card border border-white/[0.04] transition-all duration-300 hover:-translate-y-1.5 hover:border-brand-gold/30 hover:shadow-[0_8px_24px_rgba(0,0,0,0.4),0_0_0_1px_rgba(139,92,246,0.02)]">
-                {/* Game image — card is ~155px wide on desktop and ~30vw
-                    on mobile, so serve 200w/400w responsive variants. */}
+            {/* Card — v2 tile: aspect-[3/4], rounded-2xl, hairline ring, orange-gradient fallback */}
+            <div
+                className="relative aspect-[3/4] overflow-hidden rounded-2xl ring-1 ring-white/[0.06] transition-transform duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] group-hover:-translate-y-1.5 motion-reduce:transform-none motion-reduce:transition-none"
+                style={{ background: 'linear-gradient(160deg,#3a2566,#160c2c)' }}
+            >
+                {/* Game image — tiles are ~112/132/152px wide, serve 200w/400w responsive variants. */}
                 {!imgFailed && imgSrc ? (
                     <img
                         src={cfImage(imgSrc, { width: 400 })}
                         srcSet={cfImageSrcSet(imgSrc, [200, 400, 600])}
-                        sizes="(max-width: 768px) 33vw, 155px"
-                        alt={game.name}
+                        sizes="(max-width: 640px) 112px, (max-width: 1024px) 132px, 152px"
+                        alt={name}
                         onError={() => setImgFailed(true)}
-                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                        className="absolute inset-0 h-full w-full object-cover"
                         loading="lazy"
                         decoding="async"
                     />
                 ) : (
-                    <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-bg-elevated to-bg-card text-4xl">
-                        🎮
-                    </div>
+                    <div className="absolute inset-0 grid place-items-center text-3xl">🎮</div>
                 )}
 
-                {/* Dark gradient overlay at bottom */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-
-                {/* Play button on hover */}
-                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
-                    {loading ? (
-                        <div className="w-11 h-11 rounded-full bg-gradient-to-br from-brand-gold to-brand-gold-hover flex items-center justify-center shadow-glow-gold">
-                            <Loader2 size={20} className="text-black animate-spin" />
-                        </div>
-                    ) : (
-                        <div className="w-11 h-11 rounded-full bg-gradient-to-br from-brand-gold to-brand-gold-hover flex items-center justify-center shadow-glow-gold group-hover:scale-110 transition-transform duration-300">
-                            <Play size={18} fill="black" className="text-black ml-0.5" />
-                        </div>
-                    )}
-                </div>
+                {/* orange inset ring on hover AND keyboard focus */}
+                <div
+                    className="absolute inset-0 opacity-0 transition-opacity duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] group-hover:opacity-100 group-focus-visible:opacity-100"
+                    style={{ boxShadow: 'inset 0 0 0 2px rgba(255,122,26,0.85)' }}
+                />
 
                 {/* Tag badge */}
                 {game.tag && (
-                    <div className="absolute top-2 left-2 z-10 bg-gradient-to-r from-brand-gold to-brand-gold-hover text-text-inverse text-[8px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wider shadow-glow-gold">
+                    <div
+                        className="absolute left-2 top-2 z-10 rounded-full px-2 py-0.5 text-[8px] font-bold uppercase tracking-wider text-white shadow"
+                        style={{ background: 'linear-gradient(135deg,#ff9a3d,#ff6a00)' }}
+                    >
                         {game.tag}
                     </div>
                 )}
 
-                {/* Provider badge at top-right */}
-                {game.provider && (
-                    <div className="absolute top-2 right-2 z-10 bg-black/50 text-white/60 text-[7px] font-semibold px-1.5 py-0.5 rounded-md uppercase tracking-wider backdrop-blur-md border border-white/[0.06]">
-                        {game.provider?.slice(0, 6)}
+                {/* Provider badge top-right */}
+                {provider && (
+                    <div className="absolute right-2 top-2 z-10 rounded-full border border-white/[0.06] bg-black/50 px-1.5 py-0.5 text-[7px] font-semibold uppercase tracking-wider text-white/60 backdrop-blur-md">
+                        {provider.slice(0, 6)}
                     </div>
                 )}
+
+                {/* label scrim */}
+                <div className="absolute inset-x-0 bottom-0 h-2/5 bg-gradient-to-t from-black/85 via-black/30 to-transparent" />
+                <div className="absolute inset-x-0 bottom-0 p-2.5">
+                    <p className="truncate text-sm font-extrabold uppercase leading-tight text-white drop-shadow">{name}</p>
+                    {provider && <p className="mt-0.5 truncate text-[10px] font-semibold uppercase tracking-wider text-white/55">{provider}</p>}
+                </div>
+
+                {/* hover / focus play (also shows spinner while launching) */}
+                <div className="absolute inset-0 grid place-items-center bg-black/35 opacity-0 transition-opacity duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] group-hover:opacity-100 group-focus-visible:opacity-100">
+                    <span
+                        className="grid h-12 w-12 place-items-center rounded-full text-white shadow-lg"
+                        style={{ background: 'linear-gradient(135deg,#ff9a3d,#ff6a00)' }}
+                    >
+                        {loading ? (
+                            <Loader2 className="h-5 w-5 animate-spin" />
+                        ) : (
+                            <Play className="h-5 w-5" fill="currentColor" strokeWidth={0} />
+                        )}
+                    </span>
+                </div>
             </div>
-        </div>
+        </button>
     );
 }
 
@@ -159,9 +176,28 @@ export default function HomeGameList({ title, games, icon, viewAllHref, isLoadin
 
     React.useEffect(() => { setLocalGames(games); }, [games]);
 
-    // Show shimmer skeleton while parent is loading data
+    // Show shimmer skeleton (v2 tile shape) while parent is loading data
     if (isLoading) {
-        return <SkeletonGameRow count={10} />;
+        return (
+            <div>
+                {(title || icon) && (
+                    <div className="mb-3 flex items-center justify-between px-0.5">
+                        <h2 className="flex items-center gap-2 text-lg font-bold text-white">
+                            {icon ?? <Star className="h-4 w-4 text-[#ff7a1a]" fill="currentColor" strokeWidth={0} />}
+                            {title}
+                        </h2>
+                    </div>
+                )}
+                <div className="v2-no-scrollbar flex snap-x snap-mandatory gap-3 overflow-x-auto pb-1">
+                    {Array.from({ length: 10 }).map((_, i) => (
+                        <div
+                            key={i}
+                            className="aspect-[3/4] w-[112px] shrink-0 snap-start rounded-2xl skeleton-block sm:w-[132px] lg:w-[152px]"
+                        />
+                    ))}
+                </div>
+            </div>
+        );
     }
 
     const scroll = (dir: 'left' | 'right') => {
@@ -209,38 +245,53 @@ export default function HomeGameList({ title, games, icon, viewAllHref, isLoadin
             <div>
                 {/* Section header — only if title given */}
                 {(title || icon) && (
-                    <div className="flex items-center justify-between mb-4 px-0.5">
-                        <div className="flex items-center gap-2.5">
-                            {icon}
-                            {title && <h3 className="text-lg md:text-xl font-black text-white tracking-tight">{title}</h3>}
-                        </div>
+                    <div className="mb-3 flex items-center justify-between px-0.5">
+                        <h2 className="flex items-center gap-2 text-lg font-bold text-white">
+                            {icon ?? <Star className="h-4 w-4 text-[#ff7a1a]" fill="currentColor" strokeWidth={0} />}
+                            {title}
+                        </h2>
                         <div className="flex items-center gap-2">
                             {viewAllHref && (
-                                <a href={viewAllHref} className="text-[11px] font-semibold text-white/40 hover:text-white/80 transition-colors px-3.5 py-1.5 rounded-full bg-white/[0.03] hover:bg-white/[0.06] border border-white/[0.06]">
-                                    All
+                                <a
+                                    href={viewAllHref}
+                                    className="flex items-center gap-1 text-sm font-semibold text-white/55 transition-colors hover:text-white"
+                                >
+                                    View all <ChevronRight className="h-4 w-4" strokeWidth={2.4} />
                                 </a>
                             )}
-                            <button onClick={() => scroll('left')} className="w-8 h-8 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.06] rounded-full flex items-center justify-center text-white/40 hover:text-white transition-all">
+                            <button
+                                type="button"
+                                aria-label="Scroll left"
+                                onClick={() => scroll('left')}
+                                className="flex h-8 w-8 items-center justify-center rounded-full border border-white/[0.06] bg-white/[0.04] text-white/55 transition-transform duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] hover:bg-white/[0.08] hover:text-white active:scale-[0.97] motion-reduce:transition-none motion-reduce:active:scale-100"
+                            >
                                 <ChevronLeft size={15} />
                             </button>
-                            <button onClick={() => scroll('right')} className="w-8 h-8 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.06] rounded-full flex items-center justify-center text-white/40 hover:text-white transition-all">
+                            <button
+                                type="button"
+                                aria-label="Scroll right"
+                                onClick={() => scroll('right')}
+                                className="flex h-8 w-8 items-center justify-center rounded-full border border-white/[0.06] bg-white/[0.04] text-white/55 transition-transform duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] hover:bg-white/[0.08] hover:text-white active:scale-[0.97] motion-reduce:transition-none motion-reduce:active:scale-100"
+                            >
                                 <ChevronRight size={15} />
                             </button>
                         </div>
                     </div>
                 )}
 
-                {/* Horizontal scroll row */}
-                <div className="-mx-1 px-1 -my-2 py-2">
+                {/* Single horizontal line of v2 game tiles */}
                 <div
                     ref={scrollRef}
-                    className="flex gap-1 overflow-x-auto pb-2 snap-x snap-mandatory"
-                    style={{ scrollbarWidth: 'none' }}
+                    className="v2-no-scrollbar flex snap-x snap-mandatory gap-3 overflow-x-auto pb-1"
                 >
                     {localGames.map((game, i) => (
-                        <GameCardBC key={game.id || game.gameCode || i} game={game} onPlay={handlePlay} />
+                        <div
+                            key={game.id || game.gameCode || i}
+                            className="w-[112px] shrink-0 snap-start sm:w-[132px] lg:w-[152px]"
+                        >
+                            <GameCardBC game={game} onPlay={handlePlay} />
+                        </div>
                     ))}
-                </div>
                 </div>
             </div>
         </>

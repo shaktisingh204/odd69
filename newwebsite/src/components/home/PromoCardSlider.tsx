@@ -108,7 +108,7 @@ export default function PromoCardSlider({ onGameLaunch }: PromoCardSliderProps) 
 
     if (loading) {
         return (
-            <div className="w-full h-[220px] md:h-[340px] bg-bg-card rounded-xl animate-pulse border border-white/[0.04] mb-6" />
+            <div className="w-full h-[220px] md:h-[340px] bg-bg-card rounded-3xl animate-pulse ring-1 ring-white/[0.06] mb-6" />
         );
     }
 
@@ -124,7 +124,7 @@ export default function PromoCardSlider({ onGameLaunch }: PromoCardSliderProps) 
         : 'linear-gradient(120deg, #0f2027, #203a43, #2c5364)';
 
     return (
-        <div className="relative w-full mb-6 rounded-xl overflow-hidden group promo-banner-wrap aspect-video sm:aspect-[21/7]">
+        <div className="relative w-full mb-6 rounded-3xl overflow-hidden group promo-banner-wrap ring-1 ring-white/[0.06] aspect-video sm:aspect-[21/7]">
 
             {/* ── Slides ── */}
             {promoCards.map((c, i) => {
@@ -183,7 +183,10 @@ export default function PromoCardSlider({ onGameLaunch }: PromoCardSliderProps) 
                         {/* Content */}
                         <div className="absolute inset-0 z-20 flex flex-col justify-center px-6 md:px-14">
                             {c.tag && (
-                                <span className="inline-block py-0.5 px-3 rounded-full bg-brand-gold/90 text-bg-base text-[10px] md:text-xs font-black uppercase tracking-widest mb-3 w-fit shadow-glow-gold">
+                                <span
+                                    className="inline-block py-1 px-3 rounded-full text-white text-[10px] md:text-xs font-extrabold uppercase tracking-widest mb-3 w-fit shadow-[0_8px_20px_-8px_rgba(255,106,0,0.8)]"
+                                    style={{ background: 'linear-gradient(135deg,#ff9a3d,#ff6a00)' }}
+                                >
                                     {c.tag}
                                 </span>
                             )}
@@ -208,7 +211,8 @@ export default function PromoCardSlider({ onGameLaunch }: PromoCardSliderProps) 
                                 <button
                                     onClick={(e) => handlePromoClick(c, e)}
                                     disabled={isLaunching && launchingId === c._id}
-                                    className="inline-flex items-center gap-2 bg-brand-gold hover:bg-white text-bg-base text-xs md:text-sm font-black uppercase px-6 py-3 rounded-lg transition-all transform hover:scale-105 shadow-glow-gold w-fit disabled:opacity-70 disabled:cursor-not-allowed disabled:transform-none"
+                                    className="inline-flex w-fit items-center gap-2 rounded-full px-6 py-3 text-xs md:text-sm font-bold uppercase text-white shadow-[0_12px_28px_-10px_rgba(255,106,0,0.85)] transition-transform duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] hover:-translate-y-0.5 active:scale-[0.97] disabled:opacity-70 disabled:cursor-not-allowed disabled:translate-y-0 disabled:active:scale-100"
+                                    style={{ background: 'linear-gradient(135deg,#ff9a3d,#ff6a00)' }}
                                 >
                                     {isLaunching && launchingId === c._id
                                         ? <><Loader2 size={15} className="animate-spin" /> Launching...</>
@@ -218,7 +222,8 @@ export default function PromoCardSlider({ onGameLaunch }: PromoCardSliderProps) 
                             ) : (
                                 <Link
                                     href={c.buttonLink || '/'}
-                                    className="inline-flex items-center gap-2 bg-brand-gold hover:bg-white text-bg-base text-xs md:text-sm font-black uppercase px-6 py-3 rounded-lg transition-all transform hover:scale-105 shadow-glow-gold w-fit"
+                                    className="inline-flex w-fit items-center gap-2 rounded-full px-6 py-3 text-xs md:text-sm font-bold uppercase text-white shadow-[0_12px_28px_-10px_rgba(255,106,0,0.85)] transition-transform duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] hover:-translate-y-0.5 active:scale-[0.97]"
+                                    style={{ background: 'linear-gradient(135deg,#ff9a3d,#ff6a00)' }}
                                 >
                                     {c.buttonText || 'Play Now'} <ArrowRight size={15} strokeWidth={3} />
                                 </Link>
@@ -234,14 +239,14 @@ export default function PromoCardSlider({ onGameLaunch }: PromoCardSliderProps) 
                     <button
                         onClick={() => handleNav(goPrev)}
                         aria-label="Previous"
-                        className="absolute left-3 md:left-5 top-1/2 -translate-y-1/2 z-30 size-9 md:size-11 bg-black/50 hover:bg-black/80 border border-white/[0.06] text-white rounded-full flex items-center justify-center backdrop-blur-md transition-all opacity-0 group-hover:opacity-100 hover:scale-110"
+                        className="absolute left-3 md:left-5 top-1/2 -translate-y-1/2 z-30 grid size-9 md:size-11 place-items-center rounded-full bg-black/50 text-white ring-1 ring-white/10 backdrop-blur-md opacity-0 transition-[transform,opacity] duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] hover:bg-black/70 hover:scale-110 active:scale-95 group-hover:opacity-100 focus-visible:opacity-100"
                     >
                         <ChevronLeft size={20} />
                     </button>
                     <button
                         onClick={() => handleNav(goNext)}
                         aria-label="Next"
-                        className="absolute right-3 md:right-5 top-1/2 -translate-y-1/2 z-30 size-9 md:size-11 bg-black/50 hover:bg-black/80 border border-white/[0.06] text-white rounded-full flex items-center justify-center backdrop-blur-md transition-all opacity-0 group-hover:opacity-100 hover:scale-110"
+                        className="absolute right-3 md:right-5 top-1/2 -translate-y-1/2 z-30 grid size-9 md:size-11 place-items-center rounded-full bg-black/50 text-white ring-1 ring-white/10 backdrop-blur-md opacity-0 transition-[transform,opacity] duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] hover:bg-black/70 hover:scale-110 active:scale-95 group-hover:opacity-100 focus-visible:opacity-100"
                     >
                         <ChevronRight size={20} />
                     </button>
@@ -256,10 +261,11 @@ export default function PromoCardSlider({ onGameLaunch }: PromoCardSliderProps) 
                             key={i}
                             onClick={() => { handleNav(() => goTo(i)); }}
                             aria-label={`Go to slide ${i + 1}`}
-                            className={`rounded-full transition-all duration-300 ${i === activeIndex
-                                ? 'bg-brand-gold w-7 h-2'
-                                : 'bg-white/30 hover:bg-white/60 w-2 h-2'
+                            className={`h-2 rounded-full transition-[width,background-color,transform] duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] active:scale-90 ${i === activeIndex
+                                ? 'w-7'
+                                : 'w-2 bg-white/30 hover:bg-white/60'
                                 }`}
+                            style={i === activeIndex ? { background: 'linear-gradient(135deg,#ff9a3d,#ff6a00)' } : undefined}
                         />
                     ))}
                 </div>

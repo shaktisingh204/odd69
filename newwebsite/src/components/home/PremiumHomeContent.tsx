@@ -28,7 +28,7 @@ const GamePlayInterface = dynamic(
 
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import {
-    Flame, Star, Zap, Trophy, ArrowRight, Gift,
+    Flame, Star, Zap, Trophy, Gift,
     ChevronRight
 } from 'lucide-react';
 import { sportsApi, Event } from '@/services/sports';
@@ -344,23 +344,21 @@ export default function PremiumHomeContent({
             {dbPromos.length > 0 && (
                 <section className="px-3 md:px-0 mt-5 md:mt-8">
                     <div className="flex items-center justify-between mb-4">
-                        <div className="flex items-center gap-2.5">
-                            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-amber-500/20 to-amber-500/5 flex items-center justify-center">
-                                <Gift size={16} className="text-amber-400" fill="currentColor" />
-                            </div>
-                            <h2 className="text-lg md:text-xl font-extrabold text-white tracking-[-0.02em]">Promotions</h2>
-                            <span className="text-[9px] font-bold text-white/25 bg-white/[0.04] border border-white/[0.06] px-2 py-0.5 rounded-full">{dbPromos.length}</span>
-                        </div>
-                        <Link href="/promotions" className="flex items-center gap-1.5 text-[11px] font-semibold text-white/40 hover:text-white/80 transition-colors bg-white/[0.03] hover:bg-white/[0.06] border border-white/[0.06] px-3.5 py-1.5 rounded-full">
-                            All <ArrowRight size={10} />
+                        <h2 className="flex items-center gap-2 text-lg font-bold text-white">
+                            <Gift className="h-4 w-4 text-[#ff7a1a]" fill="currentColor" strokeWidth={0} />
+                            Promotions
+                            <span className="text-[9px] font-bold text-white/55 bg-white/[0.04] border border-white/[0.06] px-2 py-0.5 rounded-full">{dbPromos.length}</span>
+                        </h2>
+                        <Link href="/promotions" className="flex items-center gap-1 text-sm font-semibold text-white/55 transition-colors hover:text-white">
+                            View all <ChevronRight className="h-4 w-4" strokeWidth={2.4} />
                         </Link>
                     </div>
-                    <div className="flex gap-3 overflow-x-auto pb-2" style={{ scrollbarWidth: 'none' }}>
+                    <div className="flex gap-3 overflow-x-auto pb-2 v2-no-scrollbar" style={{ scrollbarWidth: 'none' }}>
                         {dbPromos.map(promo => (
                             <Link
                                 key={promo._id}
                                 href={promo.buttonLink || '/promotions'}
-                                className="flex-shrink-0 relative rounded-2xl overflow-hidden border border-white/[0.06] hover:border-white/[0.15] transition-all hover:scale-[1.02] hover:shadow-[0_8px_32px_rgba(0,0,0,0.4)] group"
+                                className="group flex-shrink-0 relative rounded-3xl overflow-hidden ring-1 ring-white/[0.06] transition-transform duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] hover:-translate-y-1 active:scale-[0.97] motion-reduce:transform-none motion-reduce:transition-none"
                                 style={{ background: gradientToCss(promo.gradient), width: 280, minHeight: 160 }}
                             >
                                 {promo.bgImage && (
@@ -387,8 +385,8 @@ export default function PremiumHomeContent({
                                     {promo.description && (
                                         <p className="text-white/60 text-[11px] line-clamp-2 mt-0.5">{promo.description}</p>
                                     )}
-                                    <div className="mt-3 self-start inline-flex items-center gap-1.5 bg-white/[0.12] hover:bg-white/25 text-white text-[10px] font-black uppercase px-3 py-1.5 rounded-lg transition-colors">
-                                        {promo.buttonText || 'CLAIM NOW'} <ArrowRight size={10} />
+                                    <div className="mt-3 self-start inline-flex items-center gap-1.5 text-white text-[10px] font-black uppercase px-3 py-1.5 rounded-full shadow-[0_10px_24px_-8px_rgba(255,106,0,0.8)] transition-transform duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] group-active:scale-[0.97] motion-reduce:transform-none" style={{ background: 'linear-gradient(135deg,#ff9a3d,#ff6a00)' }}>
+                                        {promo.buttonText || 'CLAIM NOW'} <ChevronRight size={12} strokeWidth={2.4} />
                                     </div>
                                 </div>
                                 {promo.charImage && (
@@ -415,14 +413,12 @@ export default function PremiumHomeContent({
             {/* ── 8. NEW GAMES ── */}
             <section className="px-3 md:px-0 mt-6 md:mt-10">
                 <div className="flex items-center justify-between mb-3">
-                    <div className="flex items-center gap-2.5">
-                        <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-teal-500/20 to-teal-500/5 flex items-center justify-center">
-                            <Zap size={16} className="text-teal-400" fill="currentColor" />
-                        </div>
-                        <h2 className="text-lg md:text-xl font-extrabold text-white tracking-[-0.02em]">New Games</h2>
-                    </div>
-                    <Link href="/casino?category=new" className="flex items-center gap-1.5 text-[11px] font-semibold text-white/40 hover:text-white/80 transition-colors bg-white/[0.03] hover:bg-white/[0.06] border border-white/[0.06] px-3.5 py-1.5 rounded-full">
-                        All <ArrowRight size={10} />
+                    <h2 className="flex items-center gap-2 text-lg font-bold text-white">
+                        <Zap className="h-4 w-4 text-[#ff7a1a]" fill="currentColor" strokeWidth={0} />
+                        New Games
+                    </h2>
+                    <Link href="/casino?category=new" className="flex items-center gap-1 text-sm font-semibold text-white/55 transition-colors hover:text-white">
+                        View all <ChevronRight className="h-4 w-4" strokeWidth={2.4} />
                     </Link>
                 </div>
                 <HomeGameList title="" games={newGames} viewAllHref="/casino?category=new" isLoading={gamesLoading} />
@@ -432,18 +428,16 @@ export default function PremiumHomeContent({
             {!eventsLoading && liveEventCards.length > 0 && (
                 <section className="mt-6 md:mt-10">
                     <div className="flex items-center justify-between mb-4 px-3 md:px-0">
-                        <div className="flex items-center gap-2.5">
-                            <div className="relative">
-                                <span className="absolute -inset-1 rounded-full bg-red-500/15 animate-ping" />
-                                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-red-500/25 to-red-500/5 flex items-center justify-center">
-                                    <Zap size={14} fill="white" className="text-red-400" />
-                                </div>
-                            </div>
-                            <h2 className="text-lg md:text-xl font-extrabold text-white tracking-[-0.02em]">Live Sports</h2>
-                            <span className="text-[9px] font-bold text-white/25 bg-white/[0.04] border border-white/[0.06] px-2 py-0.5 rounded-full">{liveEventCards.length}</span>
-                        </div>
-                        <Link href="/sports" className="flex items-center gap-1.5 text-[11px] font-semibold text-white/40 hover:text-white/80 transition-colors bg-white/[0.03] hover:bg-white/[0.06] border border-white/[0.06] px-3.5 py-1.5 rounded-full">
-                            <span>All</span> <ArrowRight size={10} />
+                        <h2 className="flex items-center gap-2 text-lg font-bold text-white">
+                            <span className="relative grid place-items-center">
+                                <span className="absolute -inset-1 rounded-full bg-[#ff7a1a]/15 animate-ping motion-reduce:hidden" />
+                                <Zap className="relative h-4 w-4 text-[#ff7a1a]" fill="currentColor" strokeWidth={0} />
+                            </span>
+                            Live Sports
+                            <span className="text-[9px] font-bold text-white/55 bg-white/[0.04] border border-white/[0.06] px-2 py-0.5 rounded-full">{liveEventCards.length}</span>
+                        </h2>
+                        <Link href="/sports" className="flex items-center gap-1 text-sm font-semibold text-white/55 transition-colors hover:text-white">
+                            View all <ChevronRight className="h-4 w-4" strokeWidth={2.4} />
                         </Link>
                     </div>
 
@@ -459,14 +453,12 @@ export default function PremiumHomeContent({
             {/* ── 10. TOP SLOTS ── */}
             <section className="px-3 md:px-0 mt-6 md:mt-10">
                 <div className="flex items-center justify-between mb-3">
-                    <div className="flex items-center gap-2.5">
-                        <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-rose-500/20 to-rose-500/5 flex items-center justify-center">
-                            <Flame size={16} className="text-rose-400" fill="currentColor" />
-                        </div>
-                        <h2 className="text-lg md:text-xl font-extrabold text-white tracking-[-0.02em]">Top Slots</h2>
-                    </div>
-                    <Link href="/casino?category=slots" className="flex items-center gap-1.5 text-[11px] font-semibold text-white/40 hover:text-white/80 transition-colors bg-white/[0.03] hover:bg-white/[0.06] border border-white/[0.06] px-3.5 py-1.5 rounded-full">
-                        All <ArrowRight size={10} />
+                    <h2 className="flex items-center gap-2 text-lg font-bold text-white">
+                        <Flame className="h-4 w-4 text-[#ff7a1a]" fill="currentColor" strokeWidth={0} />
+                        Top Slots
+                    </h2>
+                    <Link href="/casino?category=slots" className="flex items-center gap-1 text-sm font-semibold text-white/55 transition-colors hover:text-white">
+                        View all <ChevronRight className="h-4 w-4" strokeWidth={2.4} />
                     </Link>
                 </div>
                 <HomeGameList title="" games={slotGames} isLoading={gamesLoading} />
@@ -475,18 +467,16 @@ export default function PremiumHomeContent({
             {/* ── 12. LIVE CASINO ── */}
             <section className="px-3 md:px-0 mt-6 md:mt-10 pb-4">
                 <div className="flex items-center justify-between mb-3">
-                    <div className="flex items-center gap-2.5">
-                        <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-brand-gold/20 to-brand-gold/5 flex items-center justify-center">
-                            <Zap size={16} className="text-brand-gold" fill="currentColor" />
-                        </div>
-                        <h2 className="text-lg md:text-xl font-extrabold text-white tracking-[-0.02em]">Live Casino</h2>
-                        <div className="flex items-center gap-1 bg-red-500/8 border border-red-500/15 rounded-full px-2 py-0.5">
-                            <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
-                            <span className="text-red-400 text-[9px] font-bold">LIVE</span>
-                        </div>
-                    </div>
-                    <Link href="/live-dealers" className="flex items-center gap-1.5 text-[11px] font-semibold text-white/40 hover:text-white/80 transition-colors bg-white/[0.03] hover:bg-white/[0.06] border border-white/[0.06] px-3.5 py-1.5 rounded-full">
-                        All <ArrowRight size={10} />
+                    <h2 className="flex items-center gap-2 text-lg font-bold text-white">
+                        <Zap className="h-4 w-4 text-[#ff7a1a]" fill="currentColor" strokeWidth={0} />
+                        Live Casino
+                        <span className="flex items-center gap-1 bg-[#ff7a1a]/10 border border-[#ff7a1a]/20 rounded-full px-2 py-0.5">
+                            <span className="w-1.5 h-1.5 rounded-full bg-[#ff7a1a] animate-pulse motion-reduce:animate-none" />
+                            <span className="text-[#ff7a1a] text-[9px] font-bold">LIVE</span>
+                        </span>
+                    </h2>
+                    <Link href="/live-dealers" className="flex items-center gap-1 text-sm font-semibold text-white/55 transition-colors hover:text-white">
+                        View all <ChevronRight className="h-4 w-4" strokeWidth={2.4} />
                     </Link>
                 </div>
                 <HomeGameList title="" games={liveGames} viewAllHref="/live-dealers" isLoading={gamesLoading} />
@@ -495,14 +485,12 @@ export default function PremiumHomeContent({
             {/* ── 14. TABLE GAMES ── */}
             <section className="px-3 md:px-0 mt-6 md:mt-10">
                 <div className="flex items-center justify-between mb-3">
-                    <div className="flex items-center gap-2.5">
-                        <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-500/20 to-violet-500/5 flex items-center justify-center">
-                            <Star size={16} className="text-violet-400" fill="currentColor" />
-                        </div>
-                        <h2 className="text-lg md:text-xl font-extrabold text-white tracking-[-0.02em]">Table Games</h2>
-                    </div>
-                    <Link href="/casino?category=table" className="flex items-center gap-1.5 text-[11px] font-semibold text-white/40 hover:text-white/80 transition-colors bg-white/[0.03] hover:bg-white/[0.06] border border-white/[0.06] px-3.5 py-1.5 rounded-full">
-                        All <ArrowRight size={10} />
+                    <h2 className="flex items-center gap-2 text-lg font-bold text-white">
+                        <Star className="h-4 w-4 text-[#ff7a1a]" fill="currentColor" strokeWidth={0} />
+                        Table Games
+                    </h2>
+                    <Link href="/casino?category=table" className="flex items-center gap-1 text-sm font-semibold text-white/55 transition-colors hover:text-white">
+                        View all <ChevronRight className="h-4 w-4" strokeWidth={2.4} />
                     </Link>
                 </div>
                 <HomeGameList title="" games={tableGames} viewAllHref="/casino?category=table" isLoading={gamesLoading} />
@@ -511,14 +499,12 @@ export default function PremiumHomeContent({
             {/* ── 16. CRASH GAMES ── */}
             <section className="px-3 md:px-0 mt-6 md:mt-10">
                 <div className="flex items-center justify-between mb-3">
-                    <div className="flex items-center gap-2.5">
-                        <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-orange-500/20 to-orange-500/5 flex items-center justify-center">
-                            <Flame size={16} className="text-orange-400" fill="currentColor" />
-                        </div>
-                        <h2 className="text-lg md:text-xl font-extrabold text-white tracking-[-0.02em]">Crash Games</h2>
-                    </div>
-                    <Link href="/casino?category=crash" className="flex items-center gap-1.5 text-[11px] font-semibold text-white/40 hover:text-white/80 transition-colors bg-white/[0.03] hover:bg-white/[0.06] border border-white/[0.06] px-3.5 py-1.5 rounded-full">
-                        All <ArrowRight size={10} />
+                    <h2 className="flex items-center gap-2 text-lg font-bold text-white">
+                        <Flame className="h-4 w-4 text-[#ff7a1a]" fill="currentColor" strokeWidth={0} />
+                        Crash Games
+                    </h2>
+                    <Link href="/casino?category=crash" className="flex items-center gap-1 text-sm font-semibold text-white/55 transition-colors hover:text-white">
+                        View all <ChevronRight className="h-4 w-4" strokeWidth={2.4} />
                     </Link>
                 </div>
                 <HomeGameList title="" games={crashGames} viewAllHref="/casino?category=crash" isLoading={gamesLoading} />
