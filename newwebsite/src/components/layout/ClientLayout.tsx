@@ -92,7 +92,7 @@ export default function ClientLayout({ children, maintenanceConfig }: { children
                             <LayoutProvider>
                                 <PlatformMaintenanceGuard isBlocked={isBlocked} message={message} allowedUsers={allowedUsers}>
                                     {bare ? (
-                                        <div id="v2-scroll" className="h-[100dvh] w-full overflow-y-auto overflow-x-hidden">
+                                        <div id="v2-scroll" className="h-[100dvh] w-full overflow-hidden">
                                             {children}
                                         </div>
                                     ) : (
