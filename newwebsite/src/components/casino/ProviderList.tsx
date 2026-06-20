@@ -58,9 +58,9 @@ const ProviderList: React.FC<ProviderListProps> = ({
     return (
         <div className="mb-5">
             <div className="flex items-center justify-between mb-2">
-                <span className="text-[10px] font-black text-text-muted uppercase tracking-widest">Providers</span>
+                <span className="text-[10px] font-black text-white/55 uppercase tracking-widest">Providers</span>
                 {viewAllHref && hiddenCount > 0 && (
-                    <Link href={viewAllHref} className="text-[10px] font-bold text-brand-gold hover:text-brand-gold-hover transition-colors">
+                    <Link href={viewAllHref} className="text-[10px] font-bold text-[#ff7a1a] hover:text-[#ff9a3d] transition-colors">
                         All +{hiddenCount}
                     </Link>
                 )}
@@ -70,10 +70,10 @@ const ProviderList: React.FC<ProviderListProps> = ({
                 {/* All pill */}
                 <button
                     onClick={() => onSelectProvider('all')}
-                    className={`flex-shrink-0 h-8 px-3 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all border ${
+                    className={`flex-shrink-0 h-8 px-3 rounded-lg text-[10px] font-black uppercase tracking-wider border transition-transform duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] active:scale-[0.97] motion-reduce:transition-none motion-reduce:active:scale-100 ${
                         selectedProvider === 'all'
-                            ? 'bg-brand-gold/15 border-brand-gold/40 text-brand-gold'
-                            : 'bg-bg-elevated border-white/[0.04] text-text-muted hover:border-brand-gold/30 hover:text-text-primary'
+                            ? 'bg-[#ff7a1a]/15 border-[#ff7a1a]/40 text-[#ff7a1a]'
+                            : 'bg-[#1f1812] border-white/[0.06] text-white/55 hover:bg-white/[0.04] hover:border-[#ff7a1a]/30 hover:text-white'
                     }`}
                 >
                     All Games
@@ -83,21 +83,21 @@ const ProviderList: React.FC<ProviderListProps> = ({
                     <button
                         key={provider.id}
                         onClick={() => onSelectProvider(provider.provider)}
-                        className={`relative flex-shrink-0 h-8 px-3 rounded-lg flex items-center gap-1.5 transition-all border ${
+                        className={`relative flex-shrink-0 h-8 px-3 rounded-lg flex items-center gap-1.5 border transition-transform duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] active:scale-[0.97] motion-reduce:transition-none motion-reduce:active:scale-100 ${
                             selectedProvider === provider.provider
-                                ? 'bg-bg-elevated border-brand-gold/40 shadow-glow-gold'
-                                : 'bg-bg-elevated border-white/[0.04] grayscale hover:grayscale-0 hover:border-white/[0.06]'
+                                ? 'bg-[#ff7a1a]/15 border-[#ff7a1a]/40'
+                                : 'bg-[#1f1812] border-white/[0.06] grayscale hover:grayscale-0 hover:bg-white/[0.04] hover:border-white/[0.10]'
                         }`}
                     >
                         <ProviderLogo
                             provider={provider}
                             alt={provider.name}
                             className={`h-5 w-auto max-w-[72px] object-contain transition-all ${selectedProvider === provider.provider ? '' : 'grayscale'}`}
-                            fallbackClassName="text-[10px] font-bold text-text-muted"
+                            fallbackClassName={`text-[10px] font-bold ${selectedProvider === provider.provider ? 'text-[#ff7a1a]' : 'text-white/55'}`}
                             fallbackText={provider.name}
                         />
                         {provider.count > 0 && (
-                            <span className="text-[9px] font-bold text-text-muted">{provider.count}</span>
+                            <span className={`text-[9px] font-bold ${selectedProvider === provider.provider ? 'text-[#ff7a1a]/80' : 'text-white/40'}`}>{provider.count}</span>
                         )}
                     </button>
                 ))}

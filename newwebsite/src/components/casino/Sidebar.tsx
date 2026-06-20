@@ -67,48 +67,51 @@ const Sidebar: React.FC<SidebarProps> = ({ selectedCategory, onSelectCategory, c
     }, [context]);
 
     return (
-        <aside className="hidden md:flex flex-col w-[260px] h-[calc(100vh-60px)] bg-bg-section overflow-y-auto sticky top-[60px]">
+        <aside className="hidden md:flex flex-col w-[260px] h-[calc(100vh-60px)] bg-[#1a1510] border-r border-white/[0.06] overflow-y-auto sticky top-[60px]">
 
             <div className="p-4">
-                <h3 className="text-xs font-bold text-text-muted uppercase tracking-wider mb-4 px-2">Categories</h3>
+                <h3 className="text-[10px] font-black text-white/55 uppercase tracking-widest mb-4 px-2">Categories</h3>
                 <div className="flex flex-col gap-1">
-                    {categories.map((cat) => (
-                        <button
-                            key={cat.id}
-                            onClick={() => onSelectCategory(cat.id)}
-                            className={`flex items-center justify-between px-3 py-3 rounded-lg transition-all group ${selectedCategory === cat.id
-                                ? 'bg-brand-gold text-text-inverse shadow-lg shadow-glow-gold'
-                                : 'text-text-muted hover:bg-bg-hover hover:text-text-primary'
-                                }`}
-                        >
-                            <div className="flex items-center gap-3">
-                                <cat.icon size={18} className={selectedCategory === cat.id ? 'text-text-inverse' : 'text-text-muted group-hover:text-text-primary'} />
-                                <span className="font-medium text-sm">{cat.name}</span>
-                                {cat.isHot && (
-                                    <span className="ml-2 text-[8px] font-bold bg-gradient-to-r from-orange-500 to-red-600 text-white px-1.5 py-0.5 rounded-sm animate-pulse">
-                                        HOT
-                                    </span>
-                                )}
-                            </div>
-                            <span className={`text-[10px] font-bold ${selectedCategory === cat.id ? 'text-text-inverse/80' : 'text-text-muted group-hover:text-text-muted'
-                                }`}>
-                                {cat.count}
-                            </span>
-                        </button>
-                    ))}
+                    {categories.map((cat) => {
+                        const isActive = selectedCategory === cat.id;
+                        return (
+                            <button
+                                key={cat.id}
+                                onClick={() => onSelectCategory(cat.id)}
+                                className={`flex items-center justify-between px-3 py-3 rounded-xl group transition-transform duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] active:scale-[0.97] motion-reduce:transition-none motion-reduce:active:scale-100 ${isActive
+                                    ? 'bg-[#ff7a1a]/15 ring-1 ring-[#ff7a1a]/40 text-[#ff7a1a]'
+                                    : 'text-white/60 hover:bg-white/[0.04] hover:text-white'
+                                    }`}
+                            >
+                                <div className="flex items-center gap-3">
+                                    <cat.icon size={18} className={isActive ? 'text-[#ff7a1a]' : 'text-white/55 group-hover:text-white'} />
+                                    <span className="font-semibold text-sm">{cat.name}</span>
+                                    {cat.isHot && (
+                                        <span className="ml-2 text-[8px] font-bold text-white px-1.5 py-0.5 rounded-full animate-pulse motion-reduce:animate-none" style={{ background: 'linear-gradient(135deg,#ff9a3d,#ff6a00)' }}>
+                                            HOT
+                                        </span>
+                                    )}
+                                </div>
+                                <span className={`text-[10px] font-bold ${isActive ? 'text-[#ff7a1a]/80' : 'text-white/40 group-hover:text-white/55'
+                                    }`}>
+                                    {cat.count}
+                                </span>
+                            </button>
+                        );
+                    })}
                 </div>
             </div>
 
-            <div className="mt-auto p-4 m-4 bg-gradient-to-br from-brand-gold/20 to-purple-600/20 rounded-xl relative overflow-hidden group shadow-lg">
+            <div className="mt-auto p-4 m-4 bg-[#1f1812] ring-1 ring-white/[0.06] rounded-2xl relative overflow-hidden group transition-transform duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] hover:-translate-y-0.5 hover:ring-[#ff7a1a]/30 motion-reduce:transform-none motion-reduce:transition-none">
                 <div className="relative z-10">
-                    <h4 className="font-bold text-text-primary mb-1">VIP Club</h4>
-                    <p className="text-xs text-text-muted mb-3">Join now for exclusive rewards!</p>
-                    <button className="text-xs font-bold bg-brand-gold text-text-inverse px-3 py-1.5 rounded-md hover:bg-brand-gold-hover transition-colors">
+                    <h4 className="font-bold text-white mb-1">VIP Club</h4>
+                    <p className="text-xs text-white/55 mb-3">Join now for exclusive rewards!</p>
+                    <button className="text-xs font-bold text-white px-3 py-1.5 rounded-lg transition-transform duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] active:scale-[0.97] motion-reduce:transition-none motion-reduce:active:scale-100" style={{ background: 'linear-gradient(135deg,#ff9a3d,#ff6a00)' }}>
                         View Details
                     </button>
                 </div>
                 <div className="absolute -right-2 -bottom-2 opacity-20 group-hover:opacity-30 transition-opacity">
-                    <Trophy size={60} className="text-brand-gold" />
+                    <Trophy size={60} className="text-[#ff7a1a]" />
                 </div>
             </div>
 

@@ -28,9 +28,9 @@ function TeamAvatar({ name, isLive, score }: { name: string; isLive: boolean; sc
     return (
         <div className="flex items-center gap-2.5 flex-1 min-w-0">
             <div
-                className={`w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 text-[11px] font-black border transition-all ${
+                className={`w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 text-[11px] font-black border transition-transform duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] motion-reduce:transition-none ${
                     isLive
-                        ? 'bg-success-alpha-16 border-success/25 text-success-bright'
+                        ? 'bg-[#ff7a1a]/12 border-[#ff7a1a]/30 text-[#ff9a3d]'
                         : 'bg-white/[0.06] border-white/[0.08] text-white/50'
                 }`}
             >
@@ -38,7 +38,7 @@ function TeamAvatar({ name, isLive, score }: { name: string; isLive: boolean; sc
             </div>
             <span className="flex-1 text-[13px] font-bold text-text-white truncate">{name}</span>
             {score != null && (
-                <span className={`text-[15px] font-black min-w-[24px] text-right tabular-nums ${isLive ? 'text-success-bright' : 'text-white/60'}`}>
+                <span className={`text-[15px] font-black min-w-[24px] text-right tabular-nums ${isLive ? 'text-[#ff9a3d]' : 'text-white/60'}`}>
                     {score}
                 </span>
             )}
@@ -63,15 +63,15 @@ function OddsButton({
     const hasPrice = price != null && price > 1 && !disabled;
     return (
         <div
-            className={`flex items-center justify-between px-3 py-2.5 border-t border-white/[0.04] transition-all group/o ${
-                hasPrice ? 'hover:bg-white/[0.03] cursor-pointer' : 'opacity-50'
+            className={`flex items-center justify-between px-3 py-2.5 border-t border-white/[0.04] transition-transform duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] group/o motion-reduce:transition-none ${
+                hasPrice ? 'hover:bg-white/[0.03] cursor-pointer active:scale-[0.97] motion-reduce:active:scale-100' : 'opacity-50'
             }`}
             onClick={hasPrice ? onClick : undefined}
         >
             <span className="text-[12px] font-semibold text-text-secondary truncate flex-1">{label}</span>
-            <div className={`ml-3 flex-shrink-0 px-3 py-1 rounded-lg border text-[13px] font-black tabular-nums transition-all ${
+            <div className={`ml-3 flex-shrink-0 px-3 py-1 rounded-lg border text-[13px] font-black tabular-nums transition-colors duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] motion-reduce:transition-none ${
                 hasPrice
-                    ? 'bg-brand-alpha-10 border-brand-alpha-20 text-brand-gold group-hover/o:bg-info-alpha-22 group-hover/o:border-info-alpha-30'
+                    ? 'bg-[#ff7a1a]/10 border-[#ff7a1a]/25 text-[#ff9a3d] group-hover/o:bg-[#ff7a1a]/22 group-hover/o:border-[#ff7a1a]/45 group-hover/o:text-white'
                     : 'bg-white/[0.03] border-white/[0.05] text-white/20'
             }`}>
                 {pending ? '...' : hasPrice ? price!.toFixed(2) : '-'}
@@ -142,56 +142,59 @@ export default function SRMatchCard({ match, onOddsClick, oneClickEnabled, isOne
     return (
         <div
             onClick={() => router.push(`/sports/match/${match.event_id}`)}
-            className={`relative flex flex-col bg-bg-surface-3 rounded-2xl border overflow-hidden transition-all cursor-pointer group select-none ${
+            className={`relative flex flex-col bg-[#1a1510] rounded-2xl ring-1 overflow-hidden cursor-pointer group select-none transition-transform duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] hover:-translate-y-0.5 active:scale-[0.99] motion-reduce:transform-none motion-reduce:transition-none motion-reduce:active:scale-100 ${
                 isLive
-                    ? 'border-success/15 hover:border-success/30 shadow-glow-success'
+                    ? 'ring-[#ff7a1a]/25 hover:ring-[#ff7a1a]/45'
                     : isVirtual
-                    ? 'border-accent-purple/15 hover:border-accent-purple/25'
-                    : 'border-white/[0.06] hover:border-white/[0.06]'
+                    ? 'ring-[#ff7a1a]/15 hover:ring-[#ff7a1a]/30'
+                    : 'ring-white/[0.06] hover:ring-[#ff7a1a]/25'
             }`}
         >
-            {/* Live / Virtual accent stripe */}
-            {isLive && <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-success-vivid/60 to-transparent" />}
-            {isVirtual && !isLive && <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-accent-purple/50 to-transparent" />}
+            {/* Live / Virtual accent stripe — single orange accent */}
+            {isLive && <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[#ff7a1a]/70 to-transparent" />}
+            {isVirtual && !isLive && <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[#ff7a1a]/45 to-transparent" />}
 
             {/* Card Header */}
             <div className="flex items-center justify-between px-3 pt-2.5 pb-2 border-b border-white/[0.04]">
                 <div className="flex items-center gap-1.5 min-w-0 flex-1">
-                    <Shield size={8} className={`flex-shrink-0 ${isVirtual ? 'text-accent-purple/50' : 'text-success-vivid/40'}`} />
-                    <span className={`text-[10px] font-semibold truncate ${isVirtual ? 'text-accent-purple/60' : 'text-success-vivid/55'}`}>
+                    <Shield size={8} className={`flex-shrink-0 ${isLive || isVirtual ? 'text-[#ff7a1a]/50' : 'text-white/25'}`} />
+                    <span className={`text-[10px] font-semibold truncate ${isLive || isVirtual ? 'text-[#ff9a3d]/65' : 'text-white/40'}`}>
                         {compName}
                     </span>
                 </div>
 
                 <div className="flex items-center gap-1.5 flex-shrink-0 ml-2">
                     {isLive && (
-                        <div className="flex items-center gap-1 bg-success-alpha-10 border border-success/20 px-2 py-0.5 rounded-md">
-                            <div className="w-1.5 h-1.5 rounded-full bg-success-vivid animate-pulse" />
-                            <span className="text-success-vivid text-[9px] font-black">LIVE</span>
+                        <div className="flex items-center gap-1 bg-[#ff7a1a]/12 border border-[#ff7a1a]/25 px-2 py-0.5 rounded-md">
+                            <div className="w-1.5 h-1.5 rounded-full bg-[#ff7a1a] animate-pulse motion-reduce:animate-none" />
+                            <span className="text-[#ff9a3d] text-[9px] font-black">LIVE</span>
                         </div>
                     )}
                     {isVirtual && (
-                        <div className="flex items-center gap-1 bg-accent-purple-alpha border border-accent-purple/20 px-2 py-0.5 rounded-md">
-                            <Zap size={8} className="text-accent-purple" />
-                            <span className="text-accent-purple text-[9px] font-black">VIRTUAL</span>
+                        <div className="flex items-center gap-1 bg-[#ff7a1a]/10 border border-[#ff7a1a]/20 px-2 py-0.5 rounded-md">
+                            <Zap size={8} className="text-[#ff9a3d]" />
+                            <span className="text-[#ff9a3d] text-[9px] font-black">VIRTUAL</span>
                         </div>
                     )}
                     {!isLive && !isVirtual && (
                         <div className="flex items-center gap-1">
-                            <Activity size={8} className="text-white/20" />
-                            <span className="text-white/20 text-[9px] font-semibold">{match.match_status || 'Upcoming'}</span>
+                            <Activity size={8} className="text-white/25" />
+                            <span className="text-white/25 text-[9px] font-semibold">{match.match_status || 'Upcoming'}</span>
                         </div>
                     )}
                     {isCompleted && (
-                        <span className="text-white/20 text-[9px] font-bold">ENDED</span>
+                        <span className="text-white/25 text-[9px] font-bold">ENDED</span>
                     )}
                 </div>
             </div>
 
-            {/* Early 6 Badge */}
+            {/* Early 6 Badge — single orange accent */}
             {hasEarlySix && (
                 <div className="px-3 pt-2">
-                    <span className="block bg-gradient-to-r from-purple-500 to-indigo-500 text-white text-[9px] font-black uppercase px-2 py-0.5 rounded-md shadow-[0_0_8px_rgba(139,92,246,0.3)] border border-purple-400/30 text-center w-full">
+                    <span
+                        className="block text-white text-[9px] font-black uppercase px-2 py-0.5 rounded-lg shadow-[0_0_8px_rgba(255,122,26,0.3)] text-center w-full"
+                        style={{ background: 'linear-gradient(135deg,#ff9a3d,#ff6a00)' }}
+                    >
                         🎯 Early 6 Refund Offer
                     </span>
                 </div>
@@ -204,7 +207,7 @@ export default function SRMatchCard({ match, onOddsClick, oneClickEnabled, isOne
                 {/* VS divider */}
                 <div className="flex items-center gap-2 pl-[2.75rem]">
                     <div className="flex-1 h-px bg-white/[0.035]" />
-                    <span className="text-[8px] font-black text-white/12">VS</span>
+                    <span className="text-[8px] font-black text-white/15">VS</span>
                     <div className="flex-1 h-px bg-white/[0.035]" />
                 </div>
 
@@ -217,11 +220,11 @@ export default function SRMatchCard({ match, onOddsClick, oneClickEnabled, isOne
             {runners.length > 0 ? (
                 <div className="border-t border-white/[0.04] mt-1">
                     <div className="flex items-center justify-between px-3 pt-2 pb-1">
-                        <span className="text-[9px] font-black text-white/20 uppercase tracking-widest">
+                        <span className="text-[9px] font-black text-white/25 uppercase tracking-widest">
                             {srMarket?.marketName || 'Match Odds'}
                         </span>
                         {oneClickEnabled && (
-                            <span className="rounded-full bg-success-alpha-10 px-1.5 py-0.5 text-[8px] font-black uppercase tracking-[0.2em] text-success-bright">
+                            <span className="rounded-full bg-[#ff7a1a]/12 px-1.5 py-0.5 text-[8px] font-black uppercase tracking-[0.2em] text-[#ff9a3d]">
                                 1-Tap
                             </span>
                         )}
@@ -258,7 +261,7 @@ export default function SRMatchCard({ match, onOddsClick, oneClickEnabled, isOne
             ) : legacyOdds.length > 0 ? (
                 <div className="border-t border-white/[0.04] mt-1">
                     <div className="px-3 pt-2 pb-1">
-                        <span className="text-[9px] font-black text-white/20 uppercase tracking-widest">Match Odds</span>
+                        <span className="text-[9px] font-black text-white/25 uppercase tracking-widest">Match Odds</span>
                     </div>
                     {legacyOdds.slice(0, 3).map((o: MatchOddSummary, i: number) => {
                         const isPending = isOneClickPending && o.marketId && o.selectionId
@@ -280,10 +283,10 @@ export default function SRMatchCard({ match, onOddsClick, oneClickEnabled, isOne
                     })}
                 </div>
             ) : (
-                <div className="flex items-center justify-end px-3 py-2.5 border-t border-white/[0.03]">
-                    <div className="flex items-center gap-1 group-hover:gap-1.5 transition-all">
-                        <span className="text-warning-bright text-[10px] font-black">View</span>
-                        <ChevronRight size={10} className="text-warning-bright" />
+                <div className="flex items-center justify-end px-3 py-2.5 border-t border-white/[0.04]">
+                    <div className="flex items-center gap-1 transition-transform duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] group-hover:translate-x-0.5 motion-reduce:transform-none motion-reduce:transition-none">
+                        <span className="text-[#ff9a3d] text-[10px] font-black">View</span>
+                        <ChevronRight size={10} className="text-[#ff9a3d]" />
                     </div>
                 </div>
             )}

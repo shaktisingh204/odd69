@@ -128,7 +128,7 @@ const GameGrid: React.FC<GameGridProps> = ({ title, icon, category, sectionKey, 
             {layout === 'row' ? (
                 <div
                     ref={scrollContainerRef}
-                    className="flex gap-1.5 overflow-x-auto pb-2 pl-3"
+                    className="flex gap-3 overflow-x-auto pb-2 pl-3"
                     style={{ scrollbarWidth: 'none' }}
                 >
                     {games.map((game, idx) => (
@@ -147,7 +147,7 @@ const GameGrid: React.FC<GameGridProps> = ({ title, icon, category, sectionKey, 
                     <div className="min-w-3 flex-shrink-0" />
                 </div>
             ) : (
-                <div className="grid grid-cols-3 gap-1 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-7 2xl:grid-cols-8">
+                <div className="grid grid-cols-3 gap-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-7 2xl:grid-cols-8">
                     {games.map((game, idx) => (
                         <GameCard
                             key={game.id || idx}
@@ -169,7 +169,7 @@ const GameGrid: React.FC<GameGridProps> = ({ title, icon, category, sectionKey, 
                     <button
                         disabled={page === 1}
                         onClick={() => { setPage(p => Math.max(1, p - 1)); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
-                        className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-bg-elevated border border-white/[0.04] hover:border-brand-gold/40 disabled:opacity-30 disabled:cursor-not-allowed text-text-primary text-sm font-bold transition-all"
+                        className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-bg-elevated border border-white/[0.06] hover:border-[#ff7a1a]/60 disabled:opacity-30 disabled:cursor-not-allowed text-text-primary text-sm font-bold transition-transform active:scale-[0.97] motion-reduce:transform-none"
                     >
                         <ChevronLeft size={14} /> Prev
                     </button>
@@ -177,7 +177,7 @@ const GameGrid: React.FC<GameGridProps> = ({ title, icon, category, sectionKey, 
                     <button
                         disabled={page === totalPages}
                         onClick={() => { setPage(p => Math.min(totalPages, p + 1)); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
-                        className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-bg-elevated border border-white/[0.04] hover:border-brand-gold/40 disabled:opacity-30 disabled:cursor-not-allowed text-text-primary text-sm font-bold transition-all"
+                        className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-bg-elevated border border-white/[0.06] hover:border-[#ff7a1a]/60 disabled:opacity-30 disabled:cursor-not-allowed text-text-primary text-sm font-bold transition-transform active:scale-[0.97] motion-reduce:transform-none"
                     >
                         Next <ChevronRight size={14} />
                     </button>
