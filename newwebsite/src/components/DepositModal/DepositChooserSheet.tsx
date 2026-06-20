@@ -71,8 +71,8 @@ export default function DepositChooserSheet({ isOpen, onClose, onChooseDeposit, 
             {/* Bottom sheet */}
             <div className="fixed inset-x-0 bottom-0 z-50 sm:inset-0 sm:flex sm:items-center sm:justify-center sm:p-4">
                 <div
-                    className="w-full sm:max-w-md rounded-t-3xl sm:rounded-2xl overflow-hidden shadow-[0_-8px_40px_rgba(0,0,0,0.5)] border border-white/[0.05]"
-                    style={{ background: 'linear-gradient(160deg, #0F1016 0%, #0C0D12 60%, #0F1016 100%)' }}
+                    className="w-full sm:max-w-md rounded-t-3xl sm:rounded-2xl overflow-hidden shadow-[0_-8px_40px_rgba(0,0,0,0.5)] ring-1 ring-white/[0.06] bg-[#140f0b]"
+                    style={{ transformOrigin: 'center' }}
                 >
                     {/* Drag handle (mobile only) */}
                     <div className="sm:hidden flex justify-center pt-3 pb-1">
@@ -85,7 +85,7 @@ export default function DepositChooserSheet({ isOpen, onClose, onChooseDeposit, 
                             <h2 className="text-lg font-bold text-white">
                                 {allDisabled ? 'Deposits Unavailable' : 'Add Funds'}
                             </h2>
-                            <p className="text-xs text-gray-500 mt-0.5">
+                            <p className="text-xs text-white/55 mt-0.5">
                                 {allDisabled
                                     ? 'No payment methods are currently active'
                                     : manualOnlyMode
@@ -95,7 +95,7 @@ export default function DepositChooserSheet({ isOpen, onClose, onChooseDeposit, 
                         </div>
                         <button
                             onClick={onClose}
-                            className="p-2 rounded-xl text-white/40 hover:text-white hover:bg-white/[0.06] transition-all"
+                            className="p-2 rounded-xl text-white/40 hover:text-white hover:bg-white/[0.06] transition-transform duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] active:scale-[0.97] motion-reduce:transition-none motion-reduce:active:scale-100"
                         >
                             <X className="w-4 h-4" />
                         </button>
@@ -106,20 +106,16 @@ export default function DepositChooserSheet({ isOpen, onClose, onChooseDeposit, 
                             <div className="space-y-3">
                                 <button
                                     onClick={onChooseCrypto}
-                                    className="w-full rounded-2xl border p-4 text-left transition-all hover:border-brand-gold/40 hover:bg-white/[0.05]"
-                                    style={{
-                                        background: 'rgba(245, 197, 81, 0.06)',
-                                        borderColor: 'rgba(245, 197, 81, 0.18)',
-                                    }}
+                                    className="w-full rounded-2xl bg-[#ff7a1a]/15 ring-1 ring-[#ff7a1a]/50 p-4 text-left transition-transform duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] active:scale-[0.97] motion-reduce:transition-none motion-reduce:active:scale-100"
                                 >
                                     <div className="flex items-center justify-between gap-3">
                                         <div>
                                             <p className="text-sm font-semibold text-white">Crypto Deposit</p>
-                                            <p className="mt-1 text-xs text-gray-400">
+                                            <p className="mt-1 text-xs text-white/55">
                                                 Deposit with USDT, BTC, ETH, and more.
                                             </p>
                                         </div>
-                                        <span className="rounded-full border border-brand-gold/25 bg-brand-gold/10 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-brand-gold">
+                                        <span className="rounded-full ring-1 ring-[#ff7a1a]/50 bg-[#ff7a1a]/15 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-[#ff7a1a]">
                                             Crypto
                                         </span>
                                     </div>
@@ -127,20 +123,16 @@ export default function DepositChooserSheet({ isOpen, onClose, onChooseDeposit, 
 
                                 <button
                                     onClick={onChooseManual}
-                                    className="w-full rounded-2xl border p-4 text-left transition-all hover:border-orange-400/40 hover:bg-white/[0.05]"
-                                    style={{
-                                        background: 'rgba(249, 115, 22, 0.06)',
-                                        borderColor: 'rgba(249, 115, 22, 0.18)',
-                                    }}
+                                    className="w-full rounded-2xl bg-white/[0.06] ring-1 ring-white/[0.06] p-4 text-left transition-transform duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] hover:bg-white/[0.08] active:scale-[0.97] motion-reduce:transition-none motion-reduce:active:scale-100"
                                 >
                                     <div className="flex items-center justify-between gap-3">
                                         <div>
                                             <p className="text-sm font-semibold text-white">Manual UPI</p>
-                                            <p className="mt-1 text-xs text-gray-400">
+                                            <p className="mt-1 text-xs text-white/55">
                                                 Scan the QR, pay manually, then submit your UTR.
                                             </p>
                                         </div>
-                                        <span className="rounded-full border border-orange-300/25 bg-warning-alpha-08 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-warning-bright">
+                                        <span className="rounded-full ring-1 ring-white/[0.1] bg-white/[0.06] px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-white/60">
                                             Manual
                                         </span>
                                     </div>
@@ -148,20 +140,16 @@ export default function DepositChooserSheet({ isOpen, onClose, onChooseDeposit, 
                             </div>
                         ) : (
                             <div
-                                className="rounded-2xl border p-5 text-center"
-                                style={{
-                                    background: 'rgba(239,68,68,0.07)',
-                                    borderColor: 'rgba(239,68,68,0.25)',
-                                }}
+                                className="rounded-2xl ring-1 ring-danger/25 bg-danger-alpha-08 p-5 text-center"
                             >
-                                <p className="text-sm text-gray-400 leading-relaxed">
+                                <p className="text-sm text-white/55 leading-relaxed">
                                     All UPI gateways and manual deposit are currently disabled.
                                     Please check back later or contact support.
                                 </p>
                             </div>
                         )}
 
-                        <p className="text-center text-[10px] text-gray-700 mt-4">
+                        <p className="text-center text-[10px] text-white/40 mt-4">
                             All deposits are encrypted and secure.
                         </p>
                     </div>

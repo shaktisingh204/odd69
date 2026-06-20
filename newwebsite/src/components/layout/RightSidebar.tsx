@@ -78,22 +78,22 @@ function BetCard({ bet, sym, onRemove, onStake }: BetCardProps) {
     const profit   = lb ? null : potentialProfit(stakeNum || bet.stake, bet.odds);
 
     return (
-        <div className="relative rounded-xl bg-bg-surface-2 border border-white/[0.07] overflow-hidden">
-            {/* gold left accent */}
-            <div className="absolute left-0 inset-y-0 w-[3px] bg-brand-gold rounded-r-full" />
+        <div className="relative rounded-2xl bg-[#1a1510] ring-1 ring-white/[0.06] overflow-hidden">
+            {/* orange left accent */}
+            <div className="absolute left-0 inset-y-0 w-[3px] rounded-r-full" style={{ background: 'linear-gradient(135deg,#ff9a3d,#ff6a00)' }} />
             <div className="pl-3.5 pr-2.5 py-2 space-y-1.5">
                 {/* Row 1: Selection + odds badge + X */}
                 <div className="flex items-center gap-2">
                     <div className="min-w-0 flex-1">
-                        <p className="text-[11px] font-black text-brand-gold truncate leading-none">{bet.selectionName}</p>
+                        <p className="text-[11px] font-black text-[#ff7a1a] truncate leading-none">{bet.selectionName}</p>
                         <p className="text-[9px] text-white/30 leading-none mt-0.5 truncate">{bet.eventName} · {bet.marketName}</p>
                     </div>
-                    <span className="flex-shrink-0 text-[12px] font-black text-white bg-brand-gold/10 border border-brand-gold/20 px-1.5 py-0.5 rounded-lg leading-none tabular-nums">
+                    <span className="flex-shrink-0 text-[12px] font-black text-[#ff7a1a] bg-[#ff7a1a]/15 ring-1 ring-[#ff7a1a]/50 px-1.5 py-0.5 rounded-lg leading-none tabular-nums">
                         {fmtOdds(bet.odds, lb)}
                     </span>
                     <button
                         onClick={() => onRemove(bet.id)}
-                        className="p-1 rounded-lg text-white/15 hover:text-danger hover:bg-danger-alpha-08 transition-all active:scale-90 flex-shrink-0"
+                        className="p-1 rounded-lg text-white/15 hover:text-danger hover:bg-danger-alpha-08 transition-transform duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] active:scale-[0.97] flex-shrink-0 motion-reduce:transition-none motion-reduce:active:scale-100"
                     >
                         <X size={10} />
                     </button>
@@ -113,12 +113,12 @@ function BetCard({ bet, sym, onRemove, onStake }: BetCardProps) {
                                 setRaw(v);
                                 onStake(bet.id, isNaN(parseFloat(v)) ? 0 : parseFloat(v));
                             }}
-                            className="w-full rounded-lg bg-bg-deep-4 border border-white/[0.07] focus:border-brand-gold/30 text-text-white text-[12px] font-black pl-6 pr-2 py-1.5 outline-none transition-colors placeholder:text-white/10 tabular-nums"
+                            className="w-full rounded-xl bg-white/[0.04] ring-1 ring-white/[0.06] focus:ring-2 focus:ring-[#ff7a1a]/60 text-text-white text-[12px] font-black pl-6 pr-2 py-1.5 outline-none transition-shadow placeholder:text-white/10 tabular-nums"
                         />
                     </div>
                     <div className="text-right flex-shrink-0 min-w-[54px]">
                         <p className="text-[8px] text-white/25 leading-none">{profit !== null ? 'Profit' : 'Return'}</p>
-                        <p className="text-[11px] font-black text-brand-gold tabular-nums leading-tight">
+                        <p className="text-[11px] font-black text-[#ff7a1a] tabular-nums leading-tight">
                             {sym}{fmtMoney(profit !== null ? profit : bet.potentialWin)}
                         </p>
                     </div>
@@ -426,15 +426,15 @@ export default function RightSidebar({ mode = 'floating', className = '' }: Righ
                 value={oneClickStake}
                 onChange={(e) => setOneClickStake(Math.max(1, Number(e.target.value) || 1))}
                 onClick={(e) => e.stopPropagation()}
-                className="flex-1 min-w-0 bg-white/[0.04] border border-white/[0.08] focus:border-brand-gold/40 rounded-lg px-2 py-1 text-[12px] font-black text-white tabular-nums outline-none w-full text-right"
+                className="flex-1 min-w-0 bg-white/[0.04] ring-1 ring-white/[0.06] focus:ring-2 focus:ring-[#ff7a1a]/60 rounded-xl px-2 py-1 text-[12px] font-black text-white tabular-nums outline-none transition-shadow w-full text-right"
             />
             <div className="flex gap-1">
                 {[100, 500, 1000, 5000].map(amt => (
                     <button key={amt} type="button"
                         onClick={(e) => { e.stopPropagation(); setOneClickStake(amt); }}
-                        className={`text-[9px] font-black px-1.5 py-0.5 rounded-md transition-all active:scale-90 ${
+                        className={`text-[9px] font-black px-1.5 py-0.5 rounded-lg transition-all duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] active:scale-[0.97] motion-reduce:transition-none motion-reduce:active:scale-100 ${
                             oneClickStake === amt
-                                ? 'bg-brand-gold text-text-inverse'
+                                ? 'bg-[#ff7a1a]/15 ring-1 ring-[#ff7a1a]/50 text-[#ff7a1a]'
                                 : 'bg-white/[0.04] text-white/30 hover:bg-white/[0.08] hover:text-white'
                         }`}>
                         {amt >= 1000 ? `${amt / 1000}K` : amt}
@@ -446,12 +446,12 @@ export default function RightSidebar({ mode = 'floating', className = '' }: Righ
 
     /** Slip / My Bets tab row */
     const TabRow = () => (
-        <div className="flex border-b border-white/[0.06] bg-bg-game-dark flex-shrink-0">
+        <div className="flex gap-1.5 p-1.5 border-b border-white/[0.06] bg-bg-game-dark flex-shrink-0">
             {(['slip', 'mybets'] as const).map((t, i) => (
                 <button
                     key={t}
                     onClick={() => setTab(t)}
-                    className={`flex-1 py-2.5 text-[11px] font-black tracking-tight transition-all border-b-2 ${tab === t ? 'text-brand-gold border-brand-gold' : 'text-white/25 border-transparent hover:text-white/50'}`}
+                    className={`flex-1 py-2 rounded-xl text-[11px] font-black tracking-tight transition-all duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] active:scale-[0.97] motion-reduce:transition-none motion-reduce:active:scale-100 ${tab === t ? 'bg-[#ff7a1a]/15 ring-1 ring-[#ff7a1a]/50 text-[#ff7a1a]' : 'text-white/40 hover:text-white/70 hover:bg-white/[0.04]'}`}
                 >
                     {['Slip', 'My Bets'][i]}
                 </button>
@@ -492,12 +492,13 @@ export default function RightSidebar({ mode = 'floating', className = '' }: Righ
                                         placeholder="e.g. 0-NLCCV4"
                                         value={loadCode}
                                         onChange={(e) => setLoadCode(e.target.value.toUpperCase())}
-                                        className="flex-1 bg-white/[0.04] border border-white/[0.08] focus:border-brand-gold/40 rounded-xl px-3 py-2.5 text-[12px] font-black tracking-widest text-white uppercase outline-none placeholder:text-white/20 placeholder:font-normal placeholder:tracking-normal"
+                                        className="flex-1 bg-white/[0.04] ring-1 ring-white/[0.06] focus:ring-2 focus:ring-[#ff7a1a]/60 rounded-xl px-3 py-2.5 text-[12px] font-black tracking-widest text-white uppercase outline-none transition-shadow placeholder:text-white/20 placeholder:font-normal placeholder:tracking-normal"
                                     />
                                     <button
                                         type="submit"
                                         disabled={!loadCode.trim() || loadingCode}
-                                        className={`px-4 rounded-xl font-bold text-[11px] transition-all ${!loadCode.trim() || loadingCode ? 'bg-white/[0.04] text-white/20 cursor-not-allowed border border-white/[0.04]' : 'bg-brand-gold hover:bg-brand-gold-hover text-text-inverse shadow-glow-gold active:scale-[0.97]'}`}
+                                        style={!loadCode.trim() || loadingCode ? undefined : { backgroundImage: 'linear-gradient(135deg,#ff9a3d,#ff6a00)' }}
+                                        className={`px-4 rounded-xl font-bold text-[11px] transition-transform duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] motion-reduce:transition-none ${!loadCode.trim() || loadingCode ? 'bg-white/[0.04] text-white/20 cursor-not-allowed ring-1 ring-white/[0.06]' : 'text-white shadow-[0_8px_24px_-8px_rgba(255,106,0,0.7)] active:scale-[0.97] motion-reduce:active:scale-100'}`}
                                     >
                                         {loadingCode ? <span className="w-3 h-3 border-2 border-black/20 border-t-black rounded-full animate-spin inline-block align-middle" /> : 'Load'}
                                     </button>
@@ -524,7 +525,7 @@ export default function RightSidebar({ mode = 'floating', className = '' }: Righ
                         const lb = isLineBasedFancyMarket({ marketType: (bet as any).gtype, marketName: bet.marketName, selectionName: bet.selectionName });
                         const pnl = getBetNetPnL(bet);
                         return (
-                            <div key={bet.id} className="relative rounded-xl bg-bg-surface-2 border border-white/[0.07] overflow-hidden">
+                            <div key={bet.id} className="relative rounded-2xl bg-[#1a1510] ring-1 ring-white/[0.06] overflow-hidden">
                                 <span className={`absolute inset-y-0 left-0 w-[3px] rounded-r-full ${bar}`} />
                                 <div className="pl-4 pr-3 pt-3 pb-3 space-y-2">
                                     <div className="flex items-center justify-between">
@@ -545,7 +546,7 @@ export default function RightSidebar({ mode = 'floating', className = '' }: Righ
                                             Partial cash out: {sym}{getBetPartialCashoutValue(bet).toFixed(2)}
                                         </p>
                                     )}
-                                    <div className="rounded-xl bg-white/[0.03] border border-white/[0.04] px-3 py-2.5 text-[10px] grid grid-cols-2 gap-x-4 gap-y-1.5">
+                                    <div className="rounded-xl bg-white/[0.03] ring-1 ring-white/[0.06] px-3 py-2.5 text-[10px] grid grid-cols-2 gap-x-4 gap-y-1.5">
                                         <span className="text-white/30">{partial ? 'Remaining' : 'Stake'}</span>
                                         <span className="text-right font-bold text-white/55 tabular-nums">{sym}{bet.stake}</span>
                                         {partial && (<><span className="text-white/30">Original</span><span className="text-right font-bold text-white/55 tabular-nums">{sym}{getBetOriginalStake(bet).toFixed(2)}</span></>)}
@@ -575,23 +576,23 @@ export default function RightSidebar({ mode = 'floating', className = '' }: Righ
                 {QUICK_STAKES.map(amt => (
                     <button key={amt}
                         onClick={() => bets.forEach(b => updateStake(b.id, amt))}
-                        className="py-2 rounded-xl bg-white/[0.04] hover:bg-brand-gold/10 text-white/35 hover:text-brand-gold text-[10px] font-bold border border-white/[0.04] hover:border-brand-gold/20 transition-all active:scale-95">
+                        className="py-2 rounded-xl bg-white/[0.06] hover:bg-[#ff7a1a]/15 text-white/55 hover:text-[#ff7a1a] text-[10px] font-bold ring-1 ring-white/[0.06] hover:ring-[#ff7a1a]/50 transition-all duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] active:scale-[0.97] motion-reduce:transition-none motion-reduce:active:scale-100">
                         {amt >= 1000 ? `${amt / 1000}K` : amt}
                     </button>
                 ))}
             </div>
 
             {/* Summary */}
-            <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] overflow-hidden">
+            <div className="rounded-2xl ring-1 ring-white/[0.06] bg-[#1a1510] overflow-hidden">
                 <div className="flex items-center justify-between px-3.5 py-2 border-b border-white/[0.04] text-[10px]">
                     <span className="text-white/30">Wallet</span>
-                    <span className={`font-bold text-[9px] px-2 py-0.5 rounded-lg border ${selectedWallet === 'crypto' ? 'bg-brand-alpha-08 text-accent-purple border-accent-purple/20' : 'bg-brand-alpha-08 text-brand-gold border-brand-gold/20'}`}>
+                    <span className={`font-bold text-[9px] px-2 py-0.5 rounded-lg ring-1 ${selectedWallet === 'crypto' ? 'bg-accent-purple/10 text-accent-purple ring-accent-purple/30' : 'bg-[#ff7a1a]/15 text-[#ff7a1a] ring-[#ff7a1a]/50'}`}>
                         {selectedSubWallet.split('-').map(w => w[0].toUpperCase() + w.slice(1)).join(' ')} · {sym}{activeBalance.toFixed(2)}
                     </span>
                 </div>
                 <div className="px-3.5 py-3 space-y-1.5 text-[11px]">
                     <div className="flex justify-between"><span className="text-white/30">Total Stake</span><span className="font-black text-white tabular-nums">{sym}{totalStake.toLocaleString('en-US')}</span></div>
-                    <div className="flex justify-between"><span className="text-white/30">Potential Profit</span><span className="font-black text-brand-gold tabular-nums">{sym}{fmtMoney(totalProfit)}</span></div>
+                    <div className="flex justify-between"><span className="text-white/30">Potential Profit</span><span className="font-black text-[#ff7a1a] tabular-nums">{sym}{fmtMoney(totalProfit)}</span></div>
                     <div className="flex justify-between border-t border-white/[0.04] pt-1.5 mt-0.5">
                         <span className="text-white/50 font-bold">Total Return</span>
                         <span className="font-black text-white tabular-nums text-[13px]">{sym}{fmtMoney(totalPotentialWin)}</span>
@@ -609,34 +610,34 @@ export default function RightSidebar({ mode = 'floating', className = '' }: Righ
 
             {/* Active booking code banner with countdown + dismiss */}
             {bookedId && bookedCountdown > 0 && (
-                <div className="rounded-xl bg-brand-gold/10 border border-brand-gold/30 overflow-hidden">
+                <div className="rounded-2xl bg-[#ff7a1a]/15 ring-1 ring-[#ff7a1a]/50 overflow-hidden">
                     <div className="flex items-center justify-between px-3 py-2.5 gap-2">
                         <div className="flex flex-col min-w-0">
-                            <span className="text-[9px] text-brand-gold/60 uppercase font-bold tracking-wider">Booking Code</span>
-                            <span className="text-[15px] font-black text-brand-gold tracking-[0.2em]">{bookedId}</span>
+                            <span className="text-[9px] text-[#ff7a1a]/70 uppercase font-bold tracking-wider">Booking Code</span>
+                            <span className="text-[15px] font-black text-[#ff7a1a] tracking-[0.2em]">{bookedId}</span>
                         </div>
                         <div className="flex items-center gap-1.5 flex-shrink-0">
                             <div className="flex flex-col items-end">
                                 <span className="text-[8px] text-white/30 uppercase font-bold">Expires</span>
-                                <span className={`text-[12px] font-black tabular-nums ${bookedCountdown <= 30 ? 'text-danger' : bookedCountdown <= 60 ? 'text-warning-bright' : 'text-brand-gold'}`}>
+                                <span className={`text-[12px] font-black tabular-nums ${bookedCountdown <= 30 ? 'text-danger' : bookedCountdown <= 60 ? 'text-warning-bright' : 'text-[#ff7a1a]'}`}>
                                     {Math.floor(bookedCountdown / 60)}:{String(bookedCountdown % 60).padStart(2, '0')}
                                 </span>
                             </div>
-                            <button onClick={copyBookingId} title="Copy code" className="p-1.5 bg-brand-gold/20 hover:bg-brand-gold/30 rounded-lg text-brand-gold transition-colors active:scale-90">
+                            <button onClick={copyBookingId} title="Copy code" className="p-1.5 bg-[#ff7a1a]/20 hover:bg-[#ff7a1a]/30 rounded-lg text-[#ff7a1a] transition-transform duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] active:scale-[0.97] motion-reduce:transition-none motion-reduce:active:scale-100">
                                 <Clipboard size={13} />
                             </button>
-                            <button onClick={dismissBooking} title="Dismiss" className="p-1.5 bg-white/[0.04] hover:bg-danger-alpha-08 rounded-lg text-white/30 hover:text-danger transition-colors active:scale-90">
+                            <button onClick={dismissBooking} title="Dismiss" className="p-1.5 bg-white/[0.06] hover:bg-danger-alpha-08 rounded-lg text-white/30 hover:text-danger transition-transform duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] active:scale-[0.97] motion-reduce:transition-none motion-reduce:active:scale-100">
                                 <X size={13} />
                             </button>
                         </div>
                     </div>
                     <div className="h-[2px] bg-black/20">
                         <div
-                            className={`h-full transition-all duration-1000 ease-linear rounded-full ${bookedCountdown <= 30 ? 'bg-danger' : bookedCountdown <= 60 ? 'bg-warning-bright' : 'bg-brand-gold'}`}
+                            className={`h-full transition-all duration-1000 ease-linear rounded-full ${bookedCountdown <= 30 ? 'bg-danger' : bookedCountdown <= 60 ? 'bg-warning-bright' : 'bg-[#ff7a1a]'}`}
                             style={{ width: `${(bookedCountdown / 120) * 100}%` }}
                         />
                     </div>
-                    <p className="text-[9px] text-brand-gold/40 px-3 py-1.5 text-center">Share this code. It can only be used once within the timer.</p>
+                    <p className="text-[9px] text-[#ff7a1a]/50 px-3 py-1.5 text-center">Share this code. It can only be used once within the timer.</p>
                 </div>
             )}
 
@@ -650,13 +651,14 @@ export default function RightSidebar({ mode = 'floating', className = '' }: Righ
                             placeholder="Enter Booking Code"
                             value={loadCode}
                             onChange={(e) => setLoadCode(e.target.value.toUpperCase())}
-                            className="w-full bg-white/[0.04] border border-white/[0.08] focus:border-brand-gold/40 rounded-xl pl-8 pr-3 py-2.5 text-[12px] font-black tracking-widest text-white uppercase outline-none placeholder:text-white/20 placeholder:font-normal placeholder:tracking-normal"
+                            className="w-full bg-white/[0.04] ring-1 ring-white/[0.06] focus:ring-2 focus:ring-[#ff7a1a]/60 rounded-xl pl-8 pr-3 py-2.5 text-[12px] font-black tracking-widest text-white uppercase outline-none transition-shadow placeholder:text-white/20 placeholder:font-normal placeholder:tracking-normal"
                         />
                     </div>
                     <button
                         type="submit"
                         disabled={!loadCode.trim() || loadingCode}
-                        className={`px-4 rounded-xl font-bold text-[11px] transition-all ${!loadCode.trim() || loadingCode ? 'bg-white/[0.04] text-white/20 cursor-not-allowed border border-white/[0.04]' : 'bg-brand-gold hover:bg-brand-gold-hover text-text-inverse shadow-glow-gold active:scale-[0.97]'}`}
+                        style={!loadCode.trim() || loadingCode ? undefined : { backgroundImage: 'linear-gradient(135deg,#ff9a3d,#ff6a00)' }}
+                        className={`px-4 rounded-xl font-bold text-[11px] transition-transform duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] motion-reduce:transition-none ${!loadCode.trim() || loadingCode ? 'bg-white/[0.04] text-white/20 cursor-not-allowed ring-1 ring-white/[0.06]' : 'text-white shadow-[0_8px_24px_-8px_rgba(255,106,0,0.7)] active:scale-[0.97] motion-reduce:active:scale-100'}`}
                     >
                         {loadingCode ? <span className="w-3 h-3 border-2 border-black/20 border-t-black rounded-full animate-spin inline-block align-middle" /> : 'Load'}
                     </button>
@@ -668,25 +670,27 @@ export default function RightSidebar({ mode = 'floating', className = '' }: Righ
                 <div className="flex gap-2">
                     {bets.length > 1 && (
                         <button onClick={() => clearBets()} title="Clear all"
-                            className="w-11 h-11 flex-shrink-0 flex items-center justify-center rounded-xl bg-white/[0.04] border border-white/[0.06] hover:bg-danger-alpha-08 hover:border-danger/20 text-white/20 hover:text-danger transition-all active:scale-90">
+                            className="w-11 h-11 flex-shrink-0 flex items-center justify-center rounded-xl bg-white/[0.06] ring-1 ring-white/[0.06] hover:bg-danger-alpha-08 hover:ring-danger/20 text-white/20 hover:text-danger transition-transform duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] active:scale-[0.97] motion-reduce:transition-none motion-reduce:active:scale-100">
                             <Trash2 size={13} />
                         </button>
                     )}
                     {!isAuthenticated ? (
                         <>
                             <button onClick={handleBookBet} disabled={booking || !canPlace}
-                                className={`flex-1 h-11 flex items-center justify-center gap-1.5 rounded-xl font-bold text-[11px] uppercase tracking-wider transition-all active:scale-[0.97] ${booking || !canPlace ? 'bg-white/[0.04] text-white/20 cursor-not-allowed border border-white/[0.04]' : 'bg-white/[0.08] hover:bg-white/[0.12] text-white border border-white/[0.06]'}`}>
+                                className={`flex-1 h-11 flex items-center justify-center gap-1.5 rounded-xl font-bold text-[11px] uppercase tracking-wider transition-transform duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] active:scale-[0.97] motion-reduce:transition-none motion-reduce:active:scale-100 ${booking || !canPlace ? 'bg-white/[0.04] text-white/20 cursor-not-allowed ring-1 ring-white/[0.06]' : 'bg-white/[0.06] hover:bg-white/[0.12] text-white ring-1 ring-white/[0.06]'}`}>
                                 {booking ? <span className="w-3 h-3 border-2 border-white/[0.12] border-t-white rounded-full animate-spin" /> : <Share2 size={13} />}
                                 Book
                             </button>
                             <button onClick={openLogin}
-                                className="flex-[1.5] h-11 flex items-center justify-center gap-1.5 rounded-xl bg-brand-gold hover:bg-brand-gold-hover text-white font-black text-[11px] uppercase tracking-wider transition-all active:scale-[0.97] shadow-glow-gold">
+                                style={{ backgroundImage: 'linear-gradient(135deg,#ff9a3d,#ff6a00)' }}
+                                className="flex-[1.5] h-11 flex items-center justify-center gap-1.5 rounded-full text-white font-black text-[11px] uppercase tracking-wider transition-transform duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] active:scale-[0.97] motion-reduce:transition-none motion-reduce:active:scale-100 shadow-[0_8px_24px_-8px_rgba(255,106,0,0.7)]">
                                 <User size={13} /> Login
                             </button>
                         </>
                     ) : (
                         <button onClick={handlePlace} disabled={placing || !canPlace}
-                            className={`flex-1 h-11 flex items-center justify-center gap-2 rounded-xl font-black text-[12px] uppercase tracking-wider transition-all active:scale-[0.97] ${placing || !canPlace ? 'bg-white/[0.04] text-white/20 cursor-not-allowed border border-white/[0.04]' : 'bg-brand-gold hover:bg-brand-gold-hover text-white shadow-glow-gold'}`}>
+                            style={placing || !canPlace ? undefined : { backgroundImage: 'linear-gradient(135deg,#ff9a3d,#ff6a00)' }}
+                            className={`flex-1 h-11 flex items-center justify-center gap-2 rounded-full font-black text-[12px] uppercase tracking-wider transition-transform duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] active:scale-[0.97] motion-reduce:transition-none motion-reduce:active:scale-100 ${placing || !canPlace ? 'bg-white/[0.04] text-white/20 cursor-not-allowed ring-1 ring-white/[0.06]' : 'text-white shadow-[0_8px_24px_-8px_rgba(255,106,0,0.7)]'}`}>
                             {placing && <span className="w-3.5 h-3.5 border-[2.5px] border-black/20 border-t-black rounded-full animate-spin" />}
                             {placing ? 'Placing…' : `Place ${bets.length > 1 ? `${bets.length} Bets` : 'Bet'} · ${sym}${totalStake.toLocaleString('en-US')}`}
                         </button>
@@ -784,7 +788,7 @@ export default function RightSidebar({ mode = 'floating', className = '' }: Righ
                                         const { chip, bar } = statusStyle(bet.status);
                                         const lb = isLineBasedFancyMarket({ marketType: (bet as any).gtype, marketName: bet.marketName, selectionName: bet.selectionName });
                                         return (
-                                            <div key={bet.id} className="relative rounded-xl bg-bg-surface-2 border border-white/[0.07] overflow-hidden">
+                                            <div key={bet.id} className="relative rounded-2xl bg-[#1a1510] ring-1 ring-white/[0.06] overflow-hidden">
                                                 <span className={`absolute inset-y-0 left-0 w-[3px] rounded-r-full ${bar}`} />
                                                 <div className="pl-3.5 pr-2.5 py-2 space-y-1.5">
                                                     <div className="flex items-center justify-between">

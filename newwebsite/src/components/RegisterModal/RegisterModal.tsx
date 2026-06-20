@@ -362,12 +362,12 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ onClose, onLoginClick }) 
               Desktop: centered card — max 860px wide, two-column layout
             */}
             <div className="relative w-full md:max-w-[860px] md:max-h-[92vh] bg-auth-base rounded-t-2xl md:rounded-2xl shadow-xl flex flex-col md:flex-row border border-divider overflow-hidden"
-                style={{ maxHeight: '92dvh' }}>
+                style={{ maxHeight: '92dvh', transformOrigin: 'center' }}>
 
                 {/* Close Button */}
                 <button
                     onClick={onClose}
-                    className="absolute top-4 right-4 z-20 w-8 h-8 flex items-center justify-center rounded-full bg-bg-elevated hover:bg-bg-hover transition-colors text-text-muted hover:text-text-primary"
+                    className="absolute top-4 right-4 z-20 w-8 h-8 flex items-center justify-center rounded-full bg-bg-elevated hover:bg-bg-hover transition-transform duration-200 ease-out active:scale-[0.97] text-text-muted hover:text-text-primary"
                 >
                     <X size={18} />
                 </button>
@@ -427,8 +427,8 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ onClose, onLoginClick }) 
                         <div className="flex flex-col gap-5 pb-4">
                             {/* OTP Screen */}
                             <div className="text-center">
-                                <div className="w-16 h-16 rounded-full bg-indigo-500/15 border border-indigo-500/30 flex items-center justify-center mx-auto mb-3">
-                                    <ShieldCheck size={30} className="text-indigo-400" />
+                                <div className="w-16 h-16 rounded-full bg-brand-gold/15 border border-brand-gold/30 flex items-center justify-center mx-auto mb-3">
+                                    <ShieldCheck size={30} className="text-brand-gold" />
                                 </div>
                                 <h4 className="text-text-primary font-bold text-lg">{isPhone ? 'Verify Your Number' : 'Verify Your Email'}</h4>
                                 <p className="text-text-muted text-sm mt-1">
@@ -448,7 +448,7 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ onClose, onLoginClick }) 
                                     placeholder="— — — — — —"
                                     value={otpCode}
                                     onChange={(e) => { setOtpCode(e.target.value.replace(/\D/g, '').slice(0, 6)); setError(''); }}
-                                    className={`w-full h-[60px] bg-bg-elevated border-2 rounded-xl px-4 text-text-primary text-[28px] font-bold tracking-[0.5em] text-center outline-none transition-all focus:ring-[1.5px] placeholder:text-text-muted placeholder:text-2xl placeholder:tracking-[0.3em] ${error ? 'border-red-500' : 'border-divider focus:border-indigo-500 focus:ring-indigo-500/40'}`}
+                                    className={`w-full h-[60px] bg-bg-elevated border-2 rounded-xl px-4 text-text-primary text-[28px] font-bold tracking-[0.5em] text-center outline-none transition-all focus:ring-[1.5px] placeholder:text-text-muted placeholder:text-2xl placeholder:tracking-[0.3em] ${error ? 'border-red-500' : 'border-divider focus:border-brand-gold focus:ring-brand-gold/40'}`}
                                 />
                                 {error && <p className="text-danger text-xs mt-1.5 ml-1 flex items-center gap-1"><AlertCircle size={11} />{error}</p>}
                             </div>
@@ -527,14 +527,14 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ onClose, onLoginClick }) 
                             <button
                                 type="button"
                                 onClick={() => handleTabChange(true)}
-                                className={`flex-1 py-2.5 text-sm font-bold rounded-lg flex items-center justify-center gap-2 transition-all ${isPhone ? 'bg-auth-action text-text-inverse shadow-sm' : 'text-text-muted hover:text-text-primary'}`}
+                                className={`flex-1 py-2.5 text-sm font-bold rounded-lg flex items-center justify-center gap-2 transition-transform duration-200 ease-out active:scale-[0.97] ${isPhone ? 'bg-auth-action text-text-inverse shadow-sm' : 'text-text-muted hover:text-text-primary'}`}
                             >
                                 <Smartphone size={15} /> Phone
                             </button>
                             <button
                                 type="button"
                                 onClick={() => handleTabChange(false)}
-                                className={`flex-1 py-2.5 text-sm font-bold rounded-lg flex items-center justify-center gap-2 transition-all ${!isPhone ? 'bg-auth-action text-text-inverse shadow-sm' : 'text-text-muted hover:text-text-primary'}`}
+                                className={`flex-1 py-2.5 text-sm font-bold rounded-lg flex items-center justify-center gap-2 transition-transform duration-200 ease-out active:scale-[0.97] ${!isPhone ? 'bg-auth-action text-text-inverse shadow-sm' : 'text-text-muted hover:text-text-primary'}`}
                             >
                                 <Mail size={15} /> Email
                             </button>
@@ -705,7 +705,7 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ onClose, onLoginClick }) 
                                                 key={isNone ? 'none' : bonus.code}
                                                 type="button"
                                                 onClick={() => setSelectedBonusCode(isNone ? null : bonus.code)}
-                                                className={`w-full flex items-center gap-3 rounded-xl px-4 py-3 border transition-all text-left ${isSelected
+                                                className={`w-full flex items-center gap-3 rounded-xl px-4 py-3 border transition-transform duration-200 ease-out active:scale-[0.97] text-left ${isSelected
                                                     ? 'border-brand-gold bg-brand-gold/10'
                                                     : 'border-divider bg-bg-elevated hover:border-text-muted'
                                                     }`}
@@ -765,7 +765,7 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ onClose, onLoginClick }) 
                         <button
                             type="button"
                             onClick={() => setHasPromo(!hasPromo)}
-                            className={`w-full h-[50px] border rounded-xl px-4 flex items-center justify-center font-semibold text-sm transition-all ${hasPromo
+                            className={`w-full h-[50px] border rounded-xl px-4 flex items-center justify-center font-semibold text-sm transition-transform duration-200 ease-out active:scale-[0.97] ${hasPromo
                                 ? 'border-brand-gold text-brand-gold bg-brand-gold/10'
                                 : 'border-divider text-text-muted hover:text-text-primary bg-bg-elevated hover:border-text-muted'
                                 }`}
@@ -840,7 +840,7 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ onClose, onLoginClick }) 
                                 <button
                                     onClick={handleVerifyOtpAndRegister}
                                     disabled={otpLoading || otpCode.length !== 6}
-                                    className="w-full bg-auth-action hover:bg-brand-gold-hover disabled:opacity-50 disabled:cursor-not-allowed text-text-inverse h-[52px] rounded-xl font-extrabold uppercase tracking-wider text-sm transition-all shadow-lg shadow-glow-gold hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center gap-2"
+                                    className="w-full bg-gradient-gold disabled:opacity-50 disabled:cursor-not-allowed text-text-inverse h-[52px] rounded-xl font-extrabold uppercase tracking-wider text-sm transition-transform duration-200 ease-out shadow-lg shadow-glow-gold active:scale-[0.97] flex items-center justify-center gap-2"
                                 >
                                     {otpLoading ? <><Loader2 size={16} className="animate-spin" />Verifying &amp; Creating...</> : 'Verify & Create Account'}
                                 </button>
@@ -876,7 +876,7 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ onClose, onLoginClick }) 
                             <button
                                 onClick={handleSubmit}
                                 disabled={loading || !termsAccepted}
-                                className="w-full bg-auth-action hover:bg-brand-gold-hover disabled:opacity-50 disabled:cursor-not-allowed text-text-inverse h-[52px] rounded-xl font-extrabold uppercase tracking-wider text-sm transition-all shadow-lg shadow-glow-gold hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center gap-2"
+                                className="w-full bg-gradient-gold disabled:opacity-50 disabled:cursor-not-allowed text-text-inverse h-[52px] rounded-xl font-extrabold uppercase tracking-wider text-sm transition-transform duration-200 ease-out shadow-lg shadow-glow-gold active:scale-[0.97] flex items-center justify-center gap-2"
                             >
                                 {loading ? (
                                     <><Loader2 size={16} className="animate-spin" />Sending OTP...</>

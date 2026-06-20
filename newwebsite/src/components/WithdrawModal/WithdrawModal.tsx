@@ -37,7 +37,7 @@ const cryptoOptions = [
 
 // Shared field style
 const fieldCls =
-    'w-full bg-white/[0.04] border border-white/[0.05] hover:border-brand-gold/30 focus:border-brand-gold/50 rounded-xl py-3 px-4 text-sm text-text-white placeholder-gray-600 focus:outline-none transition-all focus:shadow-glow-gold';
+    'w-full bg-white/[0.04] border border-white/[0.06] hover:border-[#ff7a1a]/30 focus:border-[#ff7a1a]/50 rounded-xl py-3 px-4 text-sm text-text-white placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-[#ff7a1a]/40 transition-[border-color,box-shadow,background-color] duration-200 ease-[cubic-bezier(0.23,1,0.32,1)]';
 const labelCls = 'text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1.5 block';
 const iconFieldCls = `${fieldCls} pl-10`;
 
@@ -363,7 +363,8 @@ const WithdrawModal: React.FC<WithdrawModalProps> = ({ onClose }) => {
                                 <a
                                     href="/settings"
                                     onClick={onClose}
-                                    className="px-8 py-3.5 bg-brand-gold hover:bg-brand-gold-hover text-white transition-all shadow-glow-gold flex items-center gap-2"
+                                    className="px-8 py-3.5 rounded-full text-white font-bold transition-transform duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] active:scale-[0.97] motion-reduce:transition-none motion-reduce:active:scale-100 shadow-[0_8px_24px_-8px_rgba(255,106,0,0.7)] flex items-center gap-2"
+                                    style={{ background: 'linear-gradient(135deg,#ff9a3d,#ff6a00)' }}
                                 >
                                     <User className="w-5 h-5" />
                                     Go to Settings
@@ -387,12 +388,12 @@ const WithdrawModal: React.FC<WithdrawModalProps> = ({ onClose }) => {
                                                     <button
                                                         key={m.id}
                                                         onClick={() => { setMethod(m.id); resetMessage(); }}
-                                                        className={`group relative flex-1 lg:flex-none flex items-center gap-3 p-3 sm:p-3.5 rounded-2xl transition-all duration-200 border text-left ${method === m.id
-                                                            ? 'bg-gradient-to-br from-warning-alpha-12 to-white/3 border-warning/50 shadow-glow-gold'
-                                                            : 'bg-white/[0.03] border-white/6 hover:bg-white/6 hover:border-white/12'
+                                                        className={`group relative flex-1 lg:flex-none flex items-center gap-3 p-3 sm:p-3.5 rounded-2xl ring-1 text-left transition-transform duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] active:scale-[0.97] motion-reduce:transition-none motion-reduce:active:scale-100 ${method === m.id
+                                                            ? 'bg-[#ff7a1a]/15 ring-[#ff7a1a]/50'
+                                                            : 'bg-white/[0.04] ring-white/[0.06] hover:bg-white/[0.06]'
                                                             }`}
                                                     >
-                                                        <span className={`w-10 h-10 flex items-center justify-center rounded-xl shrink-0 transition-all ${method === m.id ? 'bg-warning-alpha-12' : 'bg-white/[0.04]'}`}>
+                                                        <span className={`w-10 h-10 flex items-center justify-center rounded-xl shrink-0 transition-colors duration-200 ${method === m.id ? 'bg-[#ff7a1a]/15' : 'bg-white/[0.04]'}`}>
                                                             {m.icon}
                                                         </span>
                                                         <div className="flex-1 min-w-0">
@@ -400,7 +401,7 @@ const WithdrawModal: React.FC<WithdrawModalProps> = ({ onClose }) => {
                                                             <div className="text-[10px] text-gray-500 leading-tight mt-0.5">{m.sub}</div>
                                                         </div>
                                                         {method === m.id && (
-                                                            <div className="w-4 h-4 rounded-full bg-warning flex items-center justify-center shrink-0">
+                                                            <div className="w-4 h-4 rounded-full bg-[#ff7a1a] flex items-center justify-center shrink-0">
                                                                 <Check className="w-2.5 h-2.5 text-black" strokeWidth={3} />
                                                             </div>
                                                         )}
@@ -498,9 +499,9 @@ const WithdrawModal: React.FC<WithdrawModalProps> = ({ onClose }) => {
                                             <button
                                                 key={val}
                                                 onClick={() => setAmount(val)}
-                                                className={`px-3.5 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all shrink-0 border ${amount === val
-                                                    ? 'bg-brand-gold text-text-inverse border-transparent shadow-glow-gold'
-                                                    : 'bg-white/[0.04] text-gray-400 hover:bg-white/[0.08] hover:text-white border-white/6'
+                                                className={`px-3.5 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap shrink-0 ring-1 transition-transform duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] active:scale-[0.97] motion-reduce:transition-none motion-reduce:active:scale-100 ${amount === val
+                                                    ? 'bg-[#ff7a1a]/15 text-[#ff7a1a] ring-[#ff7a1a]/50'
+                                                    : 'bg-white/[0.04] text-gray-400 hover:bg-white/[0.08] hover:text-white ring-white/[0.06]'
                                                     }`}
                                             >
                                                 {isCrypto ? `$${val}` : `+${val}`}
@@ -641,9 +642,9 @@ const WithdrawModal: React.FC<WithdrawModalProps> = ({ onClose }) => {
                                                     <button
                                                         key={coin.id}
                                                         onClick={() => setSelectedCoin(coin)}
-                                                        className={`flex flex-col items-center gap-1 py-2.5 px-1 rounded-xl border transition-all duration-200 ${selectedCoin.id === coin.id
-                                                            ? 'border-brand-gold/50 bg-warning-alpha-08 shadow-glow-gold'
-                                                            : 'border-white/6 bg-white/[0.03] hover:bg-white/6'
+                                                        className={`flex flex-col items-center gap-1 py-2.5 px-1 rounded-xl ring-1 transition-transform duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] active:scale-[0.97] motion-reduce:transition-none motion-reduce:active:scale-100 ${selectedCoin.id === coin.id
+                                                            ? 'ring-[#ff7a1a]/50 bg-[#ff7a1a]/15'
+                                                            : 'ring-white/[0.06] bg-white/[0.04] hover:bg-white/[0.08]'
                                                             }`}
                                                     >
                                                         <span className="text-lg font-bold" style={{ color: coin.color }}>{coin.icon}</span>
@@ -769,12 +770,12 @@ const WithdrawModal: React.FC<WithdrawModalProps> = ({ onClose }) => {
                                     <button
                                         onClick={handleSubmit}
                                         disabled={loading || !amount || hasValidationError || wageringBlocked || (hasAnyBonus && !bonusForfeitConfirmed)}
-                                        className="w-full py-3.5 rounded-xl font-bold text-white text-sm transition-all duration-200 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                                        className="w-full py-3.5 rounded-xl font-bold text-white text-sm transition-transform duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] active:scale-[0.97] motion-reduce:transition-none motion-reduce:active:scale-100 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100"
                                         style={{
                                             background: loading || !amount || hasValidationError || wageringBlocked || (hasAnyBonus && !bonusForfeitConfirmed)
                                                 ? 'var(--brand-alpha-40)'
-                                                : 'linear-gradient(135deg, var(--action-primary) 0%, var(--action-active) 100%)',
-                                            boxShadow: loading || !amount || hasValidationError || wageringBlocked || (hasAnyBonus && !bonusForfeitConfirmed) ? 'none' : 'var(--shadow-glow-gold)',
+                                                : 'linear-gradient(135deg,#ff9a3d,#ff6a00)',
+                                            boxShadow: loading || !amount || hasValidationError || wageringBlocked || (hasAnyBonus && !bonusForfeitConfirmed) ? 'none' : '0 8px 24px -8px rgba(255,106,0,0.7)',
                                         }}
                                     >
                                         {loading

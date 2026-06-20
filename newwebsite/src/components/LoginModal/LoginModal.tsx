@@ -208,16 +208,16 @@ const LoginModal: React.FC<LoginModalProps> = ({ onClose, onRegisterClick }) => 
 
             {/* Fixed-width modal — bottom sheet on mobile, centred card on sm+ */}
             <div
-                className="relative w-full sm:w-[440px] bg-bg-deep rounded-t-3xl sm:rounded-3xl border border-white/[0.05] shadow-[0_24px_80px_rgba(0,0,0,0.7)] flex flex-col flex-shrink-0 overflow-hidden sm:min-h-[560px]"
-                style={{ maxHeight: '92dvh' }}
+                className="relative w-full sm:w-[440px] bg-[#140f0b] rounded-t-3xl sm:rounded-2xl ring-1 ring-white/[0.06] shadow-[0_24px_80px_rgba(0,0,0,0.7)] flex flex-col flex-shrink-0 overflow-hidden sm:min-h-[560px]"
+                style={{ maxHeight: '92dvh', transformOrigin: 'center' }}
             >
                 {/* Decorative glow */}
-                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-72 h-36 bg-brand-gold/8 blur-[60px] rounded-full pointer-events-none" />
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-72 h-36 bg-[#ff7a1a]/10 blur-[60px] rounded-full pointer-events-none" />
 
                 {/* Close */}
                 <button
                     onClick={onClose}
-                    className="absolute top-4 right-4 z-20 w-8 h-8 flex items-center justify-center rounded-full bg-white/[0.06] hover:bg-white/[0.12] transition-colors text-white/50 hover:text-white"
+                    className="absolute top-4 right-4 z-20 w-8 h-8 flex items-center justify-center rounded-full bg-white/[0.06] hover:bg-white/[0.12] text-white/50 hover:text-white transition-transform duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] active:scale-[0.97] motion-reduce:transition-none motion-reduce:active:scale-100"
                     aria-label="Close"
                 >
                     <X size={16} />
@@ -246,15 +246,16 @@ const LoginModal: React.FC<LoginModalProps> = ({ onClose, onRegisterClick }) => 
                     </p>
 
                     {/* Tab toggle */}
-                    <div className="flex bg-white/[0.04] border border-white/[0.07] rounded-xl p-1 mb-0 gap-1">
+                    <div className="flex bg-white/[0.04] ring-1 ring-white/[0.06] rounded-xl p-1 mb-0 gap-1">
                         {(["password", "otp"] as const).map(tab => (
                             <button
                                 key={tab}
                                 type="button"
                                 onClick={() => handleModeChange(tab)}
-                                className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 text-[13px] font-bold rounded-lg transition-all ${
+                                style={loginMode === tab ? { background: "linear-gradient(135deg,#ff9a3d,#ff6a00)" } : undefined}
+                                className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 text-[13px] font-bold rounded-lg transition-transform duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] active:scale-[0.97] motion-reduce:transition-none motion-reduce:active:scale-100 ${
                                     loginMode === tab
-                                        ? "bg-brand-gold text-white shadow-md shadow-[#8B5CF6]/25"
+                                        ? "text-white shadow-[0_8px_24px_-8px_rgba(255,106,0,0.7)]"
                                         : "text-white/40 hover:text-white/70"
                                 }`}
                             >
@@ -286,10 +287,10 @@ const LoginModal: React.FC<LoginModalProps> = ({ onClose, onRegisterClick }) => 
                                         type="text"
                                         placeholder="Email / Phone Number / Username"
                                         autoComplete="username"
-                                        className={`w-full h-[50px] bg-white/[0.04] border rounded-xl ${showCountryCode ? 'px-4' : 'pl-10 pr-4'} text-white text-[15px] font-medium outline-none transition-all focus:ring-[1.5px] placeholder:text-white/25 ${
+                                        className={`w-full h-[50px] bg-[#0f0c09] border rounded-xl ${showCountryCode ? 'px-4' : 'pl-10 pr-4'} text-white text-[15px] font-medium outline-none transition-all focus:ring-[1.5px] placeholder:text-white/25 ${
                                             fieldErrors.identifier
                                                 ? 'border-red-500/70 focus:border-red-500 focus:ring-red-500/20'
-                                                : 'border-white/[0.08] focus:border-[#8B5CF6]/70 focus:ring-[#8B5CF6]/20'
+                                                : 'border-white/[0.08] focus:border-[#ff7a1a]/70 focus:ring-[#ff7a1a]/20'
                                         }`}
                                         value={identifier}
                                         onChange={e => handleIdentifierChange(e.target.value)}
@@ -315,10 +316,10 @@ const LoginModal: React.FC<LoginModalProps> = ({ onClose, onRegisterClick }) => 
                                             type={showPassword ? "text" : "password"}
                                             placeholder="Password"
                                             autoComplete="current-password"
-                                            className={`w-full h-[50px] bg-white/[0.04] border rounded-xl pl-10 pr-12 text-white text-[15px] font-medium outline-none transition-all focus:ring-[1.5px] placeholder:text-white/25 ${
+                                            className={`w-full h-[50px] bg-[#0f0c09] border rounded-xl pl-10 pr-12 text-white text-[15px] font-medium outline-none transition-all focus:ring-[1.5px] placeholder:text-white/25 ${
                                                 fieldErrors.password
                                                     ? 'border-red-500/70 focus:border-red-500 focus:ring-red-500/20'
-                                                    : 'border-white/[0.08] focus:border-[#8B5CF6]/70 focus:ring-[#8B5CF6]/20'
+                                                    : 'border-white/[0.08] focus:border-[#ff7a1a]/70 focus:ring-[#ff7a1a]/20'
                                             }`}
                                             value={password}
                                             onChange={e => {
@@ -364,10 +365,10 @@ const LoginModal: React.FC<LoginModalProps> = ({ onClose, onRegisterClick }) => 
                                     inputMode="numeric"
                                     maxLength={6}
                                     placeholder="—— —— ——"
-                                    className={`w-full h-[50px] bg-white/[0.04] border rounded-xl px-4 text-white text-[20px] tracking-[0.5em] text-center font-bold outline-none transition-all focus:ring-[1.5px] placeholder:text-white/20 placeholder:tracking-normal ${
+                                    className={`w-full h-[50px] bg-[#0f0c09] border rounded-xl px-4 text-white text-[20px] tracking-[0.5em] text-center font-bold outline-none transition-all focus:ring-[1.5px] placeholder:text-white/20 placeholder:tracking-normal ${
                                         fieldErrors.otpCode
                                             ? 'border-red-500/70 focus:border-red-500 focus:ring-red-500/20'
-                                            : 'border-white/[0.08] focus:border-[#8B5CF6]/70 focus:ring-[#8B5CF6]/20'
+                                            : 'border-white/[0.08] focus:border-[#ff7a1a]/70 focus:ring-[#ff7a1a]/20'
                                     }`}
                                     value={otpCode}
                                     onChange={e => {
@@ -421,12 +422,13 @@ const LoginModal: React.FC<LoginModalProps> = ({ onClose, onRegisterClick }) => 
                 </div>{/* end scrollable body */}
 
                 {/* ── Sticky footer — Log In always visible ── */}
-                <div className="relative z-10 flex-shrink-0 px-6 pb-6 pt-3 sm:px-8 border-t border-white/[0.05] bg-bg-deep">
+                <div className="relative z-10 flex-shrink-0 px-6 pb-6 pt-3 sm:px-8 border-t border-white/[0.06] bg-[#140f0b]">
                     <button
                         type="button"
                         onClick={handleLogin}
                         disabled={loading}
-                        className="w-full h-[52px] bg-brand-gold hover:bg-brand-active disabled:opacity-50 disabled:cursor-not-allowed text-white font-black text-[14px] uppercase tracking-widest rounded-xl transition-all hover:-translate-y-0.5 active:translate-y-0 shadow-lg shadow-[#8B5CF6]/20 flex items-center justify-center gap-2"
+                        style={{ background: "linear-gradient(135deg,#ff9a3d,#ff6a00)" }}
+                        className="w-full h-[52px] disabled:opacity-50 disabled:cursor-not-allowed text-white font-black text-[14px] uppercase tracking-widest rounded-xl transition-transform duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] active:scale-[0.97] motion-reduce:transition-none motion-reduce:active:scale-100 shadow-[0_8px_24px_-8px_rgba(255,106,0,0.7)] flex items-center justify-center gap-2"
                     >
                         {loading ? (
                             <><Loader2 size={16} className="animate-spin" /> Please wait...</>
