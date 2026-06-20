@@ -87,7 +87,7 @@ export default function CategoryGrid() {
                 <Link
                     href={hasTwoLarge ? largeCats![0].link : '/casino'}
                     className="relative h-[140px] md:h-[180px] rounded-2xl overflow-hidden group cursor-pointer border border-white/[0.04] hover:border-brand-gold/20 transition-all hover:shadow-[0_8px_32px_rgba(0,0,0,0.4)] block"
-                    style={{ background: 'linear-gradient(135deg, #141824 0%, #0C0D14 100%)' }}
+                    style={{ background: 'linear-gradient(135deg, #1a1511 0%, #100d0a 100%)' }}
                 >
                     {/* Background pattern */}
                     <div className="absolute inset-0 bg-gradient-to-br from-brand-gold/8 via-transparent to-transparent" />
@@ -136,7 +136,7 @@ export default function CategoryGrid() {
                 <Link
                     href={hasTwoLarge ? largeCats![1].link : '/sports'}
                     className="relative h-[140px] md:h-[180px] rounded-2xl overflow-hidden group cursor-pointer border border-white/[0.04] hover:border-teal-400/20 transition-all hover:shadow-[0_8px_32px_rgba(0,0,0,0.4)] block"
-                    style={{ background: 'linear-gradient(135deg, #0F1A20 0%, #0C0D14 100%)' }}
+                    style={{ background: 'linear-gradient(135deg, #0F1A20 0%, #100d0a 100%)' }}
                 >
                     {/* Background pattern */}
                     <div className="absolute inset-0 bg-gradient-to-br from-teal-500/8 via-transparent to-transparent" />

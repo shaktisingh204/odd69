@@ -1,9 +1,9 @@
 "use client";
 
 import Image from "next/image";
+import Countdown from "./Countdown";
 
 export default function RakebackBar() {
-  const digits = ["09", "11", "56", "04"];
   return (
     <div className="relative flex flex-col items-center gap-4 overflow-hidden rounded-3xl p-5 md:flex-row md:justify-between md:p-6"
          style={{ background: "linear-gradient(100deg,#4a2a7a 0%,#2a1a4a 45%,#1b1411 100%)" }}>
@@ -20,14 +20,7 @@ export default function RakebackBar() {
 
       <h3 className="text-2xl font-extrabold tracking-tight text-white md:text-3xl">Daily Rakeback</h3>
 
-      <div className="flex items-center gap-1.5">
-        {digits.map((d, i) => (
-          <span key={i} className="flex items-center gap-1.5">
-            <span className="grid h-11 w-11 place-items-center rounded-xl bg-black/30 font-mono text-lg font-bold text-white">{d}</span>
-            {i < digits.length - 1 && <span className="text-white/40">:</span>}
-          </span>
-        ))}
-      </div>
+      <Countdown seconds={9 * 86400 + 11 * 3600 + 56 * 60 + 4} days boxed />
     </div>
   );
 }

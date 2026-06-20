@@ -55,17 +55,17 @@ type TabId = 'rewards' | 'spin' | 'achievements' | 'leaderboard' | 'history';
 // ─── 3D Icon Component (replaces emojis) ─────────────────────────────────────
 const DAY_ICONS: { icon: React.ElementType; gradient: string; shadow: string }[] = [
     { icon: Gift,    gradient: 'from-rose-500 to-pink-600',    shadow: 'rgba(244,63,94,0.4)' },
-    { icon: Zap,     gradient: 'from-amber-400 to-orange-500', shadow: 'rgba(167,139,250,0.08)' },
+    { icon: Zap,     gradient: 'from-amber-400 to-orange-500', shadow: 'rgba(255, 154, 61,0.08)' },
     { icon: Diamond, gradient: 'from-cyan-400 to-blue-500',    shadow: 'rgba(34,211,238,0.4)' },
     { icon: Flame,   gradient: 'from-red-500 to-orange-600',   shadow: 'rgba(239,68,68,0.4)' },
     { icon: Star,    gradient: 'from-yellow-400 to-amber-500', shadow: 'rgba(250,204,21,0.4)' },
-    { icon: Trophy,  gradient: 'from-amber-500 to-yellow-600', shadow: 'rgba(139,92,246,0.4)' },
+    { icon: Trophy,  gradient: 'from-amber-500 to-yellow-600', shadow: 'rgba(255, 122, 26,0.4)' },
     { icon: Crown,   gradient: 'from-yellow-400 to-amber-600', shadow: 'rgba(217,179,16,0.4)' },
-    { icon: Target,  gradient: 'from-violet-500 to-purple-600', shadow: 'rgba(139,92,246,0.4)' },
+    { icon: Target,  gradient: 'from-violet-500 to-purple-600', shadow: 'rgba(255, 122, 26,0.4)' },
     { icon: Sparkles, gradient: 'from-pink-500 to-rose-600',   shadow: 'rgba(236,72,153,0.4)' },
     { icon: Rocket,  gradient: 'from-blue-500 to-indigo-600',  shadow: 'rgba(59,130,246,0.4)' },
     { icon: Award,   gradient: 'from-emerald-500 to-teal-600', shadow: 'rgba(16,185,129,0.4)' },
-    { icon: Coins,   gradient: 'from-yellow-500 to-orange-500', shadow: 'rgba(139,92,246,0.4)' },
+    { icon: Coins,   gradient: 'from-yellow-500 to-orange-500', shadow: 'rgba(255, 122, 26,0.4)' },
     { icon: Medal,   gradient: 'from-sky-500 to-blue-600',     shadow: 'rgba(14,165,233,0.4)' },
     { icon: ShieldCheck, gradient: 'from-green-500 to-emerald-600', shadow: 'rgba(34,197,94,0.4)' },
 ];
@@ -93,11 +93,11 @@ function Icon3D({ index, size = 28, pulse = false }: { index: number; size?: num
 const ACHIEVEMENT_ICONS: Record<string, { icon: React.ElementType; gradient: string; shadow: string }> = {
     'first_claim': { icon: Target,     gradient: 'from-blue-500 to-indigo-600',    shadow: 'rgba(59,130,246,0.4)' },
     'streak_3':    { icon: Flame,      gradient: 'from-orange-500 to-red-600',     shadow: 'rgba(249,115,22,0.4)' },
-    'streak_7':    { icon: Trophy,     gradient: 'from-amber-500 to-yellow-600',   shadow: 'rgba(139,92,246,0.4)' },
+    'streak_7':    { icon: Trophy,     gradient: 'from-amber-500 to-yellow-600',   shadow: 'rgba(255, 122, 26,0.4)' },
     'streak_14':   { icon: ShieldCheck, gradient: 'from-sky-500 to-cyan-600',      shadow: 'rgba(14,165,233,0.4)' },
-    'streak_30':   { icon: Crown,      gradient: 'from-yellow-400 to-amber-600',   shadow: 'rgba(139,92,246,0.4)' },
+    'streak_30':   { icon: Crown,      gradient: 'from-yellow-400 to-amber-600',   shadow: 'rgba(255, 122, 26,0.4)' },
     'streak_60':   { icon: Diamond,    gradient: 'from-cyan-400 to-blue-500',      shadow: 'rgba(34,211,238,0.4)' },
-    'streak_100':  { icon: Award,      gradient: 'from-purple-500 to-violet-700',  shadow: 'rgba(139,92,246,0.5)' },
+    'streak_100':  { icon: Award,      gradient: 'from-purple-500 to-violet-700',  shadow: 'rgba(255, 122, 26,0.5)' },
     'total_10k':   { icon: Coins,      gradient: 'from-emerald-500 to-green-600',  shadow: 'rgba(16,185,129,0.4)' },
 };
 
@@ -120,7 +120,7 @@ function formatReward(amount: number, currency: string): string {
 }
 
 // ─── 3D Card Wrapper ─────────────────────────────────────────────────────────
-function Card3D({ children, className = '', glowColor = 'rgba(139,92,246,0.15)' }: { children: React.ReactNode; className?: string; glowColor?: string }) {
+function Card3D({ children, className = '', glowColor = 'rgba(255, 122, 26,0.15)' }: { children: React.ReactNode; className?: string; glowColor?: string }) {
     const ref = useRef<HTMLDivElement>(null);
     const [rotateX, setRotateX] = useState(0);
     const [rotateY, setRotateY] = useState(0);
@@ -181,7 +181,7 @@ function ProgressRing({ value, max, size = 120, strokeWidth = 8 }: { value: numb
                 <circle cx={size / 2} cy={size / 2} r={radius} fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth={strokeWidth} />
                 <motion.circle cx={size / 2} cy={size / 2} r={radius} fill="none" stroke="url(#progressGrad)" strokeWidth={strokeWidth} strokeLinecap="round"
                     strokeDasharray={circumference} initial={{ strokeDashoffset: circumference }} animate={{ strokeDashoffset: offset }} transition={{ duration: 1.5, ease: 'easeOut' }} />
-                <defs><linearGradient id="progressGrad" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stopColor="#8B5CF6" /><stop offset="50%" stopColor="#EF4444" /><stop offset="100%" stopColor="#EC4899" /></linearGradient></defs>
+                <defs><linearGradient id="progressGrad" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stopColor="#ff7a1a" /><stop offset="50%" stopColor="#EF4444" /><stop offset="100%" stopColor="#EC4899" /></linearGradient></defs>
             </svg>
             <div className="absolute inset-0 flex flex-col items-center justify-center">
                 <motion.span key={value} initial={{ scale: 1.5, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
@@ -207,7 +207,7 @@ function DayCard3D({ day, reward, currency, claimed, isCurrent, index, onClaim, 
                     : isCurrent ? 'bg-gradient-to-b from-amber-500/25 to-orange-900/20 border-2 border-amber-400/70'
                     : isLastDay ? 'bg-gradient-to-b from-yellow-500/15 to-yellow-900/10 border border-yellow-400/30'
                     : 'bg-gradient-to-b from-white/[0.06] to-white/[0.02] border border-white/[0.08]'}
-            `} style={{ boxShadow: isCurrent ? '0 0 30px rgba(139,92,246,0.3), 0 10px 40px rgba(139,92,246,0.15)' : claimed ? '0 0 20px rgba(16,185,129,0.2)' : '0 4px 20px rgba(0,0,0,0.2)' }}>
+            `} style={{ boxShadow: isCurrent ? '0 0 30px rgba(255, 122, 26,0.3), 0 10px 40px rgba(255, 122, 26,0.15)' : claimed ? '0 0 20px rgba(16,185,129,0.2)' : '0 4px 20px rgba(0,0,0,0.2)' }}>
 
                 {claimed && (
                     <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: 'spring', stiffness: 400 }}
@@ -232,7 +232,7 @@ function DayCard3D({ day, reward, currency, claimed, isCurrent, index, onClaim, 
                 {isCurrent && canClaim && !claimed && (
                     <motion.button onClick={onClaim} whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
                         className="mt-0.5 px-3 py-1.5 rounded-lg text-[10px] font-bold text-[#1a1208] bg-gradient-to-r from-amber-400 to-orange-500"
-                        style={{ boxShadow: '0 4px 15px rgba(139,92,246,0.4)' }}>Claim</motion.button>
+                        style={{ boxShadow: '0 4px 15px rgba(255, 122, 26,0.4)' }}>Claim</motion.button>
                 )}
             </div>
         </motion.div>
@@ -272,11 +272,11 @@ function SpinWheel({ slices, onSpin, spinning, result }: { slices: SpinSlice[]; 
             <div className="relative">
                 {/* Ambient glow layers */}
                 <div className="absolute -inset-16 rounded-full pointer-events-none"
-                    style={{ background: 'radial-gradient(circle, rgba(139,92,246,0.12) 0%, transparent 70%)' }} />
+                    style={{ background: 'radial-gradient(circle, rgba(255, 122, 26,0.12) 0%, transparent 70%)' }} />
                 <motion.div animate={spinning ? { opacity: [0.2, 0.5, 0.2] } : { opacity: 0.15 }}
                     transition={{ duration: 0.8, repeat: Infinity }}
                     className="absolute -inset-10 rounded-full pointer-events-none"
-                    style={{ background: 'conic-gradient(from 0deg, #8B5CF6, #EF4444, #EC4899, #8B5CF6, #3B82F6, #10B981, #8B5CF6)', filter: 'blur(30px)' }} />
+                    style={{ background: 'conic-gradient(from 0deg, #ff7a1a, #EF4444, #EC4899, #ff7a1a, #3B82F6, #10B981, #ff7a1a)', filter: 'blur(30px)' }} />
 
                 <div className={`relative ${wheelSize}`}>
 
@@ -293,8 +293,8 @@ function SpinWheel({ slices, onSpin, spinning, result }: { slices: SpinSlice[]; 
                                 </linearGradient>
                                 <radialGradient id="ledGlow" cx="50%" cy="50%" r="50%">
                                     <stop offset="0%" stopColor="white" stopOpacity="1" />
-                                    <stop offset="40%" stopColor="#A78BFA" stopOpacity="0.8" />
-                                    <stop offset="100%" stopColor="#8B5CF6" stopOpacity="0" />
+                                    <stop offset="40%" stopColor="#ff9a3d" stopOpacity="0.8" />
+                                    <stop offset="100%" stopColor="#ff7a1a" stopOpacity="0" />
                                 </radialGradient>
                                 <filter id="ledBlur"><feGaussianBlur stdDeviation="1.5" /></filter>
                             </defs>
@@ -314,7 +314,7 @@ function SpinWheel({ slices, onSpin, spinning, result }: { slices: SpinSlice[]; 
                                     <line key={`tick-${i}`}
                                         x1={220 + r1 * Math.cos(angle)} y1={220 + r1 * Math.sin(angle)}
                                         x2={220 + r2 * Math.cos(angle)} y2={220 + r2 * Math.sin(angle)}
-                                        stroke={isMajor ? 'rgba(139,92,246,0.4)' : 'rgba(255,255,255,0.08)'}
+                                        stroke={isMajor ? 'rgba(255, 122, 26,0.4)' : 'rgba(255,255,255,0.08)'}
                                         strokeWidth={isMajor ? 1.5 : 0.5} />
                                 );
                             })}
@@ -331,7 +331,7 @@ function SpinWheel({ slices, onSpin, spinning, result }: { slices: SpinSlice[]; 
                                     <g key={`led-${i}`}>
                                         {isLit && <circle cx={cx} cy={cy} r="6" fill="url(#ledGlow)" filter="url(#ledBlur)" opacity="0.7" />}
                                         <circle cx={cx} cy={cy} r="3"
-                                            fill={isLit ? '#A78BFA' : '#4A3F2F'}
+                                            fill={isLit ? '#ff9a3d' : '#4A3F2F'}
                                             stroke={isLit ? '#C4B5FD' : '#3D3224'}
                                             strokeWidth="0.5" />
                                         {isLit && <circle cx={cx} cy={cy} r="1.5" fill="white" opacity="0.9" />}
@@ -351,14 +351,14 @@ function SpinWheel({ slices, onSpin, spinning, result }: { slices: SpinSlice[]; 
                             <defs>
                                 <linearGradient id="pointerGrad" x1="0" y1="0" x2="0" y2="1">
                                     <stop offset="0%" stopColor="#C4B5FD" />
-                                    <stop offset="50%" stopColor="#8B5CF6" />
-                                    <stop offset="100%" stopColor="#7C3AED" />
+                                    <stop offset="50%" stopColor="#ff7a1a" />
+                                    <stop offset="100%" stopColor="#e85f00" />
                                 </linearGradient>
-                                <filter id="pointerShadow"><feDropShadow dx="0" dy="3" stdDeviation="3" floodColor="#8B5CF6" floodOpacity="0.5" /></filter>
+                                <filter id="pointerShadow"><feDropShadow dx="0" dy="3" stdDeviation="3" floodColor="#ff7a1a" floodOpacity="0.5" /></filter>
                             </defs>
                             <path d="M18 0 L32 40 Q18 48 4 40 Z" fill="url(#pointerGrad)" filter="url(#pointerShadow)" />
                             <path d="M18 4 L28 38 Q18 44 8 38 Z" fill="none" stroke="rgba(255,255,255,0.3)" strokeWidth="0.5" />
-                            <circle cx="18" cy="36" r="4" fill="#7C3AED" stroke="#C4B5FD" strokeWidth="1" />
+                            <circle cx="18" cy="36" r="4" fill="#e85f00" stroke="#C4B5FD" strokeWidth="1" />
                             <circle cx="18" cy="36" r="2" fill="#C4B5FD" />
                         </svg>
                     </div>
@@ -415,7 +415,7 @@ function SpinWheel({ slices, onSpin, spinning, result }: { slices: SpinSlice[]; 
                             {/* Center circle decorative rings */}
                             <circle cx="150" cy="150" r="148" fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth="2" />
                             <circle cx="150" cy="150" r="38" fill="rgba(0,0,0,0.3)" />
-                            <circle cx="150" cy="150" r="36" fill="none" stroke="rgba(139,92,246,0.3)" strokeWidth="1" />
+                            <circle cx="150" cy="150" r="36" fill="none" stroke="rgba(255, 122, 26,0.3)" strokeWidth="1" />
                         </svg>
                     </motion.div>
 
@@ -428,13 +428,13 @@ function SpinWheel({ slices, onSpin, spinning, result }: { slices: SpinSlice[]; 
                             transition={spinning ? { duration: 1, repeat: Infinity, ease: 'linear' } : {}}
                             className="relative w-[72px] h-[72px] md:w-[88px] md:h-[88px] rounded-full disabled:cursor-wait"
                             style={{
-                                background: 'conic-gradient(from 0deg, #C4B5FD, #8B5CF6, #7C3AED, #7C3AED, #7C3AED, #8B5CF6, #C4B5FD)',
-                                boxShadow: '0 0 40px rgba(139,92,246,0.5), 0 0 80px rgba(139,92,246,0.2), inset 0 2px 4px rgba(255,255,255,0.4), inset 0 -2px 4px rgba(0,0,0,0.3)',
+                                background: 'conic-gradient(from 0deg, #C4B5FD, #ff7a1a, #e85f00, #e85f00, #e85f00, #ff7a1a, #C4B5FD)',
+                                boxShadow: '0 0 40px rgba(255, 122, 26,0.5), 0 0 80px rgba(255, 122, 26,0.2), inset 0 2px 4px rgba(255,255,255,0.4), inset 0 -2px 4px rgba(0,0,0,0.3)',
                             }}>
                             {/* Inner face */}
                             <div className="absolute inset-[4px] rounded-full flex items-center justify-center"
                                 style={{
-                                    background: 'radial-gradient(circle at 40% 35%, #8B5CF6, #7C3AED)',
+                                    background: 'radial-gradient(circle at 40% 35%, #ff7a1a, #e85f00)',
                                     boxShadow: 'inset 0 2px 6px rgba(255,255,255,0.3), inset 0 -3px 6px rgba(0,0,0,0.4)',
                                 }}>
                                 {spinning ? (
@@ -484,9 +484,9 @@ function SpinWheel({ slices, onSpin, spinning, result }: { slices: SpinSlice[]; 
                         className="relative w-full max-w-md">
                         {/* Background glow */}
                         <div className="absolute -inset-4 rounded-3xl opacity-40 blur-xl pointer-events-none"
-                            style={{ background: 'linear-gradient(135deg, #8B5CF6, #EF4444)' }} />
+                            style={{ background: 'linear-gradient(135deg, #ff7a1a, #EF4444)' }} />
                         <div className="relative rounded-2xl overflow-hidden"
-                            style={{ background: 'linear-gradient(135deg, rgba(139,92,246,0.15) 0%, rgba(239,68,68,0.08) 100%)', border: '1px solid rgba(139,92,246,0.3)' }}>
+                            style={{ background: 'linear-gradient(135deg, rgba(255, 122, 26,0.15) 0%, rgba(239,68,68,0.08) 100%)', border: '1px solid rgba(255, 122, 26,0.3)' }}>
                             {/* Shine sweep */}
                             <motion.div animate={{ x: ['-100%', '200%'] }} transition={{ duration: 2, repeat: Infinity, repeatDelay: 1 }}
                                 className="absolute inset-0 pointer-events-none" style={{ background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent)', width: '50%' }} />
@@ -496,7 +496,7 @@ function SpinWheel({ slices, onSpin, spinning, result }: { slices: SpinSlice[]; 
                                 </motion.div>
                                 <p className="text-amber-400 text-sm font-bold mt-3 uppercase tracking-widest">Congratulations!</p>
                                 <p className="text-white text-4xl font-black mt-1"
-                                    style={{ textShadow: '0 0 30px rgba(139,92,246,0.3)' }}>{result}</p>
+                                    style={{ textShadow: '0 0 30px rgba(255, 122, 26,0.3)' }}>{result}</p>
                                 <p className="text-white/30 text-sm mt-2">Added to your wallet</p>
                             </div>
                         </div>
@@ -514,7 +514,7 @@ function AchievementBadge({ achievement, unlocked, index }: { achievement: Achie
             transition={{ delay: index * 0.08, type: 'spring' }} whileHover={{ scale: 1.05, rotateY: 10, z: 10 }}
             className={`relative rounded-2xl p-5 flex flex-col items-center gap-3 text-center transition-all
                 ${unlocked ? 'bg-gradient-to-b from-amber-500/15 to-amber-900/5 border border-amber-400/30' : 'bg-white/[0.03] border border-white/[0.06] opacity-50 grayscale'}`}
-            style={{ perspective: '600px', transformStyle: 'preserve-3d', boxShadow: unlocked ? '0 10px 30px rgba(139,92,246,0.15)' : 'none' }}>
+            style={{ perspective: '600px', transformStyle: 'preserve-3d', boxShadow: unlocked ? '0 10px 30px rgba(255, 122, 26,0.15)' : 'none' }}>
             {unlocked && (<motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} className="absolute -top-2 -right-2 w-7 h-7 rounded-full bg-amber-500 flex items-center justify-center shadow-lg"><svg width="12" height="12" viewBox="0 0 10 10" fill="none"><path d="M2 5l2.5 2.5L8 3" stroke="white" strokeWidth="2" strokeLinecap="round" /></svg></motion.div>)}
             <AchievementIcon3D achievementId={achievement.id} size={28} />
             <h4 className="text-sm font-bold text-white">{achievement.name}</h4>
@@ -560,7 +560,7 @@ function ClaimResultOverlay({ result, onClose }: { result: ClaimResult; onClose:
             {confettiData && <div className="absolute inset-0 pointer-events-none z-0"><Lottie animationData={confettiData} loop={false} autoplay style={{ width: '100%', height: '100%' }} /></div>}
             <motion.div initial={{ scale: 0.7, rotateY: -20 }} animate={{ scale: 1, rotateY: 0 }} transition={{ type: 'spring', stiffness: 200 }}
                 onClick={e => e.stopPropagation()} className="relative z-10 w-full max-w-md mx-4 rounded-3xl overflow-hidden"
-                style={{ background: 'linear-gradient(160deg, #2A2230 0%, #1C191F 55%, #19150F 100%)', border: '1px solid rgba(139,92,246,0.25)', boxShadow: '0 40px 100px rgba(0,0,0,0.8), 0 0 60px rgba(139,92,246,0.1)' }}>
+                style={{ background: 'linear-gradient(160deg, #2A2230 0%, #1C191F 55%, #19150F 100%)', border: '1px solid rgba(255, 122, 26,0.25)', boxShadow: '0 40px 100px rgba(0,0,0,0.8), 0 0 60px rgba(255, 122, 26,0.1)' }}>
                 <div className="p-8 text-center">
                     <motion.div animate={{ scale: [1, 1.2, 1] }} transition={{ duration: 1.5, repeat: 2 }} className="mb-4 inline-block">
                         <Icon3D index={result.jackpotAmount > 0 ? 1 : result.weeklyMegaClaimed ? 5 : 0} size={40} />
@@ -584,7 +584,7 @@ function ClaimResultOverlay({ result, onClose }: { result: ClaimResult; onClose:
                     )}
                     <motion.button onClick={onClose} whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
                         className="w-full py-3.5 rounded-xl font-bold text-[14px] bg-gradient-to-r from-amber-500 to-orange-600 text-[#1a1208]"
-                        style={{ boxShadow: '0 8px 25px rgba(139,92,246,0.3)' }}>Awesome!</motion.button>
+                        style={{ boxShadow: '0 8px 25px rgba(255, 122, 26,0.3)' }}>Awesome!</motion.button>
                 </div>
             </motion.div>
         </motion.div>
@@ -686,7 +686,7 @@ function DailyRewardsContent() {
 
                     {/* ═══ HERO ═══════════════════════════════════════════════════ */}
                     <div className="relative overflow-hidden">
-                        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_rgba(139,92,246,0.15),_transparent_60%)]" />
+                        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_rgba(255, 122, 26,0.15),_transparent_60%)]" />
                         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,_rgba(239,68,68,0.08),_transparent_60%)]" />
                         <div className="absolute -right-20 top-10 w-80 h-80 rounded-full bg-amber-500/5 blur-3xl pointer-events-none" />
                         <div className="absolute left-10 bottom-0 w-60 h-60 rounded-full bg-purple-500/5 blur-3xl pointer-events-none" />
@@ -738,7 +738,7 @@ function DailyRewardsContent() {
                                 {/* Right: Streak + Countdown */}
                                 <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.2 }}
                                     className="flex flex-col items-center gap-3 w-full lg:w-auto">
-                                    <Card3D className="rounded-xl md:rounded-2xl p-3 md:p-5 bg-gradient-to-b from-white/[0.06] to-white/[0.02] border border-white/[0.1] w-full lg:w-auto" glowColor="rgba(139,92,246,0.1)">
+                                    <Card3D className="rounded-xl md:rounded-2xl p-3 md:p-5 bg-gradient-to-b from-white/[0.06] to-white/[0.02] border border-white/[0.1] w-full lg:w-auto" glowColor="rgba(255, 122, 26,0.1)">
                                         <div className="flex items-center gap-4 md:gap-6">
                                             <div className="flex flex-col items-center">
                                                 <div className="w-10 h-10 md:w-14 md:h-14 flex-shrink-0">{fireData ? <Lottie animationData={fireData} loop autoplay /> : <Flame size={24} className="text-orange-500" />}</div>
@@ -812,7 +812,7 @@ function DailyRewardsContent() {
                                             <div className="flex-1 min-w-0"><h3 className="text-white font-bold text-sm md:text-base">Deposit Required</h3><p className="text-white/40 text-xs mt-0.5">Make your first deposit to start claiming daily rewards.</p></div>
                                             <motion.button onClick={() => openDeposit()} whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
                                                 className="px-5 py-2.5 rounded-xl font-bold text-xs md:text-sm bg-gradient-to-r from-amber-500 to-orange-600 text-[#1a1208] w-full sm:w-auto"
-                                                style={{ boxShadow: '0 6px 20px rgba(139,92,246,0.3)' }}>Deposit Now</motion.button>
+                                                style={{ boxShadow: '0 6px 20px rgba(255, 122, 26,0.3)' }}>Deposit Now</motion.button>
                                         </div>
                                     </motion.div>
                                 )}
@@ -833,9 +833,9 @@ function DailyRewardsContent() {
                                         </Card3D>
 
                                         {status.config.monthlyGrandPrizeEnabled && (
-                                            <Card3D className="rounded-xl md:rounded-2xl p-3 md:p-4 bg-gradient-to-r from-purple-500/10 to-transparent border border-purple-500/20" glowColor="rgba(139,92,246,0.1)">
+                                            <Card3D className="rounded-xl md:rounded-2xl p-3 md:p-4 bg-gradient-to-r from-purple-500/10 to-transparent border border-purple-500/20" glowColor="rgba(255, 122, 26,0.1)">
                                                 <div className="flex items-center gap-3 mb-2">
-                                                    <div className="w-9 h-9 md:w-11 md:h-11 rounded-lg md:rounded-xl bg-gradient-to-br from-purple-500 to-violet-700 flex items-center justify-center flex-shrink-0" style={{ boxShadow: '0 4px 14px rgba(139,92,246,0.3)' }}><Crown size={18} className="text-white" /></div>
+                                                    <div className="w-9 h-9 md:w-11 md:h-11 rounded-lg md:rounded-xl bg-gradient-to-br from-purple-500 to-violet-700 flex items-center justify-center flex-shrink-0" style={{ boxShadow: '0 4px 14px rgba(255, 122, 26,0.3)' }}><Crown size={18} className="text-white" /></div>
                                                     <div className="min-w-0"><p className="text-white font-bold text-sm">Monthly Grand Prize</p><p className="text-white/30 text-[11px]">{status.config.monthlyGrandPrizeStreakRequired}-day streak required</p></div>
                                                 </div>
                                                 <div className="h-2 md:h-2.5 rounded-full bg-white/[0.06] overflow-hidden">
@@ -874,7 +874,7 @@ function DailyRewardsContent() {
                                     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="flex flex-col sm:flex-row gap-2 md:gap-3">
                                         <motion.button onClick={() => handleClaim(false)} disabled={claiming} whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
                                             className="flex-1 py-3.5 md:py-4 rounded-xl md:rounded-2xl font-black text-sm md:text-base relative overflow-hidden disabled:opacity-60"
-                                            style={{ background: 'linear-gradient(135deg, #8B5CF6 0%, #EF4444 60%, #8B5CF6 100%)', backgroundSize: '200% 100%', color: '#1A1208', boxShadow: '0 8px 30px rgba(139,92,246,0.35)' }}>
+                                            style={{ background: 'linear-gradient(135deg, #ff7a1a 0%, #EF4444 60%, #ff7a1a 100%)', backgroundSize: '200% 100%', color: '#1A1208', boxShadow: '0 8px 30px rgba(255, 122, 26,0.35)' }}>
                                             <motion.span animate={{ backgroundPosition: ['200% 0', '-200% 0'] }} transition={{ duration: 2.5, repeat: Infinity, ease: 'linear' }}
                                                 className="absolute inset-0 pointer-events-none" style={{ background: 'linear-gradient(90deg,transparent,rgba(255,255,255,0.25),transparent)', backgroundSize: '200% 100%' }} />
                                             <span className="relative flex items-center justify-center gap-2">
@@ -899,8 +899,8 @@ function DailyRewardsContent() {
                                     <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 md:gap-3">
                                         {[
                                             { icon: Target, gradient: 'from-pink-500 to-rose-600', shadow: 'rgba(236,72,153,0.3)', title: 'Spin Wheel', desc: 'Spin the wheel for randomized rewards. Land on the jackpot slice for massive prizes!', enabled: status.config.spinWheelEnabled },
-                                            { icon: Crown, gradient: 'from-yellow-400 to-amber-600', shadow: 'rgba(139,92,246,0.3)', title: 'VIP Multiplier', desc: 'VIP members earn up to 5x multiplier on every daily reward claim.', enabled: status.config.vipMultiplierEnabled },
-                                            { icon: Zap, gradient: 'from-amber-400 to-orange-500', shadow: 'rgba(167,139,250,0.3)', title: 'Lucky Jackpot', desc: 'Every claim has a chance to trigger the lucky jackpot for a mega bonus reward!', enabled: status.config.luckyJackpotEnabled },
+                                            { icon: Crown, gradient: 'from-yellow-400 to-amber-600', shadow: 'rgba(255, 122, 26,0.3)', title: 'VIP Multiplier', desc: 'VIP members earn up to 5x multiplier on every daily reward claim.', enabled: status.config.vipMultiplierEnabled },
+                                            { icon: Zap, gradient: 'from-amber-400 to-orange-500', shadow: 'rgba(255, 154, 61,0.3)', title: 'Lucky Jackpot', desc: 'Every claim has a chance to trigger the lucky jackpot for a mega bonus reward!', enabled: status.config.luckyJackpotEnabled },
                                             { icon: Users, gradient: 'from-blue-500 to-indigo-600', shadow: 'rgba(59,130,246,0.3)', title: 'Referral Bonus', desc: 'Earn extra rewards when your referred friends also claim their daily rewards.', enabled: status.config.referralBonusEnabled },
                                         ].map((f, i) => (
                                             <motion.div key={i} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.08 * i }}

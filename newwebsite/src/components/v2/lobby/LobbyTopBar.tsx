@@ -5,6 +5,7 @@ import { useModal } from "@/context/ModalContext";
 import { useAuth } from "@/context/AuthContext";
 import { useWallet } from "@/context/WalletContext";
 import { useLayout } from "@/context/LayoutContext";
+import Countdown from "./Countdown";
 
 function fmt(n: number) {
   return (n ?? 0).toLocaleString("en-US", { maximumFractionDigits: 2 });
@@ -55,7 +56,7 @@ export default function LobbyTopBar() {
         <span className="grid h-9 w-9 place-items-center rounded-lg bg-white/[0.04]"><Gift className="h-5 w-5 text-[#ff7a1a]" strokeWidth={2.2} /></span>
         <div className="leading-tight">
           <p className="text-sm font-bold text-white">Claim Bonus</p>
-          <p className="font-mono text-xs tracking-widest text-[#ff7a1a]">00 : 34 : 09</p>
+          <Countdown seconds={34 * 60 + 9} className="font-mono text-xs tracking-widest text-[#ff7a1a]" />
         </div>
       </div>
 

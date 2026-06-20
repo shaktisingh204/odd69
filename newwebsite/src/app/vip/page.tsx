@@ -19,8 +19,8 @@ const TIER_ICONS: Record<string, React.ElementType> = {
 
 const TIER_META: Record<string, { name: string; color: string; glow: string; bgFrom: string; bgTo: string; borderColor: string; iconBg: string }> = {
     SILVER:   { name: 'Silver',   color: '#94A3B8', glow: 'shadow-slate-400/20',   bgFrom: 'from-slate-500/8',   bgTo: 'to-slate-600/3',   borderColor: 'border-slate-400/15', iconBg: 'bg-gradient-to-br from-slate-300/20 to-slate-500/10' },
-    GOLD:     { name: 'Gold',     color: '#8B5CF6', glow: 'shadow-amber-400/25',   bgFrom: 'from-amber-500/8',   bgTo: 'to-amber-600/3',   borderColor: 'border-amber-400/15', iconBg: 'bg-gradient-to-br from-amber-300/20 to-amber-500/10' },
-    PLATINUM: { name: 'Platinum', color: '#8B5CF6', glow: 'shadow-purple-400/25',  bgFrom: 'from-purple-500/8',  bgTo: 'to-purple-600/3',  borderColor: 'border-purple-400/15', iconBg: 'bg-gradient-to-br from-purple-300/20 to-purple-500/10' },
+    GOLD:     { name: 'Gold',     color: '#ff7a1a', glow: 'shadow-amber-400/25',   bgFrom: 'from-amber-500/8',   bgTo: 'to-amber-600/3',   borderColor: 'border-amber-400/15', iconBg: 'bg-gradient-to-br from-amber-300/20 to-amber-500/10' },
+    PLATINUM: { name: 'Platinum', color: '#ff7a1a', glow: 'shadow-purple-400/25',  bgFrom: 'from-purple-500/8',  bgTo: 'to-purple-600/3',  borderColor: 'border-purple-400/15', iconBg: 'bg-gradient-to-br from-purple-300/20 to-purple-500/10' },
     DIAMOND:  { name: 'Diamond',  color: '#3B82F6', glow: 'shadow-blue-400/30',    bgFrom: 'from-blue-500/8',    bgTo: 'to-blue-600/3',    borderColor: 'border-blue-400/15', iconBg: 'bg-gradient-to-br from-blue-300/20 to-blue-500/10' },
 };
 
@@ -381,7 +381,7 @@ function ApplyModal({ onClose, onSuccess }: { onClose: () => void; onSuccess: (d
             <form onSubmit={handleSubmit} className="bg-bg-elevated border border-white/[0.06] rounded-2xl w-full max-w-lg shadow-xl" onClick={e => e.stopPropagation()}>
                 <div className="p-5 border-b border-white/[0.04] flex items-center gap-3">
                     <div className="w-10 h-10 rounded-xl bg-brand-gold/10 border border-brand-gold/30 flex items-center justify-center"
-                        style={{ boxShadow: '0 4px 12px -2px rgba(139,92,246,0.03)' }}>
+                        style={{ boxShadow: '0 4px 12px -2px rgba(255, 122, 26,0.03)' }}>
                         <Star size={20} className="text-brand-gold fill-brand-gold" />
                     </div>
                     <div>
@@ -489,7 +489,7 @@ function VIPContent() {
 
                     {/* HERO */}
                     <div className="relative overflow-hidden">
-                        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_rgba(139,92,246,0.18),_transparent_60%)]" />
+                        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_rgba(255, 122, 26,0.18),_transparent_60%)]" />
                         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,_rgba(123,92,214,0.12),_transparent_60%)]" />
                         <div className="absolute -right-20 top-10 w-80 h-80 rounded-full bg-brand-gold/5 blur-3xl pointer-events-none" />
                         {/* 3D floating orbs */}
@@ -499,7 +499,7 @@ function VIPContent() {
                         <div className="relative px-4 md:px-8 lg:px-12 pt-10 pb-14 md:pt-16 md:pb-20">
                           <div className="max-w-6xl mx-auto">
                             <div className="inline-flex items-center gap-2 bg-brand-gold/10 border border-brand-gold/30 rounded-full px-4 py-1.5 mb-5 backdrop-blur-md"
-                                style={{ boxShadow: '0 2px 12px -2px rgba(139,92,246,0.02)' }}>
+                                style={{ boxShadow: '0 2px 12px -2px rgba(255, 122, 26,0.02)' }}>
                                 <Crown size={14} className="text-brand-gold" />
                                 <span className="text-brand-gold text-xs font-bold uppercase tracking-widest">ODD69 VIP Club</span>
                             </div>
@@ -536,13 +536,13 @@ function VIPContent() {
                                     {!isAuthenticated ? (
                                         <button onClick={() => window.location.href = '/auth/login'}
                                             className="flex items-center gap-2 bg-brand-gold hover:bg-brand-gold-hover text-text-inverse font-black px-6 py-3 rounded-xl transition-all duration-200 hover:scale-105 text-sm uppercase tracking-wide"
-                                            style={{ boxShadow: '0 4px 16px -4px rgba(139,92,246,0.06)' }}>
+                                            style={{ boxShadow: '0 4px 16px -4px rgba(255, 122, 26,0.06)' }}>
                                             Login to Apply <ArrowRight size={16} />
                                         </button>
                                     ) : canApply ? (
                                         <button onClick={() => setShowApplyModal(true)}
                                             className="flex items-center gap-2 bg-brand-gold hover:bg-brand-gold-hover text-text-inverse font-black px-6 py-3 rounded-xl transition-all duration-200 hover:scale-105 text-sm uppercase tracking-wide"
-                                            style={{ boxShadow: '0 4px 16px -4px rgba(139,92,246,0.06)' }}>
+                                            style={{ boxShadow: '0 4px 16px -4px rgba(255, 122, 26,0.06)' }}>
                                             {application?.status === 'REJECTED' ? 'Re-Apply for VIP' : 'Apply for VIP'} <ArrowRight size={16} />
                                         </button>
                                     ) : null}
@@ -619,10 +619,10 @@ function VIPContent() {
                     {/* TRANSFER BANNER */}
                     <div className="px-4 md:px-8 lg:px-12 pb-12">
                         <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-brand-gold/20 via-amber-600/10 to-bg-elevated border border-brand-gold/20 p-6 md:p-8 flex flex-col md:flex-row items-center gap-6 max-w-6xl mx-auto"
-                            style={{ boxShadow: '0 8px 40px -12px rgba(139,92,246,0.025)' }}>
-                            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_right,_rgba(139,92,246,0.025),_transparent_70%)]" />
+                            style={{ boxShadow: '0 8px 40px -12px rgba(255, 122, 26,0.025)' }}>
+                            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_right,_rgba(255, 122, 26,0.025),_transparent_70%)]" />
                             <div className="flex-shrink-0 w-14 h-14 rounded-full bg-brand-gold/10 border border-brand-gold/30 flex items-center justify-center relative"
-                                style={{ boxShadow: '0 4px 20px -4px rgba(139,92,246,0.04)' }}>
+                                style={{ boxShadow: '0 4px 20px -4px rgba(255, 122, 26,0.04)' }}>
                                 <Shield size={28} className="text-brand-gold" />
                             </div>
                             <div className="flex-1 relative">
@@ -632,7 +632,7 @@ function VIPContent() {
                             {canApply ? (
                                 <button onClick={() => { setShowApplyModal(true); setShowTransferModal(true); }}
                                     className="flex-shrink-0 flex items-center gap-2 bg-brand-gold hover:bg-brand-gold-hover text-text-inverse font-bold px-5 py-2.5 rounded-xl text-sm uppercase tracking-wide transition-all duration-200 hover:scale-105 relative"
-                                    style={{ boxShadow: '0 4px 16px -4px rgba(139,92,246,0.06)' }}>
+                                    style={{ boxShadow: '0 4px 16px -4px rgba(255, 122, 26,0.06)' }}>
                                     Start Transfer <ArrowRight size={14} />
                                 </button>
                             ) : (
@@ -651,7 +651,7 @@ function VIPContent() {
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                             {[
                                 { icon: Users, color: 'text-brand-gold', bgColor: '#3B82F6', bg: 'from-blue-500/15 to-blue-600/5', title: 'Activity', description: 'Consistent and responsible gameplay helps you stand out as a valued player. We watch patterns, not just totals.', bullet: 'Regular, responsible play' },
-                                { icon: HeartHandshake, color: 'text-brand-gold', bgColor: '#8B5CF6', bg: 'from-amber-500/15 to-amber-600/5', title: 'Loyalty', description: 'Stable and ongoing loyalty to ODD69 increases your chance of unlocking VIP service and exclusive personal support.', bullet: 'Long-term engagement' },
+                                { icon: HeartHandshake, color: 'text-brand-gold', bgColor: '#ff7a1a', bg: 'from-amber-500/15 to-amber-600/5', title: 'Loyalty', description: 'Stable and ongoing loyalty to ODD69 increases your chance of unlocking VIP service and exclusive personal support.', bullet: 'Long-term engagement' },
                                 { icon: Layers, color: 'text-success-bright', bgColor: '#10B981', bg: 'from-success-primary/15 to-success-soft', title: 'No Barriers', description: 'No fixed level or specific game requirements — every player has the opportunity to qualify for VIP regardless of what they play.', bullet: 'Open to all players' },
                             ].map((item) => {
                                 const Icon = item.icon;

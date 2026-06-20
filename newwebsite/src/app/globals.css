@@ -39,38 +39,39 @@
   /* ═══════════════════════════════════════════════
      1. CORE BACKGROUND & DARK LAYERS
      ═══════════════════════════════════════════════ */
-  --bg-base: #0C0D12;           /* Outermost page / outer frame – deep navy */
-  --bg-section: #0F1016;        /* Deep app background / main background */
-  --bg-card: #171921;           /* Card / tile background */
-  --bg-elevated: #1C1E28;       /* Secondary / elevated background */
-  --bg-hover: #262936;          /* Hover / active surface */
-  --divider: #2A2D3A;           /* Divider / subtle border */
+  --bg-base: #0d0a08;           /* Outermost page / outer frame – deep navy */
+  --bg-section: #100d0a;        /* Deep app background / main background */
+  --bg-card: #1a1510;           /* Card / tile background */
+  --bg-elevated: #1f1a14;       /* Secondary / elevated background */
+  --bg-hover: #2a2620;          /* Hover / active surface */
+  --divider: #2d2a22;           /* Divider / subtle border */
 
   /* Deep stacked layers (used in games, overlays, modals) */
-  --bg-deep: #06070B;           /* Deepest layer – odd69 games, dark overlays */
-  --bg-deep-2: #090A10;         /* Second deep layer */
-  --bg-deep-3: #0B0C14;         /* Third deep layer */
-  --bg-deep-4: #080912;         /* Fourth deep variant */
-  --bg-modal: #12141C;          /* Standard modal background */
-  --bg-modal-2: #141620;        /* Variant modal / panel */
-  --bg-modal-3: #161824;        /* Deeper modal variant */
-  --bg-modal-4: #111320;        /* Dark modal frame */
-  --bg-surface: #1A1D28;        /* Surface panels / sheets */
-  --bg-surface-2: #1F2230;      /* Raised / distinct surface */
-  --bg-surface-3: #1C1F2C;      /* Surface variant */
-  --bg-surface-4: #1E2132;      /* Surface variant 2 */
-  --bg-input: #13151E;          /* Input / form field background */
-  --bg-input-2: #151720;        /* Input variant */
-  --bg-well: #121A2A;           /* Blue-tinted well (info, media) */
-  --bg-odd69: #080A12;          /* ODD69 originals dark base */
-  --bg-odd69-2: #0A1018;        /* ODD69 deeper blue-black */
-  --bg-odd69-3: #070810;        /* ODD69 panel background */
-  --bg-game-dark: #0A0C14;      /* Game betslip / dark base (betslip, desktop panel) */
+  --bg-deep: #05040a;           /* Deepest layer – odd69 games, dark overlays */
+  --bg-deep-2: #080704;         /* Second deep layer */
+  --bg-deep-3: #0a0907;         /* Third deep layer */
+  --bg-deep-4: #070605;         /* Fourth deep variant */
+  --bg-modal: #140f0b;          /* Standard modal background */
+  --bg-modal-2: #151008;        /* Variant modal / panel */
+  --bg-modal-3: #18120a;        /* Deeper modal variant */
+  --bg-modal-4: #0e0903;        /* Dark modal frame */
+  --bg-surface: #1c1713;        /* Surface panels / sheets */
+  --bg-surface-2: #221d16;      /* Raised / distinct surface */
+  --bg-surface-3: #1e1a13;      /* Surface variant */
+  --bg-surface-4: #201c15;      /* Surface variant 2 */
+  --bg-input: #0f0c09;          /* Input / form field background */
+  --bg-input-2: #121009;        /* Input variant */
+  --bg-well: #13100a;           /* Blue-tinted well (info, media) */
+  --bg-odd69: #070504;          /* ODD69 originals dark base */
+  --bg-odd69-2: #080705;        /* ODD69 deeper blue-black */
+  --bg-odd69-3: #060403;        /* ODD69 panel background */
+  --bg-game-dark: #080604;      /* Game betslip / dark base (betslip, desktop panel) */
 
   /* ═══════════════════════════════════════════════
      2. BRAND / PURPLE (MOST IMPORTANT)
      ═══════════════════════════════════════════════ */
   --action-primary: #ff7a1a;    /* Primary ODD69 orange CTA (v2) */
+  --action-primary-light: #ff9a3d; /* Lighter orange — small text / icons on dark (a11y) */
   --action-hover: #ff9a3d;      /* Bright orange hover */
   --action-active: #e85f00;     /* Deep orange – pressed state */
   --gold-soft: #ffb778;         /* Soft orange for banners / gradients */
@@ -857,14 +858,14 @@ body::before {
 
 /* ── Glass surfaces ── */
 .glass-surface {
-  background: rgba(15, 16, 22, 0.75);
+  background: rgba(16, 13, 10, 0.75);
   backdrop-filter: blur(20px) saturate(180%);
   -webkit-backdrop-filter: blur(20px) saturate(180%);
   border: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .glass-card {
-  background: rgba(23, 25, 33, 0.6);
+  background: rgba(26, 21, 16, 0.6);
   backdrop-filter: blur(12px) saturate(150%);
   -webkit-backdrop-filter: blur(12px) saturate(150%);
   border: 1px solid rgba(255, 255, 255, 0.05);

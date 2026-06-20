@@ -310,7 +310,7 @@ const WithdrawModal: React.FC<WithdrawModalProps> = ({ onClose }) => {
             <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center sm:p-4 pointer-events-none">
                 <div
                     className="pointer-events-auto w-full sm:max-w-5xl max-h-[95dvh] sm:max-h-[90vh] flex flex-col rounded-t-3xl sm:rounded-3xl overflow-hidden shadow-xl border border-white/[0.05] relative"
-                    style={{ background: 'linear-gradient(155deg, var(--bg-odd69-2) 0%, var(--bg-deep-3) 60%, #0a0a12 100%)' }}
+                    style={{ background: 'linear-gradient(155deg, var(--bg-odd69-2) 0%, var(--bg-deep-3) 60%, #100d0a 100%)' }}
                 >
                     {/* Ambient glow accents */}
                     <div className="pointer-events-none absolute -top-24 -right-24 w-72 h-72 rounded-full opacity-20 blur-3xl" style={{ background: 'radial-gradient(circle, var(--brand-gold) 0%, transparent 70%)' }} />
