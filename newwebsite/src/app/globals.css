@@ -1,5 +1,40 @@
 @import "tailwindcss";
 
+/* ════════════════════════════════════════════════════════════════
+   ODD69 v2 — Neon Arcade redesign (scoped utilities, additive only)
+   All continuous motion is gated behind prefers-reduced-motion.
+   ════════════════════════════════════════════════════════════════ */
+@keyframes v2-aurora {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  33%      { transform: translate3d(7%, -5%, 0) scale(1.18); }
+  66%      { transform: translate3d(-6%, 5%, 0) scale(0.9); }
+}
+@keyframes v2-float {
+  0%, 100% { transform: translateY(0) rotate(var(--v2-rot, 0deg)); }
+  50%      { transform: translateY(-16px) rotate(var(--v2-rot, 0deg)); }
+}
+@keyframes v2-marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+@keyframes v2-pulse  { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
+@keyframes v2-spin   { to { transform: rotate(360deg); } }
+
+@media (prefers-reduced-motion: no-preference) {
+  .v2-aurora        { animation: v2-aurora 20s ease-in-out infinite; }
+  .v2-float         { animation: v2-float 6s ease-in-out infinite; }
+  .v2-marquee-track { animation: v2-marquee 40s linear infinite; }
+  .v2-pulse         { animation: v2-pulse 3.4s ease-in-out infinite; }
+  .v2-spin-slow     { animation: v2-spin 22s linear infinite; }
+}
+.v2-grad-text {
+  background: linear-gradient(108deg, #ff2e9a 0%, #b14dff 46%, #22d3ee 100%);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.v2-marquee-mask {
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+}
+.v2-no-scrollbar::-webkit-scrollbar { display: none; }
+.v2-no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
 :root {
   /* ═══════════════════════════════════════════════
      1. CORE BACKGROUND & DARK LAYERS

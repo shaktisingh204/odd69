@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect } from "react";
+import { usePathname } from "next/navigation";
 import { ModalProvider, useModal } from "@/context/ModalContext";
 import LoginModal from "@/components/LoginModal/LoginModal";
 import RegisterModal from "@/components/RegisterModal/RegisterModal";
@@ -76,6 +77,12 @@ export default function ClientLayout({ children, maintenanceConfig }: { children
     const message = maintenanceConfig?.platformMessage ?? '';
     const allowedUsers = maintenanceConfig?.allowedUsers ?? [];
 
+    // The v2 redesign owns the whole viewport, so it renders without the
+    // legacy header / sidebars / mobile chrome. Providers + modals stay
+    // mounted so login / register / wallet still work inside it.
+    const pathname = usePathname();
+    const bare = pathname?.startsWith('/v2') ?? false;
+
     return (
         <AuthProvider>
             <SocketProvider>
@@ -84,6 +91,10 @@ export default function ClientLayout({ children, maintenanceConfig }: { children
                         <BetProvider>
                             <LayoutProvider>
                                 <PlatformMaintenanceGuard isBlocked={isBlocked} message={message} allowedUsers={allowedUsers}>
+                                    {bare ? (
+                                        <PageTransition>{children}</PageTransition>
+                                    ) : (
+                                    <>
                                     <AnnouncementBanner />
                                     <React.Suspense fallback={<div className="h-[50px] md:hidden bg-bg-modal" />}>
                                         <MobileCategoryBar />
@@ -98,6 +109,8 @@ export default function ClientLayout({ children, maintenanceConfig }: { children
                                         <RightSidebar />
                                     </div>
                                     <MobileBottomNav />
+                                    </>
+                                    )}
                                 </PlatformMaintenanceGuard>
                                 <ModalContainer />
                                 <NotificationPermissionPrompt />
