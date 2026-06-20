@@ -51,11 +51,17 @@ export default function RealGameSection({ title, section, href = "/casino" }: { 
           View all <ChevronRight className="h-4 w-4" strokeWidth={2.4} />
         </a>
       </div>
-      {/* ~30% smaller tiles: auto-fill packs more, smaller cards per row */}
-      <div className="grid gap-3 grid-cols-[repeat(auto-fill,minmax(96px,1fr))] sm:grid-cols-[repeat(auto-fill,minmax(116px,1fr))] lg:grid-cols-[repeat(auto-fill,minmax(136px,1fr))]">
+      {/* single horizontal line of games (scrollable); fixed-width tiles */}
+      <div className="v2-no-scrollbar flex snap-x snap-mandatory gap-3 overflow-x-auto pb-1">
         {loading
-          ? Array.from({ length: 12 }).map((_, i) => <div key={i} className="aspect-[3/4] rounded-2xl skeleton-block" />)
-          : games.map((g, i) => <GameCard key={g.id || g.gameCode || i} game={g} />)}
+          ? Array.from({ length: 10 }).map((_, i) => (
+              <div key={i} className="aspect-[3/4] w-[112px] shrink-0 snap-start rounded-2xl skeleton-block sm:w-[132px] lg:w-[152px]" />
+            ))
+          : games.map((g, i) => (
+              <div key={g.id || g.gameCode || i} className="w-[112px] shrink-0 snap-start sm:w-[132px] lg:w-[152px]">
+                <GameCard game={g} />
+              </div>
+            ))}
       </div>
     </section>
   );
