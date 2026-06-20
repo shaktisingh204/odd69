@@ -236,14 +236,14 @@ export default function Header() {
     // ──────────────────────────────────────────────────────────────────────────
 
     return (
-        <header className="fixed top-0 left-0 right-0 h-[60px] md:h-[64px] z-50 flex items-center px-2.5 md:px-6 glass-surface shadow-[0_1px_0_rgba(255,255,255,0.04),0_4px_24px_rgba(0,0,0,0.4)]">
+        <header className="fixed top-0 left-0 right-0 h-[60px] md:h-[64px] z-50 flex items-center px-2.5 md:px-6 bg-[#100d0a] border-b border-white/[0.06] shadow-[0_1px_0_rgba(255,255,255,0.04),0_4px_24px_rgba(0,0,0,0.4)]">
             {/* Left: Logo + Hamburger + Back */}
             <div className="flex items-center gap-1.5 md:gap-3 flex-shrink-0">
                 {/* Hamburger — desktop only, toggles icon rail */}
                 <button
                     onClick={toggleIconRail}
                     aria-label={isIconRail ? 'Expand sidebar' : 'Collapse sidebar'}
-                    className="hidden md:flex h-9 w-9 items-center justify-center rounded-lg border border-white/[0.06] bg-white/[0.04] text-text-secondary transition-all hover:border-brand-gold/30 hover:bg-brand-gold/8 hover:text-brand-gold"
+                    className="hidden md:flex h-9 w-9 items-center justify-center rounded-xl border border-white/[0.06] bg-white/[0.06] text-text-secondary transition-all hover:border-brand-gold/30 hover:bg-brand-gold/8 hover:text-brand-gold"
                 >
                     <motion.div
                         key={isIconRail ? 'x' : 'menu'}
@@ -265,7 +265,7 @@ export default function Header() {
                     <button
                         onClick={() => router.back()}
                         aria-label="Go back"
-                        className="hidden md:flex items-center gap-1 text-text-muted hover:text-white transition-colors p-1.5 rounded-lg hover:bg-white/[0.06] border border-white/[0.06] hover:border-white/[0.12]"
+                        className="hidden md:flex items-center gap-1 text-text-muted hover:text-white transition-colors px-2 py-1.5 rounded-xl bg-white/[0.06] hover:bg-white/[0.1] border border-white/[0.06] hover:border-white/[0.12]"
                     >
                         <ChevronLeft size={18} />
                         <span className="text-xs font-bold uppercase tracking-wide">Back</span>
@@ -280,11 +280,14 @@ export default function Header() {
                     .map((item, idx) => {
                     const isExternal = item.external || /^https?:\/\//i.test(item.path);
                     const isActive = !isExternal && (item.exact ? pathname === item.path : pathname.startsWith(item.path));
-                    const className = `text-[11px] font-semibold uppercase tracking-[0.08em] transition-all relative flex items-center gap-1 px-3 py-1.5 rounded-lg ${
+                    const className = `text-[11px] font-semibold uppercase tracking-[0.08em] transition-all relative flex items-center gap-1 px-3.5 py-2 rounded-xl ${
                         isActive
-                            ? 'text-brand-gold bg-brand-gold/10'
-                            : 'text-white/50 hover:text-white/90 hover:bg-white/[0.05]'
+                            ? 'text-white shadow-[0_4px_14px_rgba(255,106,0,0.35)]'
+                            : 'text-white/50 hover:text-white hover:bg-white/[0.05]'
                     }`;
+                    const linkStyle = isActive
+                        ? { background: 'linear-gradient(135deg,#ff9a3d,#ff6a00)' }
+                        : undefined;
                     const content = (
                         <>
                             {item.name}
@@ -304,13 +307,14 @@ export default function Header() {
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className={className}
+                                style={linkStyle}
                             >
                                 {content}
                             </a>
                         );
                     }
                     return (
-                        <Link key={key} href={item.path} className={className}>
+                        <Link key={key} href={item.path} className={className} style={linkStyle}>
                             {content}
                         </Link>
                     );
@@ -327,7 +331,7 @@ export default function Header() {
                             {/* Trigger pill */}
                             <button
                                 onClick={() => setIsDropdownOpen(prev => !prev)}
-                                className={`flex items-center gap-1 md:gap-1.5 bg-white/[0.04] border rounded-lg px-2 md:px-3.5 h-9 md:h-10 hover:border-brand-gold/40 hover:bg-white/[0.06] transition-all ${pillBorder}`}
+                                className={`flex items-center gap-1 md:gap-1.5 bg-white/[0.06] border rounded-xl px-2 md:px-3.5 h-9 md:h-10 hover:border-brand-gold/40 hover:bg-white/[0.1] transition-all ${pillBorder}`}
                             >
                                 <span className={`font-bold text-[11px] md:text-sm max-w-[72px] md:max-w-none truncate ${pillText}`}>
                                     {formatActive(activeBalance)}
@@ -472,7 +476,8 @@ export default function Header() {
                         <div className="md:hidden flex items-center gap-1">
                             <button
                                 onClick={openDeposit}
-                                className="bg-gradient-to-r from-brand-gold to-brand-gold-hover text-white font-bold h-9 px-3 rounded-lg text-[11px] uppercase transition-all hover:brightness-110 flex items-center gap-1"
+                                style={{ background: 'linear-gradient(135deg,#ff9a3d,#ff6a00)' }}
+                                className="text-white font-bold h-9 px-3 rounded-xl text-[11px] uppercase transition-all hover:brightness-110 flex items-center gap-1 shadow-[0_4px_14px_rgba(255,106,0,0.35)]"
                             >
                                 <Wallet size={12} />
                                 <span>Deposit</span>
@@ -488,7 +493,8 @@ export default function Header() {
                             <DailyCheckInButton compact />
                             <button
                                 onClick={openDeposit}
-                                className="bg-gradient-to-r from-brand-gold to-brand-gold-hover text-white font-bold h-10 px-5 rounded-lg text-sm uppercase transition-all hover:shadow-glow-gold hover:brightness-110"
+                                style={{ background: 'linear-gradient(135deg,#ff9a3d,#ff6a00)' }}
+                                className="text-white font-bold h-10 px-5 rounded-xl text-sm uppercase transition-all hover:brightness-110 shadow-[0_4px_14px_rgba(255,106,0,0.35)]"
                             >
                                 1 CLICK DEPOSIT
                             </button>
@@ -498,13 +504,14 @@ export default function Header() {
                     <div className="flex items-center gap-1.5 md:gap-2">
                         <button
                             onClick={openLogin}
-                            className="h-9 md:h-10 px-3.5 md:px-5 rounded-lg bg-white/[0.04] border border-white/[0.08] text-white/80 text-[11px] md:text-xs font-semibold uppercase tracking-wide hover:bg-white/[0.08] hover:border-white/[0.15] hover:text-white transition-all"
+                            className="h-9 md:h-10 px-3.5 md:px-5 rounded-xl bg-white/[0.06] border border-white/[0.08] text-white/80 text-[11px] md:text-xs font-semibold uppercase tracking-wide hover:bg-white/[0.1] hover:border-white/[0.15] hover:text-white transition-all"
                         >
                             Log In
                         </button>
                         <button
                             onClick={openRegister}
-                            className="h-9 md:h-10 px-3.5 md:px-5 rounded-lg bg-gradient-to-r from-brand-gold to-brand-gold-hover text-white text-[11px] md:text-xs font-bold uppercase tracking-wide hover:shadow-glow-gold hover:brightness-110 transition-all"
+                            style={{ background: 'linear-gradient(135deg,#ff9a3d,#ff6a00)' }}
+                            className="h-9 md:h-10 px-3.5 md:px-5 rounded-xl text-white text-[11px] md:text-xs font-bold uppercase tracking-wide hover:brightness-110 transition-all shadow-[0_4px_14px_rgba(255,106,0,0.35)]"
                         >
                             Register
                         </button>

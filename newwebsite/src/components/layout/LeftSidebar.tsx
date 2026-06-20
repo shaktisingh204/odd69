@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, Suspense, useMemo } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname, useSearchParams } from 'next/navigation';
 import {
     Gamepad2, Trophy, Dices, Crown, Home,
@@ -180,8 +181,8 @@ function NavCard({
     return (
         <div className={`overflow-hidden rounded-xl transition-all duration-200 ${
             active || isOpen
-                ? 'bg-gradient-to-b from-white/[0.06] to-white/[0.02] shadow-[0_4px_24px_rgba(0,0,0,0.3)] border border-white/[0.06]'
-                : 'bg-white/[0.02] hover:bg-white/[0.04] border border-transparent'
+                ? 'bg-gradient-to-r from-[#ff7a1a]/20 to-transparent'
+                : 'hover:bg-white/[0.04]'
         }`}>
             <div className="flex items-center gap-2.5 px-3 py-2.5">
                 <Link
@@ -190,11 +191,11 @@ function NavCard({
                     className="flex min-w-0 flex-1 items-center gap-2.5"
                 >
                     <span className={`flex h-8 w-8 items-center justify-center rounded-md flex-shrink-0 transition-all ${
-                        active || isOpen ? iconClass : iconClass + ' opacity-80'
+                        active || isOpen ? `${iconClass} text-[#ff7a1a]` : 'bg-white/[0.04] text-white/60'
                     }`}>
                         <Icon size={14} />
                     </span>
-                    <span className={`truncate text-[12px] font-semibold tracking-[-0.01em] transition-colors ${active || isOpen ? 'text-white' : 'text-white/90'}`}>
+                    <span className={`truncate text-[12px] font-semibold tracking-[-0.01em] transition-colors ${active || isOpen ? 'text-white' : 'text-white/60'}`}>
                         {label}
                     </span>
                 </Link>
@@ -205,8 +206,8 @@ function NavCard({
                         onClick={onToggle}
                         className={`flex h-6 w-6 items-center justify-center rounded-md flex-shrink-0 transition-all ${
                             isOpen
-                                ? 'bg-brand-gold/20 text-brand-gold'
-                                : 'bg-white/[0.06] text-white/30 hover:bg-brand-gold/15 hover:text-brand-gold'
+                                ? 'bg-[#ff7a1a]/20 text-[#ff7a1a]'
+                                : 'bg-white/[0.06] text-white/30 hover:bg-[#ff7a1a]/15 hover:text-[#ff7a1a]'
                         }`}
                         aria-label={`Toggle ${label}`}
                     >
@@ -214,7 +215,7 @@ function NavCard({
                     </button>
                 ) : (
                     <div className={`flex h-6 w-6 items-center justify-center rounded-md flex-shrink-0 transition-all ${
-                        active ? 'bg-brand-gold/20 text-brand-gold' : 'bg-white/[0.06] text-white/25'
+                        active ? 'bg-[#ff7a1a]/20 text-[#ff7a1a]' : 'bg-white/[0.06] text-white/25'
                     }`}>
                         <ChevronRight size={11} />
                     </div>
@@ -466,7 +467,7 @@ function LeftSidebarWithSearchParams({ selectedSportId, onSelectSport, collapsed
                 {isMobileSidebarOpen && <div className="fixed inset-0 bg-black/70 backdrop-blur-md z-40 md:hidden" onClick={closeMobileSidebar} />}
                 <aside className="hidden md:flex md:sticky md:top-[64px] h-[calc(100vh-64px)] flex-shrink-0 border-r border-white/[0.04] bg-bg-section/80 backdrop-blur-md" style={{ width: 60 }}>
                     <div className="flex w-full flex-col items-center gap-2 overflow-y-auto px-2 py-3">
-                        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-brand-gold/30 to-brand-gold/10 text-brand-gold mb-1">
+                        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-[#ff7a1a]/30 to-[#ff7a1a]/10 text-[#ff7a1a] mb-1">
                             <Crown size={15} />
                         </div>
                         {[
@@ -482,7 +483,7 @@ function LeftSidebarWithSearchParams({ selectedSportId, onSelectSport, collapsed
                             <Link key={href} href={href} onClick={onClick} title={label}
                                 className={`group relative flex h-10 w-10 items-center justify-center rounded-lg transition-all ${
                                     active
-                                        ? 'bg-brand-gold/20 text-brand-gold'
+                                        ? 'bg-[#ff7a1a]/20 text-[#ff7a1a]'
                                         : 'bg-white/[0.03] text-white/70 hover:bg-white/[0.08] hover:text-white'
                                 }`}
                             >
@@ -518,7 +519,7 @@ function LeftSidebarWithSearchParams({ selectedSportId, onSelectSport, collapsed
 
                     {/* ── Logo ── */}
                     <div className="flex items-center gap-2.5 px-3.5 pb-4">
-                        <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-brand-gold/25 to-brand-gold/5 text-brand-gold flex-shrink-0 shadow-[0_0_12px_rgba(139,92,246,0.02)]">
+                        <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-[#ff9a3d] to-[#ff6a00] text-white flex-shrink-0 shadow-[0_4px_12px_rgba(255,122,26,0.35)]">
                             <Sparkles size={16} />
                         </div>
                         <Link href="/" className="min-w-0">
@@ -528,6 +529,26 @@ function LeftSidebarWithSearchParams({ selectedSportId, onSelectSport, collapsed
                     </div>
 
                     <div className="px-2.5 space-y-1">
+
+                        {/* ── GIFT / REWARDS cards ── */}
+                        <div className="grid grid-cols-2 gap-3 pb-1">
+                            {[
+                                { label: 'GIFT',    icon: 'gift',   href: '/promotions', grad: 'linear-gradient(150deg,#ff8a3d,#b23a00)' },
+                                { label: 'REWARDS', icon: 'trophy', href: '/vip',        grad: 'linear-gradient(150deg,#ffb43d,#a85f00)' },
+                            ].map((c) => (
+                                <Link
+                                    key={c.label}
+                                    href={c.href}
+                                    className="relative flex h-24 flex-col justify-end overflow-hidden rounded-2xl p-2.5 transition-transform hover:-translate-y-0.5"
+                                    style={{ background: c.grad }}
+                                >
+                                    <div className="pointer-events-none absolute -right-2 -top-2 opacity-95">
+                                        <Image src={`/odd69/icons-3d/${c.icon}.png`} alt="" aria-hidden="true" width={56} height={56} style={{ width: 56, height: 56 }} />
+                                    </div>
+                                    <span className="relative text-xs font-extrabold tracking-wide text-white drop-shadow">{c.label}</span>
+                                </Link>
+                            ))}
+                        </div>
 
                         {/* ── Primary Nav ── */}
                         {[
