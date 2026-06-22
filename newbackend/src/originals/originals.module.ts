@@ -6,10 +6,23 @@ import { OriginalsAdminController } from './originals-admin.controller';
 import { OriginalsAccessController } from './originals-access.controller';
 import { OriginalsPublicController } from './originals-public.controller';
 import { GGRService } from './ggr.service';
+import { OriginalsGamesController } from './originals-games.controller';
 import { MinesModule } from '../mines/mines.module';
 import { DiceModule } from '../dice/dice.module';
 import { PlinkoModule } from '../plinko/plinko.module';
 import { EventsModule } from '../events.module';
+import { BonusModule } from '../bonus/bonus.module';
+
+// Single-shot / multi-step game services
+import { CoinflipService } from './services/coinflip.service';
+import { ColorService } from './services/color.service';
+import { KenoService } from './services/keno.service';
+import { WheelService } from './services/wheel.service';
+import { RouletteService } from './services/roulette.service';
+import { LottoService } from './services/lotto.service';
+import { JackpotService } from './services/jackpot.service';
+import { HiloService } from './services/hilo.service';
+import { TowersService } from './services/towers.service';
 
 // Schemas
 import { MinesGame, MinesGameSchema } from './schemas/mines-game.schema';
@@ -51,13 +64,32 @@ const MONGOOSE_FEATURES = MongooseModule.forFeature([
 @Module({
   imports: [
     MONGOOSE_FEATURES,
+    BonusModule,
     forwardRef(() => MinesModule),
     forwardRef(() => DiceModule),
     forwardRef(() => PlinkoModule),
     forwardRef(() => EventsModule),
   ],
-  controllers: [OriginalsAdminController, OriginalsAccessController, OriginalsPublicController],
-  providers: [OriginalsGateway, OriginalsAdminService, GGRService],
+  controllers: [
+    OriginalsAdminController,
+    OriginalsAccessController,
+    OriginalsPublicController,
+    OriginalsGamesController,
+  ],
+  providers: [
+    OriginalsGateway,
+    OriginalsAdminService,
+    GGRService,
+    CoinflipService,
+    ColorService,
+    KenoService,
+    WheelService,
+    RouletteService,
+    LottoService,
+    JackpotService,
+    HiloService,
+    TowersService,
+  ],
   exports: [GGRService, OriginalsAdminService, MONGOOSE_FEATURES],
 })
 export class OriginalsModule {}

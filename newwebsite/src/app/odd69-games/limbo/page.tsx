@@ -3,6 +3,7 @@
 import React, { useEffect, useRef, useState, useCallback, useMemo } from "react";
 import { io, Socket } from "socket.io-client";
 import { toast } from "react-hot-toast";
+import { motion, useReducedMotion, useMotionValue, useSpring, animate } from "framer-motion";
 import Header from "@/components/layout/Header";
 import LeftSidebar from "@/components/layout/LeftSidebar";
 import { useAuth } from "@/context/AuthContext";
@@ -11,6 +12,7 @@ import { useModal } from "@/context/ModalContext";
 import { useOriginalsAccess } from "@/hooks/useOriginalsAccess";
 import { useGameSounds } from "@/hooks/useGameSounds";
 import { getConfiguredSocketNamespace } from "@/utils/socketUrl";
+import { fireWin, fireBigWin, playSound } from "@/utils/originalsFx";
 import { Volume2, VolumeX, Users } from "lucide-react";
 
 const FIRE_FRAME_H = 96;
@@ -61,7 +63,13 @@ export default function LimboPage() {
   const socketRef = useRef<Socket | null>(null);
   const { playBet, playLimboRise, playWin, playCrash, muted, toggleMute } = useGameSounds();
   const lastRiseSoundRef = useRef(0);
+  const lastTickSoundRef = useRef(0);
   const hasSession = !!token;
+  const prefersReducedMotion = useReducedMotion();
+
+  // Crash explosion + screen-shake trigger (incremented on every limbo:crash so
+  // visuals re-fire even on identical crash points). Driven ONLY by the server.
+  const [crashBurst, setCrashBurst] = useState(0);
 
   useEffect(() => {
     if (!authLoading && !accessLoading && (!hasSession || !canAccessOriginals)) {
@@ -114,7 +122,99 @@ export default function LimboPage() {
   // Animation Refs
   const [fireFrame, setFireFrame] = useState(0);
   const stars = useMemo<StarDot[]>(() => buildStarField(), []);
-  
+
+  // ── Smoothed multiplier (visual only) ───────────────────────────────────
+  // The server multiplier from limbo:tick is the single source of truth; this
+  // motion value just spring-eases the on-screen number between ticks so the
+  // climb reads smoothly. It NEVER changes the value used for bets/payout.
+  const mvMultiplier = useMotionValue(1);
+  const smoothMultiplier = useSpring(mvMultiplier, prefersReducedMotion
+    ? { duration: 0 }
+    : { stiffness: 90, damping: 26, mass: 0.6 });
+  const [displayMultiplier, setDisplayMultiplier] = useState("1.00");
+
+  // Stage size (for the canvas curve) + canvas/raf refs.
+  const stageRef = useRef<HTMLDivElement | null>(null);
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const curveRafRef = useRef<number | null>(null);
+  const smoothMultRef = useRef(1);
+  const phaseForCanvasRef = useRef<GamePhase>(phase);
+  useEffect(() => { phaseForCanvasRef.current = phase; }, [phase]);
+
+  // Feed the server multiplier into the spring; subscribe to the smoothed value
+  // to render the display string. On reduced motion the spring snaps instantly.
+  useEffect(() => { mvMultiplier.set(multiplier); }, [multiplier, mvMultiplier]);
+  useEffect(() => {
+    const unsub = smoothMultiplier.on("change", (v) => {
+      smoothMultRef.current = v;
+      setDisplayMultiplier(v.toFixed(2));
+    });
+    return () => unsub();
+  }, [smoothMultiplier]);
+
+  // When CRASHED, pin the display to the exact server crash point (no spring
+  // overshoot beyond the real result).
+  useEffect(() => {
+    if (phase === "CRASHED") {
+      mvMultiplier.set(multiplier);
+      smoothMultRef.current = multiplier;
+      setDisplayMultiplier(multiplier.toFixed(2));
+    }
+    if (phase === "BETTING") {
+      mvMultiplier.set(1);
+      smoothMultRef.current = 1;
+      setDisplayMultiplier("1.00");
+    }
+  }, [phase, multiplier, mvMultiplier]);
+
+  // ── Screen shake + explosion particles on crash ─────────────────────────
+  const shakeX = useMotionValue(0);
+  const shakeY = useMotionValue(0);
+  const [explosion, setExplosion] = useState<{ id: number; parts: { dx: number; dy: number; r: number; hue: string; d: number }[] } | null>(null);
+
+  useEffect(() => {
+    if (crashBurst === 0) return;
+    // Explosion debris keyed to this server crash event.
+    const parts = Array.from({ length: 18 }, (_, i) => {
+      const ang = (i / 18) * Math.PI * 2 + Math.random() * 0.4;
+      const dist = 60 + Math.random() * 90;
+      const palette = ["#ff9a3d", "#ffd24a", "#ff6a00", "#e74c3c", "#ffffff"];
+      return {
+        dx: Math.cos(ang) * dist,
+        dy: Math.sin(ang) * dist,
+        r: 3 + Math.random() * 5,
+        hue: palette[i % palette.length],
+        d: 0.45 + Math.random() * 0.4,
+      };
+    });
+    setExplosion({ id: crashBurst, parts });
+    const clr = window.setTimeout(() => setExplosion(null), 1000);
+
+    if (prefersReducedMotion) {
+      return () => window.clearTimeout(clr);
+    }
+
+    // Screen shake: a decaying random jitter via framer-motion animate.
+    const controls = animate(0, 1, {
+      duration: 0.5,
+      ease: "linear",
+      onUpdate: (t) => {
+        const decay = 1 - t;
+        const mag = 14 * decay * decay;
+        shakeX.set((Math.random() * 2 - 1) * mag);
+        shakeY.set((Math.random() * 2 - 1) * mag);
+      },
+      onComplete: () => { shakeX.set(0); shakeY.set(0); },
+    });
+
+    return () => {
+      window.clearTimeout(clr);
+      controls.stop();
+      shakeX.set(0);
+      shakeY.set(0);
+    };
+  }, [crashBurst, prefersReducedMotion, shakeX, shakeY]);
+
   // Fire animation
   useEffect(() => {
     if (phase !== "FLYING") return;
@@ -128,6 +228,136 @@ export default function LimboPage() {
     return () => cancelAnimationFrame(raf);
   }, [phase]);
 
+  // ── Canvas climb curve + exhaust trail ──────────────────────────────────
+  // Draws an exponential trajectory whose endpoint maps to the (smoothed)
+  // multiplier. Purely decorative — the multiplier comes from the server.
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    const stage = stageRef.current;
+    if (!canvas || !stage) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    let dpr = Math.min(typeof window !== "undefined" ? window.devicePixelRatio || 1 : 1, 2);
+    let W = 0, H = 0;
+
+    const resize = () => {
+      const rect = stage.getBoundingClientRect();
+      W = Math.max(1, rect.width);
+      H = Math.max(1, rect.height);
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      canvas.width = Math.round(W * dpr);
+      canvas.height = Math.round(H * dpr);
+      canvas.style.width = `${W}px`;
+      canvas.style.height = `${H}px`;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    };
+    resize();
+    const ro = typeof ResizeObserver !== "undefined" ? new ResizeObserver(resize) : null;
+    ro?.observe(stage);
+
+    // Trajectory: progress 0..1 across the stage maps to multiplier 1..target.
+    // We invert: given current multiplier m, find how far along the curve we are.
+    const PAD_L = 14;
+    const PAD_B = 18;
+    const draw = () => {
+      ctx.clearRect(0, 0, W, H);
+      const ph = phaseForCanvasRef.current;
+      if (ph !== "FLYING" && ph !== "CRASHED") {
+        curveRafRef.current = requestAnimationFrame(draw);
+        return;
+      }
+      const m = Math.max(1, smoothMultRef.current);
+      // Normalised climb 0..1 (log scale so high multipliers stay on-screen).
+      const climb = Math.min(1, Math.log(m) / Math.log(20));
+      const crashed = ph === "CRASHED";
+
+      const x0 = PAD_L;
+      const y0 = H - PAD_B;
+      const xEnd = x0 + climb * (W - PAD_L * 2);
+      const yEnd = y0 - climb * (H - PAD_B - 26);
+
+      // Build the curve points (quadratic-ish exponential rise).
+      const pts: Array<[number, number]> = [];
+      const STEPS = 48;
+      for (let i = 0; i <= STEPS; i++) {
+        const t = i / STEPS;
+        const px = x0 + t * (xEnd - x0);
+        // ease the y so it bows upward like a real crash curve
+        const ey = Math.pow(t, 1.7);
+        const py = y0 - ey * (y0 - yEnd);
+        pts.push([px, py]);
+      }
+
+      // Filled area under the curve.
+      const grad = ctx.createLinearGradient(0, yEnd, 0, y0);
+      if (crashed) {
+        grad.addColorStop(0, "rgba(231,76,60,0.30)");
+        grad.addColorStop(1, "rgba(231,76,60,0.02)");
+      } else {
+        grad.addColorStop(0, "rgba(255,154,61,0.32)");
+        grad.addColorStop(1, "rgba(255,154,61,0.02)");
+      }
+      ctx.beginPath();
+      ctx.moveTo(x0, y0);
+      pts.forEach(([px, py]) => ctx.lineTo(px, py));
+      ctx.lineTo(xEnd, y0);
+      ctx.closePath();
+      ctx.fillStyle = grad;
+      ctx.fill();
+
+      // The glowing trajectory line.
+      ctx.beginPath();
+      ctx.moveTo(x0, y0);
+      pts.forEach(([px, py]) => ctx.lineTo(px, py));
+      ctx.lineWidth = 3;
+      ctx.lineCap = "round";
+      ctx.lineJoin = "round";
+      ctx.strokeStyle = crashed ? "#e74c3c" : "#ff9a3d";
+      ctx.shadowColor = crashed ? "rgba(231,76,60,0.8)" : "rgba(255,154,61,0.85)";
+      ctx.shadowBlur = crashed ? 10 : 16;
+      ctx.stroke();
+      ctx.shadowBlur = 0;
+
+      // Exhaust trail: short bright tongue trailing the leading point.
+      if (!crashed) {
+        const trailLen = 6;
+        for (let i = 0; i < trailLen; i++) {
+          const idx = pts.length - 1 - i * 2;
+          if (idx < 1) break;
+          const [px, py] = pts[idx];
+          const alpha = (1 - i / trailLen) * 0.5;
+          ctx.beginPath();
+          ctx.arc(px, py, 5 - i * 0.6, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(255,210,74,${alpha})`;
+          ctx.fill();
+        }
+      }
+
+      // Leading head dot.
+      ctx.beginPath();
+      ctx.arc(xEnd, yEnd, crashed ? 6 : 5, 0, Math.PI * 2);
+      ctx.fillStyle = crashed ? "#ff5a4a" : "#ffd24a";
+      ctx.shadowColor = crashed ? "rgba(231,76,60,0.9)" : "rgba(255,210,74,0.9)";
+      ctx.shadowBlur = 14;
+      ctx.fill();
+      ctx.shadowBlur = 0;
+
+      curveRafRef.current = requestAnimationFrame(draw);
+    };
+
+    // One lightweight canvas loop. When reduced motion is on, the spring feeding
+    // smoothMultRef snaps instantly, so the curve jumps straight to the server
+    // value with no long tween (still always correct).
+    curveRafRef.current = requestAnimationFrame(draw);
+
+    return () => {
+      if (curveRafRef.current) cancelAnimationFrame(curveRafRef.current);
+      curveRafRef.current = null;
+      ro?.disconnect();
+    };
+  }, [prefersReducedMotion]);
+
   // Handle Rocket Sound
   useEffect(() => {
     if (phase === "FLYING") {
@@ -135,6 +365,11 @@ export default function LimboPage() {
       if (now - lastRiseSoundRef.current >= 300) {
         playLimboRise(multiplier);
         lastRiseSoundRef.current = now;
+      }
+      // Throttled FX-util tick layered on top of the rocket rise.
+      if (now - lastTickSoundRef.current >= 160) {
+        playSound("tick");
+        lastTickSoundRef.current = now;
       }
     }
   }, [phase, multiplier, playLimboRise]);
@@ -199,6 +434,9 @@ export default function LimboPage() {
       setMultiplier(d.crashPoint);
       setHistoryItems(prev => [{ roundId: d.roundId, crashPoint: d.crashPoint }, ...prev.slice(0, 29)]);
       playCrash();
+      playSound("crash");
+      // Fire the explosion + screen-shake keyed to this exact server crash.
+      setCrashBurst(b => b + 1);
     });
 
     s.on("limbo:bet-placed", (d: { betId: string; roundId: number; betAmount: number }) => {
@@ -223,6 +461,13 @@ export default function LimboPage() {
         toast.success(`Cashed out at ${d.multiplier.toFixed(2)}× for ${getWalletSymbol(walletTypeRef.current)}${d.payout.toFixed(2)}`);
       }
       playWin();
+      // Celebration FX keyed to the SERVER cashout multiplier.
+      playSound("cashout");
+      if (d.multiplier >= 10) {
+        fireBigWin();
+      } else {
+        fireWin();
+      }
       void refreshWallet();
     });
 
@@ -391,15 +636,52 @@ export default function LimboPage() {
             </div>
 
             {/* Stage */}
-            <div className="flex-1 relative min-h-0" style={{
+            <motion.div ref={stageRef} className="flex-1 relative min-h-0" style={{
               background: "linear-gradient(180deg, #1a1d23 0%, #12141a 50%, #0e1016 100%)",
               borderRadius: 16, border: "1px solid #2A2B2E", overflow: "hidden",
+              x: shakeX, y: shakeY,
             }}>
               <div className="absolute inset-0" style={{ opacity: 0.4 }}>
                 {stars.map((star, i) => (
                   <div key={i} className="absolute rounded-full bg-white" style={star} />
                 ))}
               </div>
+
+              {/* Climb curve + exhaust trail canvas (server-multiplier driven) */}
+              <canvas
+                ref={canvasRef}
+                className="absolute inset-0"
+                style={{ width: "100%", height: "100%", zIndex: 1, pointerEvents: "none" }}
+              />
+
+              {/* Crash explosion debris keyed to the server crash event */}
+              {explosion && (
+                <div className="absolute inset-0 flex items-center justify-center" style={{ zIndex: 4, pointerEvents: "none" }}>
+                  <motion.div
+                    key={`shock-${explosion.id}`}
+                    initial={{ scale: 0.2, opacity: 0.85 }}
+                    animate={{ scale: prefersReducedMotion ? 1 : 3.2, opacity: 0 }}
+                    transition={{ duration: prefersReducedMotion ? 0 : 0.55, ease: "easeOut" }}
+                    style={{
+                      position: "absolute", width: 120, height: 120, borderRadius: "50%",
+                      border: "3px solid #ff6a00",
+                      boxShadow: "0 0 40px 10px rgba(255,106,0,0.5)",
+                    }}
+                  />
+                  {explosion.parts.map((p, i) => (
+                    <motion.div
+                      key={`p-${explosion.id}-${i}`}
+                      initial={{ x: 0, y: 0, opacity: 1, scale: 1 }}
+                      animate={{ x: p.dx, y: p.dy, opacity: 0, scale: 0.4 }}
+                      transition={{ duration: prefersReducedMotion ? 0 : p.d, ease: "easeOut" }}
+                      style={{
+                        position: "absolute", width: p.r * 2, height: p.r * 2, borderRadius: "50%",
+                        background: p.hue, boxShadow: `0 0 10px ${p.hue}`,
+                      }}
+                    />
+                  ))}
+                </div>
+              )}
 
               {/* Multiplier display */}
               <div className="absolute inset-0 flex items-start justify-center pt-8 md:pt-12" style={{ zIndex: 3, pointerEvents: "none" }}>
@@ -414,15 +696,26 @@ export default function LimboPage() {
                   </div>
                 )}
                 {phase === "FLYING" && (
-                  <div className="text-center font-black tabular-nums" style={{
-                    color: "#ff8c00", fontSize: "clamp(40px, 10vw, 90px)", lineHeight: 1,
-                    textShadow: "0 0 30px rgba(255,140,0,0.4)",
-                  }}>
-                    {multiplier.toFixed(2)}<span style={{ fontSize: "0.65em" }}>×</span>
-                  </div>
+                  <motion.div
+                    className="text-center font-black tabular-nums"
+                    animate={prefersReducedMotion ? undefined : { scale: [1, 1.04, 1] }}
+                    transition={prefersReducedMotion ? undefined : { duration: 0.9, repeat: Infinity, ease: "easeInOut" }}
+                    style={{
+                      color: "#ff9a3d", fontSize: "clamp(40px, 10vw, 90px)", lineHeight: 1,
+                      textShadow: "0 0 30px rgba(255,154,61,0.45)",
+                    }}
+                  >
+                    {/* Smoothed display value (server tick is the source of truth) */}
+                    {displayMultiplier}<span style={{ fontSize: "0.65em" }}>×</span>
+                  </motion.div>
                 )}
                 {phase === "CRASHED" && (
-                  <div className="text-center">
+                  <motion.div
+                    className="text-center"
+                    initial={prefersReducedMotion ? false : { scale: 1.25, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={prefersReducedMotion ? { duration: 0 } : { type: "spring", stiffness: 320, damping: 18 }}
+                  >
                     <div className="font-black tabular-nums" style={{
                       color: "#e74c3c", fontSize: "clamp(40px, 10vw, 90px)", lineHeight: 1,
                       textShadow: "0 0 30px rgba(231,76,60,0.4)",
@@ -430,7 +723,7 @@ export default function LimboPage() {
                       {multiplier.toFixed(2)}<span style={{ fontSize: "0.65em" }}>×</span>
                     </div>
                     <div className="mt-2 font-bold text-sm uppercase tracking-[0.2em]" style={{ color: "#e74c3c" }}>CRASHED</div>
-                  </div>
+                  </motion.div>
                 )}
                 
                 {/* Local Player Floating Cashout Message */}
@@ -471,7 +764,7 @@ export default function LimboPage() {
                   }} />
                 )}
               </div>
-            </div>
+            </motion.div>
 
             {/* ── Bet controls ──────────────────────────────────────────── */}
             <div className="flex-shrink-0 pt-2">

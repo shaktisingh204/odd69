@@ -3,6 +3,7 @@
 import React, { useEffect, useRef, useState, useCallback } from "react";
 import { io, Socket } from "socket.io-client";
 import { toast } from "react-hot-toast";
+import { motion, useAnimationControls, useReducedMotion } from "framer-motion";
 import Header from "@/components/layout/Header";
 import LeftSidebar from "@/components/layout/LeftSidebar";
 import { useAuth } from "@/context/AuthContext";
@@ -11,6 +12,7 @@ import { useModal } from "@/context/ModalContext";
 import { useOriginalsAccess } from "@/hooks/useOriginalsAccess";
 import { useGameSounds } from "@/hooks/useGameSounds";
 import { getConfiguredSocketNamespace } from "@/utils/socketUrl";
+import { fireWin, fireBigWin, playSound } from "@/utils/originalsFx";
 import { Volume2, VolumeX } from "lucide-react";
 
 type Phase = "BETTING" | "FLYING" | "CRASHED" | "IDLE";
@@ -33,14 +35,29 @@ function HistoryPill({ h }: { h: HistoryRound }) {
   );
 }
 
-/* ═══ Canvas — crash graph with green curve + grid ══════════════════════ */
+/* ═══ Canvas — crash graph with smooth curve + rocket trail + grid ══════ */
 function useCrashCanvas(
   canvasRef: React.RefObject<HTMLCanvasElement | null>,
   phase: Phase,
   multiplier: number,
   startTime: number,
+  reduceMotion: boolean,
 ) {
   const rafRef = useRef(0);
+  // Latest values, read inside the RAF loop so the loop itself never restarts
+  // (smoother animation — only data drives it, never a React re-render churn).
+  const stateRef = useRef({ phase, multiplier, startTime });
+  useEffect(() => {
+    stateRef.current = { phase, multiplier, startTime };
+  }, [phase, multiplier, startTime]);
+
+  // Smoothed (eased) multiplier so the curve glides between server ticks
+  // instead of snapping. This is purely cosmetic: the *target* is always the
+  // server-reported multiplier, we only interpolate the in-between frames.
+  const smoothMultiRef = useRef(1.0);
+  // Particle puffs trailing behind the rocket while flying.
+  const trailRef = useRef<{ x: number; y: number; life: number; r: number }[]>([]);
+  const lastTrailRef = useRef(0);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -48,21 +65,31 @@ function useCrashCanvas(
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
+    let dpr = 1;
     const resize = () => {
       const p = canvas.parentElement;
       if (!p) return;
-      canvas.width = p.clientWidth * 2;
-      canvas.height = p.clientHeight * 2;
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      canvas.width = p.clientWidth * dpr;
+      canvas.height = p.clientHeight * dpr;
       canvas.style.width = p.clientWidth + "px";
       canvas.style.height = p.clientHeight + "px";
-      ctx.scale(2, 2);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     };
     resize();
     window.addEventListener("resize", resize);
 
+    let lastFrame = performance.now();
+
     const draw = () => {
-      const W = canvas.width / 2;
-      const H = canvas.height / 2;
+      const now = performance.now();
+      const dt = Math.min(0.05, (now - lastFrame) / 1000);
+      lastFrame = now;
+
+      const { phase, multiplier, startTime } = stateRef.current;
+
+      const W = canvas.width / dpr;
+      const H = canvas.height / dpr;
       if (W === 0 || H === 0) { rafRef.current = requestAnimationFrame(draw); return; }
       ctx.clearRect(0, 0, W, H);
 
@@ -73,13 +100,24 @@ function useCrashCanvas(
       const gW = W - padL - padR;
       const gH = H - padT - padB;
 
+      /* ── Ease the displayed multiplier toward the server value ── */
+      if (phase === "CRASHED" || reduceMotion) {
+        smoothMultiRef.current = multiplier; // snap on crash / reduced motion
+      } else if (phase === "FLYING") {
+        const k = 1 - Math.pow(0.0001, dt); // frame-rate independent lerp
+        smoothMultiRef.current += (multiplier - smoothMultiRef.current) * k;
+      } else {
+        smoothMultiRef.current = 1.0;
+      }
+      const dispMulti = phase === "CRASHED" ? multiplier : Math.max(1, smoothMultiRef.current);
+
       /* ── Grid lines ─────────────────────────────────────── */
       ctx.strokeStyle = "#1a1f2e";
       ctx.lineWidth = 1;
 
       // Horizontal grid + Y labels
-      const maxMulti = Math.max(2, multiplier * 1.3);
-      const ySteps = Math.max(2, Math.ceil(maxMulti));
+      const maxMulti = Math.max(2, dispMulti * 1.3);
+      const ySteps = Math.max(2, Math.min(10, Math.ceil(maxMulti)));
       for (let i = 0; i <= ySteps; i++) {
         const val = 1 + (maxMulti - 1) * (i / ySteps);
         const y = padT + gH - (gH * i / ySteps);
@@ -113,58 +151,120 @@ function useCrashCanvas(
         ctx.fillText(tVal + "s", x, padT + gH + 18);
       }
 
+      const flying = phase === "FLYING";
+      const crashed = phase === "CRASHED";
+      const accent = crashed ? "#e74c3c" : "#2ecc71";
+
       /* ── Curve ──────────────────────────────────────────── */
-      if ((phase === "FLYING" || phase === "CRASHED") && multiplier > 1) {
-        // Generate curve points using exponential growth
+      if ((flying || crashed) && dispMulti > 1) {
+        // Generate curve points using exponential growth.
         const points: [number, number][] = [];
-        const numPts = 80;
+        const numPts = 90;
         for (let i = 0; i <= numPts; i++) {
           const t = i / numPts;
-          // Exponential: mult = e^(k*time), where time maps to t
-          const m = 1 + (multiplier - 1) * (Math.exp(t * 2.5) - 1) / (Math.exp(2.5) - 1);
+          const m = 1 + (dispMulti - 1) * (Math.exp(t * 2.5) - 1) / (Math.exp(2.5) - 1);
           const x = padL + gW * (t * elapsed / maxTime);
           const y = padT + gH - gH * ((m - 1) / (maxMulti - 1));
           points.push([x, y]);
         }
+        const lastPt = points[points.length - 1];
 
-        // Filled area under curve
+        // Filled area under curve (smooth quadratic path).
         ctx.beginPath();
         ctx.moveTo(padL, padT + gH);
-        points.forEach(([x, y]) => ctx.lineTo(x, y));
-        const lastPt = points[points.length - 1];
+        ctx.lineTo(points[0][0], points[0][1]);
+        for (let i = 1; i < points.length - 1; i++) {
+          const xc = (points[i][0] + points[i + 1][0]) / 2;
+          const yc = (points[i][1] + points[i + 1][1]) / 2;
+          ctx.quadraticCurveTo(points[i][0], points[i][1], xc, yc);
+        }
+        ctx.lineTo(lastPt[0], lastPt[1]);
         ctx.lineTo(lastPt[0], padT + gH);
         ctx.closePath();
 
         const grad = ctx.createLinearGradient(0, padT, 0, padT + gH);
-        if (phase === "CRASHED") {
-          grad.addColorStop(0, "rgba(231,76,60,0.25)");
+        if (crashed) {
+          grad.addColorStop(0, "rgba(231,76,60,0.28)");
           grad.addColorStop(1, "rgba(231,76,60,0.02)");
         } else {
-          grad.addColorStop(0, "rgba(46,204,113,0.25)");
+          grad.addColorStop(0, "rgba(46,204,113,0.28)");
           grad.addColorStop(1, "rgba(46,204,113,0.02)");
         }
         ctx.fillStyle = grad;
         ctx.fill();
 
-        // Stroke
+        // Glowing stroke (smooth quadratic path).
         ctx.beginPath();
-        points.forEach(([x, y], i) => i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y));
-        ctx.strokeStyle = phase === "CRASHED" ? "#e74c3c" : "#2ecc71";
-        ctx.lineWidth = 3;
+        ctx.moveTo(points[0][0], points[0][1]);
+        for (let i = 1; i < points.length - 1; i++) {
+          const xc = (points[i][0] + points[i + 1][0]) / 2;
+          const yc = (points[i][1] + points[i + 1][1]) / 2;
+          ctx.quadraticCurveTo(points[i][0], points[i][1], xc, yc);
+        }
+        ctx.lineTo(lastPt[0], lastPt[1]);
+        ctx.strokeStyle = accent;
+        ctx.lineWidth = 3.5;
         ctx.lineJoin = "round";
+        ctx.lineCap = "round";
+        ctx.shadowColor = accent;
+        ctx.shadowBlur = flying ? 12 : 6;
         ctx.stroke();
+        ctx.shadowBlur = 0;
 
-        // Dot at end
-        if (phase === "FLYING") {
+        /* ── Rocket trail particles (flying only) ── */
+        if (flying && !reduceMotion) {
+          // Spawn a fresh puff a few times per second near the rocket tip.
+          if (now - lastTrailRef.current > 38) {
+            lastTrailRef.current = now;
+            trailRef.current.push({
+              x: lastPt[0] - 2,
+              y: lastPt[1] + 4,
+              life: 1,
+              r: 3 + Math.random() * 3,
+            });
+            if (trailRef.current.length > 26) trailRef.current.shift();
+          }
+        } else {
+          trailRef.current = [];
+        }
+        // Draw + age the puffs.
+        for (let i = trailRef.current.length - 1; i >= 0; i--) {
+          const p = trailRef.current[i];
+          p.life -= dt * 1.6;
+          p.y += dt * 14;
+          p.x -= dt * 10;
+          if (p.life <= 0) { trailRef.current.splice(i, 1); continue; }
           ctx.beginPath();
-          ctx.arc(lastPt[0], lastPt[1], 5, 0, Math.PI * 2);
-          ctx.fillStyle = "#2ecc71";
+          ctx.arc(p.x, p.y, p.r * (0.6 + p.life * 0.7), 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(255,154,61,${0.18 * p.life})`;
           ctx.fill();
+        }
+
+        /* ── Rocket head ── */
+        if (flying) {
+          // Pulsing halo.
+          const pulse = 7 + Math.sin(now / 120) * 2;
           ctx.beginPath();
-          ctx.arc(lastPt[0], lastPt[1], 8, 0, Math.PI * 2);
-          ctx.strokeStyle = "rgba(46,204,113,0.4)";
-          ctx.lineWidth = 2;
-          ctx.stroke();
+          ctx.arc(lastPt[0], lastPt[1], pulse + 6, 0, Math.PI * 2);
+          ctx.fillStyle = "rgba(46,204,113,0.12)";
+          ctx.fill();
+          // Rocket emoji rotated along the curve direction.
+          const prev = points[points.length - 2] ?? points[0];
+          const ang = Math.atan2(lastPt[1] - prev[1], lastPt[0] - prev[0]);
+          ctx.save();
+          ctx.translate(lastPt[0], lastPt[1]);
+          ctx.rotate(ang + Math.PI / 4); // emoji points up-right by default
+          ctx.font = "20px sans-serif";
+          ctx.textAlign = "center";
+          ctx.textBaseline = "middle";
+          ctx.fillText("🚀", 0, 0);
+          ctx.restore();
+        } else {
+          // Crashed: a small ember where the curve ended.
+          ctx.beginPath();
+          ctx.arc(lastPt[0], lastPt[1], 4, 0, Math.PI * 2);
+          ctx.fillStyle = accent;
+          ctx.fill();
         }
       }
 
@@ -176,7 +276,9 @@ function useCrashCanvas(
       cancelAnimationFrame(rafRef.current);
       window.removeEventListener("resize", resize);
     };
-  }, [canvasRef, phase, multiplier, startTime]);
+    // Loop reads live values from stateRef, so it only needs to (re)mount on
+    // canvas/reduced-motion changes — keeping the RAF loop stable & smooth.
+  }, [canvasRef, reduceMotion]);
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════ */
@@ -195,6 +297,19 @@ export default function CrashPage() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const { playBet, playTick, playWin, playCrash, muted, toggleMute } = useGameSounds();
   const hasSession = !!token;
+
+  // ── Visual/motion layer (does NOT touch any data flow) ──
+  const prefersReducedMotion = useReducedMotion();
+  const reduceMotion = !!prefersReducedMotion;
+  const stageControls = useAnimationControls(); // screen-shake on crash
+  const lastTickSoundRef = useRef(0);            // throttle shared 'tick' sound
+  const reduceMotionRef = useRef(reduceMotion);
+  useEffect(() => { reduceMotionRef.current = reduceMotion; }, [reduceMotion]);
+  // Keep the shared FX util's mute state in sync with the page's mute toggle so
+  // the single mute button silences both sound systems.
+  useEffect(() => {
+    void import("@/utils/originalsFx").then((fx) => fx.setSoundMuted(muted));
+  }, [muted]);
 
   useEffect(() => {
     if (!authLoading && !accessLoading && (!hasSession || !canAccessOriginals)) {
@@ -241,7 +356,7 @@ export default function CrashPage() {
   useEffect(() => { walletTypeRef.current = walletType; }, [walletType]);
   useEffect(() => { setWalletType(selectedWallet); }, [selectedWallet]);
 
-  useCrashCanvas(canvasRef, phase, multiplier, startTime);
+  useCrashCanvas(canvasRef, phase, multiplier, startTime, reduceMotion);
 
   /* ── Socket — /aviator (crash engine) ───────────────────────────────── */
   useEffect(() => {
@@ -294,10 +409,25 @@ export default function CrashPage() {
     s.on("aviator:tick", (d: { roundId: number; multiplier: number }) => {
       multiplierRef.current = d.multiplier; setMultiplier(d.multiplier);
       playTick(d.multiplier);
+      // Shared FX: throttled blip while flying (max ~5/s) so fast ticks don't spam audio.
+      const now = Date.now();
+      if (now - lastTickSoundRef.current > 200) {
+        lastTickSoundRef.current = now;
+        playSound("tick");
+      }
     });
     s.on("aviator:crash", (d: { roundId: number; crashPoint: number }) => {
       setPhase("CRASHED"); multiplierRef.current = d.crashPoint; setMultiplier(d.crashPoint);
       playCrash();
+      playSound("crash");
+      // Crash burst + screen shake (visualizing the SERVER crashPoint — never altering it).
+      if (!reduceMotionRef.current) {
+        stageControls.start({
+          x: [0, -10, 9, -7, 5, -3, 0],
+          y: [0, 6, -5, 4, -2, 1, 0],
+          transition: { duration: 0.5, ease: "easeOut" },
+        });
+      }
       setHistory(prev => [{ roundId: d.roundId, crashPoint: d.crashPoint }, ...prev.slice(0, 29)]);
       // Auto-bet: track loss if we had a bet and didn't cash out
       if (autoRunningRef.current && lastBetAmountRef.current > 0) {
@@ -312,11 +442,16 @@ export default function CrashPage() {
       void refreshWallet();
     });
     s.on("aviator:cashout-success", (d: { multiplier: number; payout: number }) => {
+      const winMulti = d.multiplier || multiplierRef.current;
       setCashedOut(true);
-      setCashoutMulti(d.multiplier || multiplierRef.current);
+      setCashoutMulti(winMulti);
       playWin();
+      // Shared FX celebration — visualizes the SERVER-confirmed cashout.
+      playSound("cashout");
+      if (winMulti >= 10) fireBigWin();
+      else fireWin();
       void refreshWallet();
-      toast.success(`Won ${getWalletSymbol(walletTypeRef.current)}${d.payout.toFixed(2)} at ${(d.multiplier || multiplierRef.current).toFixed(2)}×`);
+      toast.success(`Won ${getWalletSymbol(walletTypeRef.current)}${d.payout.toFixed(2)} at ${winMulti.toFixed(2)}×`);
       // Auto: track profit (cashout-success fires before crash, so reset lastBetAmount to prevent double counting)
       if (autoRunningRef.current) {
         const net = d.payout - lastBetAmountRef.current;
@@ -355,7 +490,7 @@ export default function CrashPage() {
     });
 
     return () => { s.disconnect(); };
-  }, [playBet, playCrash, playTick, playWin, refreshWallet]);
+  }, [playBet, playCrash, playTick, playWin, refreshWallet, stageControls]);
 
   const betAmount = parseFloat(betInput) || 0;
   const activeBalance = walletType === "crypto" ? cryptoBalance : fiatBalance;
@@ -439,30 +574,54 @@ export default function CrashPage() {
             </div>
 
             {/* ── Game area — canvas + multiplier ──────────────────────── */}
-            <div className="flex-1 relative min-h-0" style={{ background: "#0f1117" }}>
+            <div className="flex-1 relative min-h-0 overflow-hidden" style={{ background: "#0f1117" }}>
+              {/* Shake stage — wraps canvas + overlay so a crash jolts the whole board */}
+              <motion.div className="absolute inset-0" animate={stageControls}>
               {/* Canvas */}
               <canvas ref={canvasRef} className="absolute inset-0 w-full h-full" />
+
+              {/* Crash flash overlay (radial red pulse, snaps invisible on reduced motion) */}
+              {phase === "CRASHED" && !reduceMotion && (
+                <motion.div
+                  className="absolute inset-0 pointer-events-none"
+                  style={{ zIndex: 1, background: "radial-gradient(circle at 50% 45%, rgba(231,76,60,0.35), transparent 60%)" }}
+                  initial={{ opacity: 0.9 }}
+                  animate={{ opacity: 0 }}
+                  transition={{ duration: 0.7, ease: "easeOut" }}
+                />
+              )}
 
               {/* Multiplier overlay */}
               <div className="absolute inset-0 flex flex-col items-center justify-center" style={{ zIndex: 2, pointerEvents: "none" }}>
                 {phase === "FLYING" && (
-                  <div className="font-black tabular-nums" style={{
-                    color: "#fff", fontSize: "clamp(48px, 12vw, 100px)", lineHeight: 1,
-                    textShadow: "0 2px 20px rgba(46,204,113,0.3)",
-                  }}>
+                  <motion.div
+                    className="font-black tabular-nums"
+                    initial={false}
+                    animate={reduceMotion ? {} : { scale: [1, 1.035, 1] }}
+                    transition={reduceMotion ? undefined : { duration: 0.45, repeat: Infinity, ease: "easeInOut" }}
+                    style={{
+                      color: "#fff", fontSize: "clamp(48px, 12vw, 100px)", lineHeight: 1,
+                      textShadow: "0 2px 24px rgba(46,204,113,0.45)",
+                    }}
+                  >
                     {multiplier.toFixed(2)}<span style={{ fontSize: "0.65em", color: "#2ecc71" }}>×</span>
-                  </div>
+                  </motion.div>
                 )}
                 {phase === "CRASHED" && (
-                  <div className="text-center">
+                  <motion.div
+                    className="text-center"
+                    initial={reduceMotion ? false : { scale: 1.25, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{ duration: 0.35, ease: "backOut" }}
+                  >
                     <div className="font-black tabular-nums" style={{
                       color: "#e74c3c", fontSize: "clamp(48px, 12vw, 100px)", lineHeight: 1,
-                      textShadow: "0 2px 20px rgba(231,76,60,0.3)",
+                      textShadow: "0 2px 24px rgba(231,76,60,0.5)",
                     }}>
                       {multiplier.toFixed(2)}<span style={{ fontSize: "0.65em" }}>×</span>
                     </div>
                     <div className="text-zinc-500 text-sm font-bold uppercase tracking-[0.2em] mt-2">Crashed</div>
-                  </div>
+                  </motion.div>
                 )}
                 {phase === "BETTING" && (
                   <div className="text-center">
@@ -487,6 +646,7 @@ export default function CrashPage() {
                   </div>
                 </div>
               </div>
+              </motion.div>
             </div>
 
             {/* ── Bet controls ──────────────────────────────────────────── */}

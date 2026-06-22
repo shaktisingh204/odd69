@@ -3,6 +3,8 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { io, Socket } from "socket.io-client";
 import { toast } from "react-hot-toast";
+import { useReducedMotion } from "framer-motion";
+import Matter from "matter-js";
 import { ChevronUp, ChevronDown, Info, Zap, Volume2, VolumeX, BarChart3, Clock } from "lucide-react";
 import Header from "@/components/layout/Header";
 import LeftSidebar from "@/components/layout/LeftSidebar";
@@ -12,6 +14,7 @@ import { useModal } from "@/context/ModalContext";
 import { useOriginalsAccess } from "@/hooks/useOriginalsAccess";
 import { useGameSounds } from "@/hooks/useGameSounds";
 import { getConfiguredSocketNamespace } from "@/utils/socketUrl";
+import { fireWin, fireBigWin, playSound } from "@/utils/originalsFx";
 
 type WalletType = "fiat" | "crypto";
 type PlinkoRisk = "low" | "medium" | "high";
@@ -96,16 +99,50 @@ function getWalletSymbol(walletType: WalletType) {
   return walletType === "crypto" ? "$" : "$";
 }
 
+// Same percent-coordinate layout the DOM pegs / slots use, kept in one place so
+// the matter-js bodies line up pixel-perfect with the rendered chrome.
+const PEG_X_SPREAD = 75; // total horizontal % the peg triangle spans (centered on 50%)
+function pegPercent(rowIndex: number, colIndex: number, rows: number) {
+  const cols = rowIndex + 1;
+  const x = 50 + (colIndex - (cols - 1) / 2) * (PEG_X_SPREAD / rows);
+  const y = 8 + ((rowIndex + 1) / rows) * 73;
+  return { x, y };
+}
+
+// Pixel x of the center of a given bucket/lane (matches the DOM slot strip).
+function targetXForSlot(slotIndex: number, rowCount: number, w: number) {
+  const binStartX = ((50 - PEG_X_SPREAD / 2) / 100) * w;
+  const binW = ((PEG_X_SPREAD / 100) * w) / rowCount;
+  return binStartX + (slotIndex + 0.5) * binW;
+}
+
 export default function PlinkoPage() {
   const { token, loading: authLoading } = useAuth();
   const { canAccessOriginals, loading: accessLoading } = useOriginalsAccess();
   const { fiatBalance, cryptoBalance, refreshWallet, selectedWallet, setSelectedWallet } = useWallet();
   const { openLogin } = useModal();
-  const { playBet, playCrash, playTick, playWin, muted, toggleMute } = useGameSounds();
+  const { playBet, playCrash, playWin, muted, toggleMute } = useGameSounds();
+  const prefersReducedMotion = useReducedMotion();
 
   const socketRef = useRef<Socket | null>(null);
-  const timeoutRefs = useRef<number[]>([]);
   const hasSession = !!token;
+
+  // ── Physics / canvas refs ───────────────────────────────────────────
+  const boardRef = useRef<HTMLDivElement | null>(null);
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const engineRef = useRef<Matter.Engine | null>(null);
+  const runnerRef = useRef<Matter.Runner | null>(null);
+  const ballBodyRef = useRef<Matter.Body | null>(null);
+  const rafRef = useRef<number | null>(null);
+  const boardSizeRef = useRef({ w: 0, h: 0 });
+  const lastPegSoundRef = useRef(0);
+  const pegFlashRef = useRef<Map<number, number>>(new Map());
+  // Per-row steering plan derived from the SERVER path so the ball settles in
+  // exactly result.slotIndex. { y(px), targetX(px), dir }
+  const steerRef = useRef<{ y: number; targetX: number }[]>([]);
+  const steerIdxRef = useRef(0);
+  const finishedRef = useRef(true);
+  const settleTimerRef = useRef<number | null>(null);
 
   const [walletType, setWalletType] = useState<WalletType>(selectedWallet);
   const [betInput, setBetInput] = useState("10");
@@ -114,14 +151,10 @@ export default function PlinkoPage() {
   const [history, setHistory] = useState<PlinkoHistoryItem[]>([]);
   const [isDropping, setIsDropping] = useState(false);
   const [lastResult, setLastResult] = useState<PlinkoResult | null>(null);
-  const [ball, setBall] = useState({ visible: false, x: 50, y: 2 });
   const [hyperMode, setHyperMode] = useState(false);
   const [tab, setTab] = useState<"Manual" | "Auto">("Manual");
   const [resultBannerKey, setResultBannerKey] = useState(0);
   const [showHistory, setShowHistory] = useState(false);
-  // Trail of ball positions for glow effect
-  const [ballTrail, setBallTrail] = useState<{ x: number; y: number; id: number }[]>([]);
-  const trailCounter = useRef(0);
 
   const betAmount = parseFloat(betInput) || 0;
   const activeBalance = walletType === "crypto" ? cryptoBalance : fiatBalance;
@@ -136,57 +169,395 @@ export default function PlinkoPage() {
     }
   }, [authLoading, accessLoading, canAccessOriginals, hasSession]);
 
-  const clearDropTimers = useCallback(() => {
-    timeoutRefs.current.forEach((id) => window.clearTimeout(id));
-    timeoutRefs.current = [];
-  }, []);
+  // ── matter-js engine setup (persists across drops; rebuilds on rows/size) ──
+  const buildWorld = useCallback(() => {
+    const canvas = canvasRef.current;
+    const board = boardRef.current;
+    if (!canvas || !board) return;
 
-  const animateDrop = useCallback((result: PlinkoResult, isDemo = false) => {
-    clearDropTimers();
-    setBallTrail([]);
-    setBall({ visible: true, x: 50, y: 2 });
-    setIsDropping(true);
+    const rect = board.getBoundingClientRect();
+    const w = Math.round(rect.width);
+    const h = Math.round(rect.height);
+    if (w === 0 || h === 0) return;
+    boardSizeRef.current = { w, h };
 
-    const pegSpacing = 75 / result.rows;
-    let rights = 0;
-    const stepDelay = hyperMode ? 45 : 110;
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    canvas.width = Math.round(w * dpr);
+    canvas.height = Math.round(h * dpr);
+    canvas.style.width = `${w}px`;
+    canvas.style.height = `${h}px`;
+    const ctx = canvas.getContext("2d");
+    if (ctx) ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-    result.path.forEach((step, index) => {
-      const id = window.setTimeout(() => {
-        rights += step;
-        const stepCount = index + 1;
-        const x = 50 + (rights - stepCount / 2) * pegSpacing;
-        const y = 6 + (stepCount / result.rows) * 74;
-        setBall({ visible: true, x, y });
-        // Add trail point
-        const trailId = trailCounter.current++;
-        setBallTrail((prev) => [...prev.slice(-4), { x, y, id: trailId }]);
-        if (!isDemo) playTick(1 + stepCount / 4);
-      }, index * stepDelay);
-      timeoutRefs.current.push(id);
+    // Tear down any prior engine.
+    if (runnerRef.current) Matter.Runner.stop(runnerRef.current);
+    if (engineRef.current) {
+      Matter.World.clear(engineRef.current.world, false);
+      Matter.Engine.clear(engineRef.current);
+    }
+
+    const engine = Matter.Engine.create();
+    engine.gravity.y = 1;
+    engine.world.gravity.scale = 0.0014;
+    engineRef.current = engine;
+    ballBodyRef.current = null;
+
+    const pegR = Math.max(3, w * (Math.max(5, 9 - rows * 0.15) / 2) / 680);
+    const bodies: Matter.Body[] = [];
+
+    // Pegs — static circles at the exact DOM percent positions.
+    let pegId = 0;
+    for (let r = 0; r < rows; r++) {
+      for (let c = 0; c <= r; c++) {
+        const p = pegPercent(r, c, rows);
+        const peg = Matter.Bodies.circle((p.x / 100) * w, (p.y / 100) * h, pegR, {
+          isStatic: true,
+          restitution: 0.4,
+          friction: 0.0,
+          label: `peg-${pegId++}`,
+        });
+        bodies.push(peg);
+      }
+    }
+
+    // Bin dividers + floor under the last peg row, aligned to the slot strip.
+    const slotCount = rows + 1;
+    const binTopPct = 8 + (rows / rows) * 73; // y of last peg row in %
+    const binTop = (binTopPct / 100) * h + pegR * 2;
+    const binStartX = ((50 - PEG_X_SPREAD / 2) / 100) * w;
+    const binW = ((PEG_X_SPREAD / 100) * w) / rows; // lane width == peg spacing
+    const floorY = h - 2;
+    const wallThick = Math.max(2, binW * 0.06);
+    for (let i = 0; i <= slotCount; i++) {
+      const x = binStartX + (i - 0.5) * binW + binW / 2;
+      const divider = Matter.Bodies.rectangle(
+        x,
+        (binTop + floorY) / 2,
+        wallThick,
+        floorY - binTop,
+        { isStatic: true, restitution: 0.1, friction: 0.4, label: "divider" },
+      );
+      bodies.push(divider);
+    }
+    // Floor.
+    bodies.push(
+      Matter.Bodies.rectangle(w / 2, floorY + 6, w, 12, {
+        isStatic: true,
+        restitution: 0,
+        friction: 0.6,
+        label: "floor",
+      }),
+    );
+    // Outer side walls so a ball can never escape the board.
+    bodies.push(Matter.Bodies.rectangle(-6, h / 2, 12, h, { isStatic: true, label: "wall" }));
+    bodies.push(Matter.Bodies.rectangle(w + 6, h / 2, 12, h, { isStatic: true, label: "wall" }));
+
+    Matter.World.add(engine.world, bodies);
+
+    // Peg-hit feedback: throttled tick + brief visual flash on the struck peg.
+    Matter.Events.on(engine, "collisionStart", (evt) => {
+      for (const pair of evt.pairs) {
+        const pegBody =
+          pair.bodyA.label?.startsWith("peg-") ? pair.bodyA
+          : pair.bodyB.label?.startsWith("peg-") ? pair.bodyB
+          : null;
+        if (!pegBody) continue;
+        const now = performance.now();
+        if (now - lastPegSoundRef.current > 38) {
+          lastPegSoundRef.current = now;
+          playSound("tick");
+        }
+        const id = Number(pegBody.label.slice(4));
+        pegFlashRef.current.set(id, now);
+      }
     });
 
-    const settleId = window.setTimeout(() => {
-      const x = 50 + (result.slotIndex - result.rows / 2) * pegSpacing;
-      setBall({ visible: true, x, y: 88 });
-      setBallTrail([]);
-    }, result.path.length * stepDelay + (hyperMode ? 15 : 35));
-    timeoutRefs.current.push(settleId);
+    const runner = Matter.Runner.create();
+    runnerRef.current = runner;
+    Matter.Runner.run(runner, engine);
+  }, [rows]);
 
-    const finishId = window.setTimeout(() => {
-      setLastResult(result);
-      setResultBannerKey((k) => k + 1);
-      setIsDropping(false);
-      if (!isDemo) {
-        if (result.multiplier >= 1) {
-          playWin();
-        } else {
-          playCrash();
-        }
+  // ── Render loop: draws ball + steers it row-by-row toward the server slot ──
+  const startRenderLoop = useCallback(() => {
+    if (rafRef.current != null) return;
+    const draw = () => {
+      const canvas = canvasRef.current;
+      const engine = engineRef.current;
+      if (!canvas || !engine) {
+        rafRef.current = requestAnimationFrame(draw);
+        return;
       }
-    }, result.path.length * stepDelay + (hyperMode ? 80 : 480));
-    timeoutRefs.current.push(finishId);
-  }, [clearDropTimers, hyperMode, playCrash, playTick, playWin]);
+      const ctx = canvas.getContext("2d");
+      const { w, h } = boardSizeRef.current;
+      if (!ctx || w === 0) {
+        rafRef.current = requestAnimationFrame(draw);
+        return;
+      }
+      ctx.clearRect(0, 0, w, h);
+
+      // Peg flashes (fade over ~180ms).
+      const now = performance.now();
+      const pegR = Math.max(3, w * (Math.max(5, 9 - rows * 0.15) / 2) / 680);
+      pegFlashRef.current.forEach((t, id) => {
+        const age = now - t;
+        if (age > 200) { pegFlashRef.current.delete(id); return; }
+        const a = 1 - age / 200;
+        // resolve peg id -> position
+        let counter = 0, found: { x: number; y: number } | null = null;
+        for (let r = 0; r < rows && !found; r++) {
+          for (let c = 0; c <= r; c++) {
+            if (counter === id) { found = pegPercent(r, c, rows); break; }
+            counter++;
+          }
+        }
+        if (!found) return;
+        const px = (found.x / 100) * w;
+        const py = (found.y / 100) * h;
+        ctx.beginPath();
+        ctx.arc(px, py, pegR * (1.6 + a * 1.2), 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255,154,61,${0.32 * a})`;
+        ctx.fill();
+      });
+
+      const ball = ballBodyRef.current;
+      if (ball) {
+        // Steer the ball as it descends past each row so the realistic bounce
+        // resolves into the server's slotIndex. We nudge horizontal velocity
+        // toward the lane target for the row the ball is currently entering.
+        const plan = steerRef.current;
+        while (
+          steerIdxRef.current < plan.length &&
+          ball.position.y >= plan[steerIdxRef.current].y
+        ) {
+          steerIdxRef.current++;
+        }
+        const next = plan[steerIdxRef.current];
+        if (next) {
+          const dx = next.targetX - ball.position.x;
+          // Gentle proportional nudge — strong enough to guarantee the lane,
+          // soft enough to keep visible, peg-deflected bouncing.
+          const nudge = Math.max(-1.4, Math.min(1.4, dx * 0.018));
+          Matter.Body.setVelocity(ball, {
+            x: ball.velocity.x * 0.86 + nudge,
+            y: ball.velocity.y,
+          });
+        } else {
+          // Past the last peg row: hard-funnel into the exact target lane.
+          const targetX = steerRef.current.length
+            ? steerRef.current[steerRef.current.length - 1].targetX
+            : ball.position.x;
+          const finalX =
+            (lastResult && engineRef.current)
+              ? targetXForSlot(lastResult.slotIndex, rows, w)
+              : targetX;
+          const dx = finalX - ball.position.x;
+          Matter.Body.setVelocity(ball, {
+            x: ball.velocity.x * 0.7 + Math.max(-1.0, Math.min(1.0, dx * 0.05)),
+            y: ball.velocity.y,
+          });
+        }
+
+        // Draw the glowing ball.
+        const bx = ball.position.x;
+        const by = ball.position.y;
+        const br = ball.circleRadius || pegR * 1.6;
+        ctx.save();
+        const grd = ctx.createRadialGradient(bx - br * 0.3, by - br * 0.3, br * 0.1, bx, by, br);
+        grd.addColorStop(0, "#fff8aa");
+        grd.addColorStop(0.5, "#ffc300");
+        grd.addColorStop(1, "#e89000");
+        ctx.shadowColor = "rgba(255,170,0,0.9)";
+        ctx.shadowBlur = 18;
+        ctx.beginPath();
+        ctx.arc(bx, by, br, 0, Math.PI * 2);
+        ctx.fillStyle = grd;
+        ctx.fill();
+        ctx.restore();
+      }
+
+      rafRef.current = requestAnimationFrame(draw);
+    };
+    rafRef.current = requestAnimationFrame(draw);
+  }, [lastResult, rows]);
+
+  const clearSettleTimer = useCallback(() => {
+    if (settleTimerRef.current != null) {
+      window.clearTimeout(settleTimerRef.current);
+      settleTimerRef.current = null;
+    }
+  }, []);
+
+  const resolveResult = useCallback((result: PlinkoResult, isDemo = false) => {
+    setLastResult(result);
+    setResultBannerKey((k) => k + 1);
+    setIsDropping(false);
+    finishedRef.current = true;
+    if (isDemo) return;
+    // Celebrations + sound driven STRICTLY by the server result.
+    if (result.status === "WON" && result.multiplier >= 1) {
+      playWin();
+      playSound("win");
+      if (result.multiplier >= 10) {
+        fireBigWin();
+      } else {
+        fireWin();
+      }
+    } else {
+      playCrash();
+      playSound("lose");
+    }
+  }, [playCrash, playWin]);
+
+  // ── Drop the physics ball; it MUST land in result.slotIndex ──────────
+  const animateDrop = useCallback((result: PlinkoResult, isDemo = false) => {
+    clearSettleTimer();
+    finishedRef.current = false;
+
+    const engine = engineRef.current;
+    const { w, h } = boardSizeRef.current;
+
+    // Reduced motion (or no engine yet): snap straight to the resolved result.
+    if (prefersReducedMotion || !engine || w === 0) {
+      if (ballBodyRef.current && engine) {
+        Matter.World.remove(engine.world, ballBodyRef.current);
+        ballBodyRef.current = null;
+      }
+      resolveResult(result, isDemo);
+      return;
+    }
+
+    // Remove any existing ball.
+    if (ballBodyRef.current) {
+      Matter.World.remove(engine.world, ballBodyRef.current);
+      ballBodyRef.current = null;
+    }
+
+    const pegR = Math.max(3, w * (Math.max(5, 9 - rows * 0.15) / 2) / 680);
+    const ballR = pegR * 1.55;
+
+    // Build the steering plan from the SERVER path. result.path is a list of
+    // 0/1 right-deflections; the cumulative count == lane index after each row.
+    // We compute the target lane center at every peg row and steer toward it.
+    const plan: { y: number; targetX: number }[] = [];
+    let cum = 0;
+    const path = Array.isArray(result.path) && result.path.length === result.rows
+      ? result.path
+      : // Fallback: derive a balanced L/R path that sums to slotIndex.
+        Array.from({ length: result.rows }, (_, i) => (i < result.slotIndex ? 1 : 0));
+    const binStartX = ((50 - PEG_X_SPREAD / 2) / 100) * w;
+    const binW = ((PEG_X_SPREAD / 100) * w) / result.rows;
+    const finalX = binStartX + (result.slotIndex + 0.5) * binW;
+    const startXpx = w / 2;
+    for (let r = 0; r < result.rows; r++) {
+      cum += path[r] ? 1 : 0;
+      // Interpolate toward the server's final bucket, weighted by descent
+      // progress. The cumulative right-count keeps the curve faithful to the
+      // server path while guaranteeing arrival at result.slotIndex.
+      const t = (r + 1) / result.rows;
+      const pathBias = (cum / Math.max(1, result.rows)) - 0.5; // -0.5..+0.5 from path so far
+      const targetX =
+        startXpx + (finalX - startXpx) * t + pathBias * binW * 0.6 * (1 - t);
+      const py = (pegPercent(r, 0, result.rows).y / 100) * h - pegR; // trigger slightly above the row
+      plan.push({ y: py, targetX });
+    }
+    steerRef.current = plan;
+    steerIdxRef.current = 0;
+
+    // Drop position: a touch of randomness for organic feel; steering corrects it.
+    const dropX = w / 2 + (Math.random() - 0.5) * (pegR * 1.2);
+    const ball = Matter.Bodies.circle(dropX, (5 / 100) * h, ballR, {
+      restitution: 0.45,
+      friction: 0.002,
+      frictionAir: 0.012,
+      density: 0.02,
+      label: "ball",
+    });
+    Matter.Body.setVelocity(ball, { x: 0, y: 0 });
+    ballBodyRef.current = ball;
+    Matter.World.add(engine.world, ball);
+
+    if (hyperMode) {
+      engine.timing.timeScale = 1.9;
+    } else {
+      engine.timing.timeScale = 1.0;
+    }
+
+    startRenderLoop();
+
+    // Detect rest in the bucket (or hard timeout) → resolve from the server.
+    const startedAt = performance.now();
+    const maxMs = hyperMode ? 2200 : 4200;
+    const watch = () => {
+      if (finishedRef.current) return;
+      const b = ballBodyRef.current;
+      const elapsed = performance.now() - startedAt;
+      const floorReached = b && b.position.y > h - ballR * 2.4;
+      const resting = b && Math.abs(b.velocity.y) < 0.25 && b.position.y > (8 + 73) / 100 * h;
+      if ((floorReached && resting) || elapsed > maxMs) {
+        // Snap the ball cleanly to the exact bucket center, then resolve.
+        if (b && engineRef.current) {
+          const finalX = targetXForSlot(result.slotIndex, result.rows, w);
+          Matter.Body.setPosition(b, { x: finalX, y: h - ballR * 2.2 });
+          Matter.Body.setVelocity(b, { x: 0, y: 0 });
+        }
+        resolveResult(result, isDemo);
+        // Let the ball linger briefly in the bucket, then remove it.
+        settleTimerRef.current = window.setTimeout(() => {
+          if (ballBodyRef.current && engineRef.current) {
+            Matter.World.remove(engineRef.current.world, ballBodyRef.current);
+            ballBodyRef.current = null;
+          }
+        }, 650);
+        return;
+      }
+      settleTimerRef.current = window.setTimeout(watch, 60);
+    };
+    settleTimerRef.current = window.setTimeout(watch, 120);
+  }, [clearSettleTimer, hyperMode, prefersReducedMotion, resolveResult, rows, startRenderLoop]);
+
+  // Build / rebuild the matter world whenever the board mounts or rows change,
+  // and keep it sized to the responsive board via ResizeObserver.
+  useEffect(() => {
+    buildWorld();
+    startRenderLoop();
+    const board = boardRef.current;
+    if (!board || typeof ResizeObserver === "undefined") return;
+    let raf = 0;
+    const ro = new ResizeObserver(() => {
+      // Debounce to the next frame; rebuild keeps bodies aligned to the box.
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(() => {
+        if (!isDropping) buildWorld();
+      });
+    });
+    ro.observe(board);
+    return () => {
+      cancelAnimationFrame(raf);
+      ro.disconnect();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [buildWorld]);
+
+  // Full teardown on unmount.
+  useEffect(() => {
+    return () => {
+      clearSettleTimer();
+      if (rafRef.current != null) {
+        cancelAnimationFrame(rafRef.current);
+        rafRef.current = null;
+      }
+      if (runnerRef.current) {
+        Matter.Runner.stop(runnerRef.current);
+        runnerRef.current = null;
+      }
+      if (engineRef.current) {
+        Matter.World.clear(engineRef.current.world, false);
+        Matter.Engine.clear(engineRef.current);
+        engineRef.current = null;
+      }
+      ballBodyRef.current = null;
+    };
+  }, [clearSettleTimer]);
 
   useEffect(() => {
     const endpoint = getConfiguredSocketNamespace("originals");
@@ -220,16 +591,19 @@ export default function PlinkoPage() {
     socket.on("plinko:history", (items: PlinkoHistoryItem[]) => { setHistory(items); });
 
     socket.on("plinko:error", (payload: { message: string }) => {
-      clearDropTimers();
+      clearSettleTimer();
+      finishedRef.current = true;
       setIsDropping(false);
-      setBall((c) => ({ ...c, visible: false }));
-      setBallTrail([]);
+      if (ballBodyRef.current && engineRef.current) {
+        Matter.World.remove(engineRef.current.world, ballBodyRef.current);
+        ballBodyRef.current = null;
+      }
       void refreshWallet();
       toast.error(payload.message);
     });
 
-    return () => { clearDropTimers(); socket.disconnect(); };
-  }, [animateDrop, clearDropTimers, refreshWallet]);
+    return () => { socket.disconnect(); };
+  }, [animateDrop, clearSettleTimer, refreshWallet]);
 
   const handleWalletTypeChange = useCallback((next: WalletType) => {
     setWalletType(next);
@@ -243,7 +617,7 @@ export default function PlinkoPage() {
     if (betAmount > activeBalance) return toast.error("Insufficient balance");
     if (!socketRef.current) return toast.error("Connecting to server…");
     setLastResult(null);
-    setBall({ visible: true, x: 50, y: 2 });
+    setIsDropping(true);
     playBet();
     socketRef.current.emit("plinko:play", { betAmount, rows, risk, walletType });
   }, [activeBalance, betAmount, hasSession, isDropping, openLogin, playBet, risk, rows, walletType]);
@@ -252,9 +626,8 @@ export default function PlinkoPage() {
     return Array.from({ length: rows }, (_, rowIndex) => {
       const cols = rowIndex + 1;
       return Array.from({ length: cols }, (_, colIndex) => {
-        const x = 50 + (colIndex - (cols - 1) / 2) * (75 / rows);
-        const y = 8 + ((rowIndex + 1) / rows) * 73;
-        return { key: `${rowIndex}-${colIndex}`, x, y };
+        const p = pegPercent(rowIndex, colIndex, rows);
+        return { key: `${rowIndex}-${colIndex}`, x: p.x, y: p.y };
       });
     }).flat();
   }, [rows]);
@@ -585,7 +958,7 @@ export default function PlinkoPage() {
 
             {/* Plinko Board */}
             <div className="flex-1 flex items-center justify-center mt-16 p-3 relative z-10">
-              <div className="w-full max-w-[680px] aspect-[1/1.05] relative">
+              <div ref={boardRef} className="w-full max-w-[680px] aspect-[1/1.05] relative">
 
                 {/* Pegs */}
                 {pegNodes.map((peg) => (
@@ -602,48 +975,14 @@ export default function PlinkoPage() {
                   />
                 ))}
 
-                {/* Ball Trail */}
-                {ballTrail.map((pt, i) => (
-                  <div
-                    key={pt.id}
-                    className="absolute rounded-full -translate-x-1/2 -translate-y-1/2 pointer-events-none"
-                    style={{
-                      left: `${pt.x}%`,
-                      top: `${pt.y}%`,
-                      width: "14px",
-                      height: "14px",
-                      background: "rgba(255,195,0,0.15)",
-                      opacity: (i + 1) / ballTrail.length * 0.6,
-                    }}
-                  />
-                ))}
-
-                {/* Ball */}
-                {ball.visible && (
-                  <div
-                    className="absolute -translate-x-1/2 -translate-y-1/2 z-20 pointer-events-none"
-                    style={{
-                      left: `${ball.x}%`,
-                      top: `${ball.y}%`,
-                      width: `${Math.max(14, 20 - rows * 0.2)}px`,
-                      height: `${Math.max(14, 20 - rows * 0.2)}px`,
-                      transition: hyperMode
-                        ? "left 45ms ease-out, top 45ms ease-out"
-                        : "left 100ms cubic-bezier(0.25,0.1,0.25,1), top 100ms cubic-bezier(0.25,0.1,0.25,1)",
-                    }}
-                  >
-                    <div
-                      className="w-full h-full rounded-full"
-                      style={{
-                        background: "radial-gradient(circle at 35% 35%, #fff8aa, #ffc300 50%, #e89000)",
-                        boxShadow: "0 0 12px rgba(255,195,0,0.9), 0 0 24px rgba(255,150,0,0.5)",
-                      }}
-                    />
-                  </div>
-                )}
+                {/* Physics ball canvas (matter-js). Sits above pegs, below slots. */}
+                <canvas
+                  ref={canvasRef}
+                  className="absolute inset-0 z-20 pointer-events-none"
+                />
 
                 {/* Multiplier Slots */}
-                <div className="absolute inset-x-[1%] bottom-[1%] h-[30px] sm:h-[36px] flex items-end gap-[2px]">
+                <div className="absolute inset-x-[1%] bottom-[1%] h-[30px] sm:h-[36px] flex items-end gap-[2px] z-[25]">
                   {multiplierTable.map((multiplier, index) => {
                     const isLast = lastResult?.slotIndex === index;
                     return (
@@ -654,7 +993,7 @@ export default function PlinkoPage() {
                           background: getSlotGradient(index, multiplierTable.length, multiplier),
                           transform: isLast ? "translateY(2px) scaleY(0.95)" : "translateY(0)",
                           boxShadow: isLast
-                            ? "none"
+                            ? "0 0 14px rgba(255,154,61,0.85), inset 0 0 0 1.5px rgba(255,255,255,0.6)"
                             : `0 3px 0 rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.15)`,
                         }}
                       >

@@ -33,7 +33,8 @@
     "repair:wallet-history": "ts-node src/scripts/repair-wallet-history.ts",
     "repair:wallet-history:force": "ts-node src/scripts/repair-wallet-history.ts --apply --allow-negative",
     "repair:wallets-to-cutoff": "ts-node src/scripts/rebuild-wallets-to-cutoff.ts",
-    "repair:wallets-to-cutoff:force": "ts-node src/scripts/rebuild-wallets-to-cutoff.ts --apply --allow-negative"
+    "repair:wallets-to-cutoff:force": "ts-node src/scripts/rebuild-wallets-to-cutoff.ts --apply --allow-negative",
+    "originals:open-access": "ts-node scripts/originals-open-access.ts"
   },
   "prisma": {
     "seed": "ts-node prisma/seed.ts"

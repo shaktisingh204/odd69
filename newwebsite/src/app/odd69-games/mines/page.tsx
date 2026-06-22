@@ -1,6 +1,8 @@
 "use client";
 
 import React, { useState, useEffect, useCallback, useRef } from "react";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
+import { fireWin, fireBigWin, playSound } from "@/utils/originalsFx";
 import Header from "@/components/layout/Header";
 import LeftSidebar from "@/components/layout/LeftSidebar";
 import { useAuth } from "@/context/AuthContext";
@@ -125,21 +127,44 @@ interface BigWinData {
 }
 
 function BigWinOverlay({ data, onClose }: { data: BigWinData | null; onClose: () => void }) {
-  if (!data) return null;
+  const prefersReducedMotion = useReducedMotion();
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-md" onClick={onClose}>
-      <div className="bg-success-soft border border-green-500/40 rounded-2xl p-10 text-center max-w-xs mx-4 shadow-xl"
-        style={{ boxShadow: "0 0 60px rgba(34,197,94,0.4)" }}>
-        <div className="flex justify-center mb-3"><GemIcon size={64} /></div>
-        <div className="text-green-400 font-black text-xs tracking-widest uppercase mb-1">ODD69 MINES</div>
-        <h2 className="text-3xl font-black text-white mb-1">BIG WIN!</h2>
-        <div className="text-5xl font-black text-green-400 my-3">${data.payout?.toFixed(2)}</div>
-        <div className="text-2xl text-yellow-400 font-black mb-6">{data.multiplier?.toFixed(2)}×</div>
-        <button onClick={onClose} className="w-full py-3 bg-green-500 hover:bg-green-400 text-white font-black rounded-xl transition-all">
-          Awesome! 🎯
-        </button>
-      </div>
-    </div>
+    <AnimatePresence>
+      {data && (
+        <motion.div
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-md"
+          onClick={onClose}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.2 }}
+        >
+          <motion.div
+            className="bg-success-soft border border-green-500/40 rounded-2xl p-10 text-center max-w-xs mx-4 shadow-xl"
+            style={{ boxShadow: "0 0 60px rgba(34,197,94,0.4)" }}
+            initial={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, scale: 0.6, y: 24 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, scale: 0.8 }}
+            transition={prefersReducedMotion ? { duration: 0.15 } : { type: "spring", stiffness: 320, damping: 20 }}
+          >
+            <motion.div
+              className="flex justify-center mb-3"
+              animate={prefersReducedMotion ? undefined : { rotate: [0, -8, 8, -5, 0], scale: [1, 1.12, 1] }}
+              transition={{ duration: 0.8, ease: "easeInOut" }}
+            >
+              <GemIcon size={64} />
+            </motion.div>
+            <div className="text-green-400 font-black text-xs tracking-widest uppercase mb-1">ODD69 MINES</div>
+            <h2 className="text-3xl font-black text-white mb-1">BIG WIN!</h2>
+            <div className="text-5xl font-black text-green-400 my-3">${data.payout?.toFixed(2)}</div>
+            <div className="text-2xl text-yellow-400 font-black mb-6">{data.multiplier?.toFixed(2)}×</div>
+            <button onClick={onClose} className="w-full py-3 bg-green-500 hover:bg-green-400 text-white font-black rounded-xl transition-all">
+              Awesome! 🎯
+            </button>
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 }
 
@@ -151,6 +176,7 @@ export default function MinesPage() {
   const { openLogin } = useModal();
   const { playBet, playGemReveal, playMineExplosion, playWin, playBigWin, muted, toggleMute } = useGameSounds();
   const hasSession = !!token;
+  const prefersReducedMotion = useReducedMotion();
 
   // Access gate — redirect non-allowed users
   useEffect(() => {
@@ -179,6 +205,9 @@ export default function MinesPage() {
   const [activePlayers, setActivePlayers] = useState(0);
   const [showFairness, setShowFairness] = useState(false);
   const [isInitializing, setIsInitializing] = useState(true); // wait for reconnect event on mount
+  const [boardShake, setBoardShake] = useState(0); // bump to trigger an explosion shake (visual only)
+  const [explodedTile, setExplodedTile] = useState<number | null>(null); // the mine the player actually hit
+  const [multiplierPulse, setMultiplierPulse] = useState(0); // bump to pulse the multiplier on each gem (visual only)
 
   // ── Auto mode state ────────────────────────────────────────────────────────
   const [autoRounds, setAutoRounds] = useState(10);
@@ -245,6 +274,7 @@ export default function MinesPage() {
         tilesRef.current = Array(TOTAL_TILES).fill("hidden");
         gemsRevealedRef.current = 0;
         setNearMissTiles(new Set());
+        setExplodedTile(null);
         setCurrentMultiplier(1); setPotentialPayout(0);
         setGameStatus("active");
         refreshWallet();
@@ -267,6 +297,7 @@ export default function MinesPage() {
         setCurrentMultiplier(data.multiplier);
         setPotentialPayout(data.potentialPayout);
         setActiveGame(prev => prev ? { ...prev, multiplier: data.multiplier, potentialPayout: data.potentialPayout } : null);
+        setMultiplierPulse(p => p + 1); // animate the multiplier on each safe reveal (visual only)
 
         if (data.nearMiss) {
           const row = Math.floor(data.tileIndex / 5), col = data.tileIndex % 5;
@@ -301,6 +332,9 @@ export default function MinesPage() {
       onGameOver: (data) => {
         setIsLoading(false);
         playMineExplosion();
+        playSound("lose"); // shared FX util — descending lose tone on mine hit
+        setExplodedTile(data.tileIndex); // visualize the exact mine the server says was hit
+        setBoardShake(s => s + 1); // trigger explosion shake (visual only)
         setTiles(prev => {
           const n = [...prev]; n[data.tileIndex] = "mine";
           (data.minePositions as number[]).forEach(mi => { if (mi !== data.tileIndex) n[mi] = "revealed-mine"; });
@@ -331,6 +365,9 @@ export default function MinesPage() {
       onCashoutSuccess: (data) => {
         setIsLoading(false);
         if (data.multiplier >= 10) { playBigWin(); } else { playWin(); }
+        // shared FX util — confetti + cashout chime driven by the server result
+        playSound("cashout");
+        if (data.multiplier >= 10) { fireBigWin(); } else { fireWin(); }
         setTiles(prev => {
           const n = [...prev];
           (data.minePositions as number[]).forEach(mi => { if (n[mi] === "hidden") n[mi] = "revealed-mine"; });
@@ -436,6 +473,7 @@ export default function MinesPage() {
     setTiles(Array(TOTAL_TILES).fill("hidden"));
     tilesRef.current = Array(TOTAL_TILES).fill("hidden");
     gemsRevealedRef.current = 0;
+    setExplodedTile(null);
     // Extra guard: make sure no active game exists
     if (activeGameRef.current !== null) {
       console.warn("[Auto] Tried to start but activeGame exists, skipping");
@@ -508,6 +546,7 @@ export default function MinesPage() {
     setTiles(Array(TOTAL_TILES).fill("hidden"));
     tilesRef.current = Array(TOTAL_TILES).fill("hidden");
     setNearMissTiles(new Set());
+    setExplodedTile(null);
     setCurrentMultiplier(1); setPotentialPayout(0);
     setActiveGame(null); activeGameRef.current = null; setIsLoading(false);
   };
@@ -723,7 +762,15 @@ export default function MinesPage() {
                     </div>
                     <div className="flex justify-between text-xs">
                       <span className="text-[#6b7280]">Multiplier</span>
-                      <span className="text-yellow-400 font-black">{currentMultiplier.toFixed(4)}×</span>
+                      <motion.span
+                        key={multiplierPulse}
+                        className="text-yellow-400 font-black"
+                        initial={prefersReducedMotion ? false : { scale: 1.35, color: "#ff9a3d" }}
+                        animate={{ scale: 1, color: "#facc15" }}
+                        transition={{ type: "spring", stiffness: 500, damping: 18 }}
+                      >
+                        {currentMultiplier.toFixed(4)}×
+                      </motion.span>
                     </div>
                     <div className="flex justify-between text-xs">
                       <span className="text-[#6b7280]">Cash out</span>
@@ -841,64 +888,187 @@ export default function MinesPage() {
                         : "💥 Mine hit! Try again"}
               </div>
 
-              {/* 5×5 Grid */}
-              <div className="relative z-10 grid gap-2 md:gap-3 p-3 md:p-4 w-full"
-                style={{ gridTemplateColumns: "repeat(5, 1fr)", maxWidth: "min(640px, 100%)", margin: "0 auto" }}>
+              {/* Animated multiplier readout — visualizes the server-returned multiplier */}
+              <AnimatePresence>
+                {(isGameActive || gameStatus === "won") && gemsRevealed > 0 && (
+                  <motion.div
+                    key="mult-readout"
+                    className="absolute top-16 left-1/2 -translate-x-1/2 z-20 pointer-events-none text-center"
+                    initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0, y: -8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: -8 }}
+                  >
+                    <motion.div
+                      key={multiplierPulse}
+                      className="font-black tabular-nums"
+                      style={{
+                        fontSize: "clamp(28px, 6vw, 52px)",
+                        color: gameStatus === "won" ? "#22c55e" : "#ff9a3d",
+                        textShadow: gameStatus === "won"
+                          ? "0 0 30px rgba(34,197,94,0.5)"
+                          : "0 0 28px rgba(255,154,61,0.45)",
+                      }}
+                      initial={prefersReducedMotion ? false : { scale: 1.3 }}
+                      animate={{ scale: 1 }}
+                      transition={{ type: "spring", stiffness: 480, damping: 16 }}
+                    >
+                      {currentMultiplier.toFixed(2)}×
+                    </motion.div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              {/* 5×5 Grid — board shakes on a mine hit (server-driven game-over) */}
+              <motion.div
+                className="relative z-10 grid gap-2 md:gap-3 p-3 md:p-4 w-full"
+                style={{ gridTemplateColumns: "repeat(5, 1fr)", maxWidth: "min(640px, 100%)", margin: "0 auto" }}
+                animate={
+                  boardShake && !prefersReducedMotion
+                    ? { x: [0, -10, 9, -7, 5, -3, 0], y: [0, 4, -3, 3, -2, 1, 0] }
+                    : { x: 0, y: 0 }
+                }
+                transition={{ duration: 0.45, ease: "easeOut" }}
+                key={`shake-${boardShake}`}
+              >
                 {tiles.map((state, idx) => {
                   const clickable = state === "hidden" && isGameActive && !isLoading && !isAutoRunning;
                   const isNearMiss = nearMissTiles.has(idx) && state === "hidden";
+                  const isExploded = state === "mine" && explodedTile === idx;
+                  const revealed = state !== "hidden";
 
                   return (
-                    <button key={idx} onClick={() => handleTile(idx)} disabled={!clickable}
+                    <motion.button key={idx} onClick={() => handleTile(idx)} disabled={!clickable}
+                      whileHover={clickable && !prefersReducedMotion ? { scale: 1.06 } : undefined}
+                      whileTap={clickable && !prefersReducedMotion ? { scale: 0.92 } : undefined}
                       className={`
-                        aspect-square rounded-xl border transition-all duration-200 relative overflow-hidden
+                        aspect-square rounded-xl border relative overflow-hidden
                         ${state === "hidden"
                           ? clickable
-                            ? `bg-bg-elevated border-[#3a3d45] hover:bg-bg-hover hover:border-[#4a4d55] hover:scale-105 cursor-pointer active:scale-95
+                            ? `bg-bg-elevated border-[#3a3d45] hover:bg-bg-hover hover:border-[#4a4d55] cursor-pointer
                                ${isNearMiss ? "border-orange-400/40 shadow-[0_0_12px_rgba(251,146,60,0.25)]" : ""}`
                             : `bg-bg-surface-3 border-[#2a2d35] cursor-not-allowed ${isGameActive && !isAutoRunning ? "" : "opacity-60"}`
                           : ""}
-                        ${state === "gem" ? "bg-success-soft border-cyan-500/50 scale-[1.03]" : ""}
-                        ${state === "mine" ? "bg-danger-soft border-red-500/60 scale-[1.03]" : ""}
+                        ${state === "gem" ? "bg-success-soft border-cyan-500/50" : ""}
+                        ${state === "mine" ? "bg-danger-soft border-red-500/60" : ""}
                         ${state === "revealed-mine" ? "bg-danger-soft border-red-900/20 opacity-40" : ""}
                       `}
-                      style={{
-                        animation: state === "gem" ? "gemFlip 0.3s ease-out" :
-                          state === "mine" ? "mineBang 0.35s ease-out" : undefined,
-                      }}
+                      style={{ transformStyle: "preserve-3d", perspective: 600 }}
                     >
-                      {/* Tile shine */}
+                      {/* Tile shine (hidden state) */}
                       {state === "hidden" && (
                         <div className="absolute top-0 left-0 right-0 h-1/2 bg-white/[0.03] rounded-t-xl" />
                       )}
-                      {/* Gem */}
-                      {state === "gem" && (
-                        <div className="absolute inset-0 flex items-center justify-center">
-                          <div className="absolute inset-0 bg-cyan-500/5" />
-                          <div className="relative z-10">
-                            <GemIcon size={36} />
-                          </div>
-                        </div>
-                      )}
-                      {/* Mine hit */}
-                      {state === "mine" && (
-                        <div className="absolute inset-0 flex items-center justify-center">
-                          <div className="absolute inset-0 bg-danger-alpha-10 animate-pulse" />
-                          <div className="relative z-10">
-                            <MineIcon size={36} />
-                          </div>
-                        </div>
-                      )}
-                      {/* Revealed mine */}
-                      {state === "revealed-mine" && (
-                        <div className="absolute inset-0 flex items-center justify-center opacity-30">
-                          <MineIcon size={28} />
-                        </div>
-                      )}
-                    </button>
+
+                      {/* Animated reveal content — flip-in driven by the server result */}
+                      <AnimatePresence>
+                        {revealed && (
+                          <motion.div
+                            key={state}
+                            className="absolute inset-0 flex items-center justify-center"
+                            initial={
+                              prefersReducedMotion
+                                ? { opacity: 1, scale: 1, rotateY: 0 }
+                                : state === "gem"
+                                  ? { opacity: 0, scale: 0.4, rotateY: 90 }
+                                  : state === "mine"
+                                    ? { opacity: 0, scale: 0.55 }
+                                    : { opacity: 0, scale: 0.7 }
+                            }
+                            animate={
+                              prefersReducedMotion
+                                ? { opacity: state === "revealed-mine" ? 0.35 : 1, scale: 1, rotateY: 0 }
+                                : state === "gem"
+                                  ? { opacity: 1, scale: [0.4, 1.12, 1.03], rotateY: [90, -8, 0] }
+                                  : state === "mine"
+                                    ? { opacity: 1, scale: [0.55, 1.32, 0.95, 1.03] }
+                                    : { opacity: 0.35, scale: 1 }
+                            }
+                            transition={
+                              prefersReducedMotion
+                                ? { duration: 0 }
+                                : state === "gem"
+                                  ? { duration: 0.34, ease: "easeOut" }
+                                  : state === "mine"
+                                    ? { duration: 0.38, ease: "easeOut" }
+                                    : { duration: 0.25, ease: "easeOut" }
+                            }
+                          >
+                            {/* Gem with sparkle halo */}
+                            {state === "gem" && (
+                              <>
+                                <div className="absolute inset-0 bg-cyan-500/5" />
+                                {!prefersReducedMotion && (
+                                  <motion.div
+                                    className="absolute inset-0 rounded-xl"
+                                    style={{ background: "radial-gradient(circle at 50% 45%, rgba(34,211,238,0.45) 0%, transparent 60%)" }}
+                                    initial={{ opacity: 0.9, scale: 0.6 }}
+                                    animate={{ opacity: 0, scale: 1.6 }}
+                                    transition={{ duration: 0.6, ease: "easeOut" }}
+                                  />
+                                )}
+                                <motion.div
+                                  className="relative z-10"
+                                  animate={prefersReducedMotion ? undefined : { y: [0, -2, 0] }}
+                                  transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut" }}
+                                >
+                                  <GemIcon size={36} />
+                                </motion.div>
+                                {/* Sparkle twinkles */}
+                                {!prefersReducedMotion && [
+                                  { x: "22%", y: "26%", d: 0 },
+                                  { x: "74%", y: "34%", d: 0.18 },
+                                  { x: "60%", y: "72%", d: 0.3 },
+                                ].map((s, i) => (
+                                  <motion.span
+                                    key={i}
+                                    className="absolute z-20 text-white text-[10px] select-none"
+                                    style={{ left: s.x, top: s.y }}
+                                    initial={{ opacity: 0, scale: 0 }}
+                                    animate={{ opacity: [0, 1, 0], scale: [0, 1.2, 0] }}
+                                    transition={{ duration: 0.7, delay: 0.15 + s.d, ease: "easeOut" }}
+                                  >
+                                    ✦
+                                  </motion.span>
+                                ))}
+                              </>
+                            )}
+
+                            {/* Mine hit — explosion flash on the tile the server returned */}
+                            {state === "mine" && (
+                              <>
+                                {isExploded && !prefersReducedMotion && (
+                                  <motion.div
+                                    className="absolute inset-0 rounded-xl z-20"
+                                    style={{ background: "radial-gradient(circle at 50% 50%, #fff 0%, #ff9a3d 35%, rgba(220,38,38,0) 75%)" }}
+                                    initial={{ opacity: 1, scale: 0.3 }}
+                                    animate={{ opacity: 0, scale: 2.2 }}
+                                    transition={{ duration: 0.55, ease: "easeOut" }}
+                                  />
+                                )}
+                                <div className="absolute inset-0 bg-danger-alpha-10 animate-pulse" />
+                                <motion.div
+                                  className="relative z-10"
+                                  animate={prefersReducedMotion ? undefined : { rotate: [0, -8, 8, -4, 0] }}
+                                  transition={{ duration: 0.4, ease: "easeOut" }}
+                                >
+                                  <MineIcon size={36} />
+                                </motion.div>
+                              </>
+                            )}
+
+                            {/* Revealed (non-hit) mine */}
+                            {state === "revealed-mine" && (
+                              <div className="opacity-90">
+                                <MineIcon size={28} />
+                              </div>
+                            )}
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </motion.button>
                   );
                 })}
-              </div>
+              </motion.div>
 
               {/* Mobile cashout — hidden since controls panel is below on mobile now */}
             </div>
@@ -920,20 +1090,6 @@ export default function MinesPage() {
       </div>
 
       <BigWinOverlay data={bigWin} onClose={() => setBigWin(null)} />
-
-      <style>{`
-        @keyframes gemFlip {
-          0%   { transform: scale(0.5) rotateY(90deg); opacity: 0; }
-          60%  { transform: scale(1.1) rotateY(-10deg); opacity: 1; }
-          100% { transform: scale(1.03) rotateY(0deg); opacity: 1; }
-        }
-        @keyframes mineBang {
-          0%   { transform: scale(0.6); }
-          40%  { transform: scale(1.3); }
-          70%  { transform: scale(0.95); }
-          100% { transform: scale(1.03); }
-        }
-      `}</style>
     </div>
   );
 }

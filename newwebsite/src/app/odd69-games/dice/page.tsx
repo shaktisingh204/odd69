@@ -3,6 +3,8 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { io, Socket } from "socket.io-client";
 import { toast } from "react-hot-toast";
+import { motion, useReducedMotion } from "framer-motion";
+import { gsap } from "gsap";
 import Header from "@/components/layout/Header";
 import LeftSidebar from "@/components/layout/LeftSidebar";
 import { useAuth } from "@/context/AuthContext";
@@ -11,6 +13,7 @@ import { useModal } from "@/context/ModalContext";
 import { useOriginalsAccess } from "@/hooks/useOriginalsAccess";
 import { useGameSounds } from "@/hooks/useGameSounds";
 import { getConfiguredSocketNamespace } from "@/utils/socketUrl";
+import { fireWin, fireBigWin, playSound } from "@/utils/originalsFx";
 import { Volume2, VolumeX } from "lucide-react";
 
 interface RollResult {
@@ -94,8 +97,14 @@ export default function DicePage() {
     setSelectedWallet,
   } = useWallet();
   const { openLogin } = useModal();
+  const prefersReducedMotion = useReducedMotion();
+  const prefersReducedMotionRef = useRef(prefersReducedMotion);
   const socketRef = useRef<Socket | null>(null);
   const animationRef = useRef<number | null>(null);
+  const markerRef = useRef<HTMLDivElement | null>(null);
+  const markerTweenRef = useRef<gsap.core.Tween | null>(null);
+  const payoutTweenRef = useRef<gsap.core.Tween | null>(null);
+  const payoutObjRef = useRef({ value: 0 });
   const hasSession = !!token;
   const {
     playDiceRoll,
@@ -119,6 +128,9 @@ export default function DicePage() {
   const [betInput, setBetInput] = useState("100");
   const [isRolling, setIsRolling] = useState(false);
   const [lastResult, setLastResult] = useState<RollResult | null>(null);
+  const [resultPulse, setResultPulse] = useState(0);
+  const [payoutDisplay, setPayoutDisplay] = useState(0);
+  const [markerPos, setMarkerPos] = useState(50);
   const [rollDisplay, setRollDisplay] = useState(50);
   const [history, setHistory] = useState<HistoryItem[]>([]);
   const [autoRounds, setAutoRounds] = useState("10");
@@ -136,6 +148,10 @@ export default function DicePage() {
   const walletTypeRef = useRef<WalletType>(walletType);
   const autoStopWinRef = useRef(autoStopWin);
   const autoStopLossRef = useRef(autoStopLoss);
+
+  useEffect(() => {
+    prefersReducedMotionRef.current = prefersReducedMotion;
+  }, [prefersReducedMotion]);
 
   useEffect(() => {
     setWalletType(selectedWallet);
@@ -204,6 +220,59 @@ export default function DicePage() {
     }, 600);
   }, [stopRollAnimation]);
 
+  // Visual-only: slide the result marker to the server's roll with a gsap
+  // spring and count the server's payout up. Never alters the outcome — it
+  // only visualises the values already returned by `dice:result`.
+  const animateResult = useCallback((result: RollResult) => {
+    const reduced = prefersReducedMotionRef.current;
+
+    markerTweenRef.current?.kill();
+    payoutTweenRef.current?.kill();
+
+    const targetPayout = result.status === "WON" ? result.payout : 0;
+
+    if (reduced) {
+      setMarkerPos(result.roll);
+      payoutObjRef.current.value = targetPayout;
+      setPayoutDisplay(targetPayout);
+      return;
+    }
+
+    // Spring-slide the marker to the rolled value.
+    const markerObj = { pos: markerPos };
+    markerTweenRef.current = gsap.to(markerObj, {
+      pos: result.roll,
+      duration: 1,
+      ease: "elastic.out(1, 0.55)",
+      onUpdate: () => setMarkerPos(markerObj.pos),
+      onComplete: () => setMarkerPos(result.roll),
+    });
+
+    // Count the payout up from zero (only meaningful on a win).
+    payoutObjRef.current.value = 0;
+    setPayoutDisplay(0);
+    if (targetPayout > 0) {
+      payoutTweenRef.current = gsap.to(payoutObjRef.current, {
+        value: targetPayout,
+        duration: 0.9,
+        ease: "power2.out",
+        onUpdate: () => setPayoutDisplay(payoutObjRef.current.value),
+        onComplete: () => setPayoutDisplay(targetPayout),
+      });
+    }
+  }, [markerPos]);
+
+  const animateResultRef = useRef(animateResult);
+  useEffect(() => {
+    animateResultRef.current = animateResult;
+  }, [animateResult]);
+
+  // Clean up any in-flight gsap tweens on unmount.
+  useEffect(() => () => {
+    markerTweenRef.current?.kill();
+    payoutTweenRef.current?.kill();
+  }, []);
+
   const stopAuto = useCallback((notice?: { type: "success" | "error"; message: string }) => {
     autoRunningRef.current = false;
     setAutoRunning(false);
@@ -227,6 +296,7 @@ export default function DicePage() {
     setLastResult(null);
     playBet();
     playDiceRoll();
+    playSound("bet");
     startRollAnimation();
 
     socketRef.current.emit("dice:roll", {
@@ -262,6 +332,8 @@ export default function DicePage() {
       setLastResult(result);
       setRollDisplay(result.roll);
       setIsRolling(false);
+      setResultPulse((value) => value + 1);
+      animateResultRef.current(result);
       setHistory((previous) => [
         {
           gameId: result.gameId,
@@ -282,9 +354,16 @@ export default function DicePage() {
 
       if (result.status === "WON") {
         playWin();
+        playSound("win");
+        if (result.multiplier >= 10) {
+          fireBigWin();
+        } else {
+          fireWin();
+        }
         toast.success(`Won ${getWalletSymbol(walletTypeRef.current)}${result.payout.toFixed(2)} at ${result.multiplier}×!`);
       } else {
         playCrash();
+        playSound("lose");
         toast(`Rolled ${result.roll.toFixed(2)} — lost`, { icon: "💥" });
       }
 
@@ -650,11 +729,17 @@ export default function DicePage() {
           <div className="flex-1 flex flex-col overflow-y-auto order-1 md:order-2" style={{ background: "#1a1d26" }}>
             <div className="flex-shrink-0 py-3 text-center border-b" style={{ background: "#21242e", borderColor: "rgba(255,255,255,0.05)" }}>
               {lastResult ? (
-                <span className={`text-sm font-bold ${won ? "text-success-bright" : "text-danger"}`}>
+                <motion.span
+                  key={resultPulse}
+                  initial={prefersReducedMotion ? false : { scale: 0.85, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{ type: "spring", stiffness: 420, damping: 18 }}
+                  className={`inline-block text-sm font-bold ${won ? "text-success-bright" : "text-danger"}`}
+                >
                   {won
-                    ? `Won ${activeSymbol}${lastResult.payout.toFixed(2)}`
+                    ? `Won ${activeSymbol}${payoutDisplay.toFixed(2)}`
                     : `Lost — Rolled ${lastResult.roll.toFixed(2)}`}
-                </span>
+                </motion.span>
               ) : (
                 <span className="text-zinc-600 text-sm">Game result will be displayed</span>
               )}
@@ -662,7 +747,24 @@ export default function DicePage() {
 
             <div className="flex-1 flex flex-col items-center justify-center px-6 py-8 min-h-0">
               <div className="relative mb-8">
-                <div className="relative w-[120px] h-[120px] flex items-center justify-center">
+                <motion.div
+                  key={resultPulse}
+                  className="relative w-[120px] h-[120px] flex items-center justify-center"
+                  animate={
+                    lastResult && !prefersReducedMotion
+                      ? {
+                          scale: [1, won ? 1.16 : 0.92, 1],
+                          rotate: won ? [0, -6, 6, 0] : [0, -3, 3, 0],
+                          filter: [
+                            "drop-shadow(0 0 0px rgba(0,0,0,0))",
+                            `drop-shadow(0 0 22px ${won ? "rgba(34,197,94,0.7)" : "rgba(239,68,68,0.65)"})`,
+                            "drop-shadow(0 0 0px rgba(0,0,0,0))",
+                          ],
+                        }
+                      : undefined
+                  }
+                  transition={{ duration: 0.6, ease: "easeOut" }}
+                >
                   <div
                     className="absolute inset-0 transition-colors duration-300"
                     style={{
@@ -682,7 +784,7 @@ export default function DicePage() {
                   <span className="relative z-10 text-3xl font-black text-white tabular-nums">
                     {animRoll.toFixed(2)}
                   </span>
-                </div>
+                </motion.div>
               </div>
 
               <div className="w-full max-w-[600px] mb-10">
@@ -693,15 +795,28 @@ export default function DicePage() {
 
                   {lastResult && (
                     <div
+                      ref={markerRef}
                       className="absolute top-0 h-1.5"
-                      style={{ left: `calc(${lastResult.roll}% + ${(0.5 - lastResult.roll / 100) * 16}px)`, transform: "translateX(-50%)" }}
+                      style={{ left: `calc(${markerPos}% + ${(0.5 - markerPos / 100) * 16}px)`, transform: "translateX(-50%)", willChange: "left" }}
                     >
-                      <div
-                        className="w-0.5 h-6 -mt-2 rounded-full"
-                        style={{
-                          background: won ? "#22c55e" : "#ef4444",
-                          boxShadow: `0 0 8px ${won ? "#22c55e" : "#ef4444"}`,
-                        }}
+                      <motion.div
+                        key={resultPulse}
+                        className="w-1 h-7 -mt-2.5 rounded-full"
+                        style={{ background: won ? "#22c55e" : "#ef4444" }}
+                        initial={prefersReducedMotion ? false : { boxShadow: `0 0 6px ${won ? "#22c55e" : "#ef4444"}` }}
+                        animate={
+                          prefersReducedMotion
+                            ? { boxShadow: `0 0 8px ${won ? "#22c55e" : "#ef4444"}` }
+                            : {
+                                boxShadow: [
+                                  `0 0 6px ${won ? "#22c55e" : "#ef4444"}`,
+                                  `0 0 20px ${won ? "#22c55e" : "#ef4444"}`,
+                                  `0 0 8px ${won ? "#22c55e" : "#ef4444"}`,
+                                ],
+                                scaleY: [1, 1.25, 1],
+                              }
+                        }
+                        transition={{ duration: 0.7, ease: "easeOut" }}
                       />
                     </div>
                   )}

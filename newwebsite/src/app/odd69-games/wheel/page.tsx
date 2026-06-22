@@ -1,11 +1,20 @@
 "use client";
 
-import React, { useState, useEffect, useCallback, useMemo } from "react";
+import React, {
+  useState,
+  useEffect,
+  useCallback,
+  useMemo,
+  useRef,
+} from "react";
 import { toast } from "react-hot-toast";
+import { useReducedMotion } from "framer-motion";
+import gsap from "gsap";
 import api from "@/services/api";
 import OriginalsShell from "@/components/originals/OriginalsShell";
 import OriginalsControls from "@/components/originals/OriginalsControls";
 import { useWallet } from "@/context/WalletContext";
+import { fireWin, fireBigWin, playSound } from "@/utils/originalsFx";
 
 type Risk = "low" | "medium" | "high";
 type SegCount = 10 | 20 | 30 | 40 | 50;
@@ -68,6 +77,7 @@ function arcPath(
 
 export default function WheelPage() {
   const { refreshWallet } = useWallet();
+  const reduceMotion = useReducedMotion();
   const [betInput, setBetInput] = useState("10");
   const [walletType, setWalletType] = useState<"fiat" | "crypto">("crypto");
   const [useBonus, setUseBonus] = useState(false);
@@ -76,7 +86,27 @@ export default function WheelPage() {
   const [busy, setBusy] = useState(false);
   const [result, setResult] = useState<WheelResult | null>(null);
   const [preview, setPreview] = useState<WheelPreview | null>(null);
-  const [rotation, setRotation] = useState(0);
+  const [spinning, setSpinning] = useState(false);
+
+  // GSAP-driven spin: the SVG transform is animated directly so the pointer
+  // lands EXACTLY on the server-returned slot. `rotationRef` carries the
+  // current accumulated angle between spins so each new spin continues from
+  // wherever the wheel currently sits.
+  const wheelRef = useRef<SVGSVGElement | null>(null);
+  const rotationRef = useRef(0);
+  const tlRef = useRef<gsap.core.Tween | null>(null);
+
+  // Keep latest reduceMotion readable inside async play() without stale closure.
+  const reduceMotionRef = useRef(reduceMotion);
+  reduceMotionRef.current = reduceMotion;
+
+  // Clean up any in-flight tween on unmount.
+  useEffect(() => {
+    return () => {
+      tlRef.current?.kill();
+      tlRef.current = null;
+    };
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -106,6 +136,8 @@ export default function WheelPage() {
     if (!bet || bet <= 0) return toast.error("Invalid bet");
     setBusy(true);
     setResult(null);
+    setSpinning(true);
+    playSound("bet");
     try {
       const res = await api.post<WheelResult>("/originals/wheel/play", {
         betAmount: bet,
@@ -114,16 +146,80 @@ export default function WheelPage() {
         walletType,
         useBonus,
       });
-      const segAngle = 360 / res.data.segments;
-      const target =
-        360 * 5 + (res.data.segments - res.data.slot) * segAngle - segAngle / 2;
-      setRotation(target);
-      setResult(res.data);
-      if (res.data.status === "WON") {
-        toast.success(`+$${res.data.payout.toLocaleString("en-US")}`);
+
+      // ---- Visualise the SERVER result ----------------------------------
+      // Compute the absolute target angle so the top pointer lands EXACTLY on
+      // the slot the server returned. Same math as before, but resolved
+      // against the wheel's CURRENT accumulated rotation so it always spins
+      // forward by several full turns.
+      const data = res.data;
+      const segAngle = 360 / data.segments;
+      const landingOffset =
+        (data.segments - data.slot) * segAngle - segAngle / 2;
+
+      const current = rotationRef.current;
+      // Round current down to the nearest full turn, then add full spins +
+      // the landing offset → guarantees a forward, multi-turn rotation that
+      // ends precisely on the server slot.
+      const base = Math.ceil(current / 360) * 360;
+      const target = base + 360 * 5 + landingOffset;
+
+      // Celebration helper, gated on the SERVER status only.
+      const isWin = data.status === "WON";
+      const high = data.multiplier >= 10;
+      const celebrate = () => {
+        if (isWin) {
+          if (high) fireBigWin();
+          else fireWin();
+          playSound("win");
+          toast.success(`+$${data.payout.toLocaleString("en-US")}`);
+        } else {
+          playSound("lose");
+        }
+      };
+
+      tlRef.current?.kill();
+
+      if (reduceMotionRef.current || !wheelRef.current) {
+        // Reduced motion / no node: snap straight to the final result.
+        rotationRef.current = target;
+        if (wheelRef.current) {
+          gsap.set(wheelRef.current, { rotation: target, transformOrigin: "50% 50%" });
+        }
+        setResult(data);
+        setSpinning(false);
+        celebrate();
+      } else {
+        // A few ticking blips as the wheel decelerates past segments.
+        let nextTick = 0.55; // fraction of the timeline at which to next tick
+        const totalSpan = target - current;
+        tlRef.current = gsap.to(wheelRef.current, {
+          rotation: target,
+          duration: 3.2,
+          ease: "power4.out",
+          transformOrigin: "50% 50%",
+          onUpdate: function () {
+            const p = this.progress();
+            if (p >= nextTick && p < 0.985) {
+              playSound("tick");
+              // tick more sparsely early, denser as it slows
+              nextTick += p < 0.85 ? 0.09 : 0.045;
+            }
+            // keep ref roughly in sync for any mid-spin remount edge cases
+            rotationRef.current = current + totalSpan * p;
+          },
+          onComplete: () => {
+            rotationRef.current = target;
+            setResult(data);
+            setSpinning(false);
+            celebrate();
+          },
+        });
       }
+
       await refreshWallet();
     } catch (e: any) {
+      setSpinning(false);
       toast.error(e?.response?.data?.message || "Spin failed");
     } finally {
       setBusy(false);
@@ -268,22 +364,30 @@ export default function WheelPage() {
             />
           </div>
           <svg
+            ref={wheelRef}
             width={SIZE}
             height={SIZE}
             viewBox={`0 0 ${SIZE} ${SIZE}`}
-            className="transition-transform duration-[2500ms] ease-out"
-            style={{ transform: `rotate(${rotation}deg)` }}
+            style={{ willChange: "transform" }}
           >
             {wheel.map((m, i) => {
               const start = i * segAngle;
               const end = (i + 1) * segAngle;
+              // Highlight the landed segment once the spin has settled.
+              const landed = !spinning && result != null && i === result.slot;
               return (
                 <path
                   key={i}
                   d={arcPath(CX, CY, R_OUT, R_IN, start, end)}
                   fill={colorForMultiplier(m)}
-                  stroke="#0b0d11"
-                  strokeWidth={1}
+                  stroke={landed ? "#fff" : "#0b0d11"}
+                  strokeWidth={landed ? 2.5 : 1}
+                  style={{
+                    filter: landed
+                      ? `drop-shadow(0 0 10px ${colorForMultiplier(m)})`
+                      : undefined,
+                    transition: "filter 200ms ease, stroke 200ms ease",
+                  }}
                 />
               );
             })}
@@ -302,11 +406,43 @@ export default function WheelPage() {
               <div className="text-[10px] uppercase text-[#6b7280] tracking-wider font-bold">
                 {risk}
               </div>
-              <div className="text-3xl font-black text-white">
-                {result ? `× ${result.multiplier.toFixed(2)}` : "·"}
+              <div
+                key={result ? `${result.slot}-${result.multiplier}` : "idle"}
+                className="text-3xl font-black"
+                style={{
+                  color:
+                    !spinning && result
+                      ? colorForMultiplier(result.multiplier)
+                      : "#fff",
+                  animation:
+                    !spinning && result && !reduceMotion
+                      ? "wheelPop 320ms ease-out"
+                      : undefined,
+                  textShadow:
+                    !spinning && result && result.status === "WON"
+                      ? `0 0 16px ${colorForMultiplier(result.multiplier)}`
+                      : undefined,
+                }}
+              >
+                {spinning ? "·" : result ? `× ${result.multiplier.toFixed(2)}` : "·"}
               </div>
             </div>
           </div>
+          <style jsx>{`
+            @keyframes wheelPop {
+              0% {
+                transform: scale(0.6);
+                opacity: 0;
+              }
+              60% {
+                transform: scale(1.18);
+                opacity: 1;
+              }
+              100% {
+                transform: scale(1);
+              }
+            }
+          `}</style>
         </div>
 
         {/* Multiplier pills */}

@@ -25,6 +25,8 @@ export class RouletteGame {
   })
   bets: { kind: string; value?: number; amount: number }[];
   @Prop({ required: true }) result: number; // 0..36
+  @Prop() resultColor: string; // 'green' | 'red' | 'black'
+  @Prop({ default: 0 }) multiplier: number; // payout / betAmount
   @Prop({ default: 0 }) payout: number;
   @Prop({ required: true }) status: string; // 'WON' | 'LOST'
   @Prop({ required: true }) serverSeed: string;

@@ -1,11 +1,20 @@
 "use client";
 
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useRef, useState, useCallback } from "react";
 import { toast } from "react-hot-toast";
+import {
+  motion,
+  AnimatePresence,
+  useReducedMotion,
+  useMotionValue,
+  useTransform,
+  animate,
+} from "framer-motion";
 import api from "@/services/api";
 import OriginalsShell from "@/components/originals/OriginalsShell";
 import OriginalsControls from "@/components/originals/OriginalsControls";
 import { useWallet } from "@/context/WalletContext";
+import { fireWin, fireBigWin, playSound } from "@/utils/originalsFx";
 import { ChevronUp, ChevronDown, ChevronsRight } from "lucide-react";
 
 interface HiloState {
@@ -37,13 +46,73 @@ function cardLabel(card: number) {
   };
 }
 
+const ORANGE = "#ff9a3d";
+
+// Animated multiplier counter that tweens to the server's multiplier value.
+function MultiplierCounter({
+  value,
+  reduced,
+  className,
+  style,
+}: {
+  value: number;
+  reduced: boolean;
+  className?: string;
+  style?: React.CSSProperties;
+}) {
+  const mv = useMotionValue(value);
+  const text = useTransform(mv, (v) => `× ${v.toFixed(2)}`);
+
+  useEffect(() => {
+    if (reduced) {
+      mv.set(value);
+      return;
+    }
+    const controls = animate(mv, value, {
+      duration: 0.6,
+      ease: [0.22, 1, 0.36, 1],
+    });
+    return () => controls.stop();
+  }, [value, reduced, mv]);
+
+  return (
+    <motion.span className={className} style={style}>
+      {text}
+    </motion.span>
+  );
+}
+
 export default function HiloPage() {
   const { refreshWallet } = useWallet();
+  const reduced = !!useReducedMotion();
   const [betInput, setBetInput] = useState("10");
   const [walletType, setWalletType] = useState<"fiat" | "crypto">("crypto");
   const [useBonus, setUseBonus] = useState(false);
   const [busy, setBusy] = useState(false);
   const [game, setGame] = useState<HiloState | null>(null);
+
+  // ----- Animation-only state (never feeds the bet/data flow) -----
+  // The card key forces a fresh flip whenever the server returns a new card.
+  const [cardKey, setCardKey] = useState(0);
+  // Visual outcome flash on the card after an action: 'win' | 'bust' | null.
+  const [flash, setFlash] = useState<"win" | "bust" | null>(null);
+  // The action the player chose, so we can highlight the right side.
+  const [lastAction, setLastAction] = useState<
+    "higher" | "lower" | "skip" | null
+  >(null);
+
+  // Track previous values to decide animations without altering outcomes.
+  const prevCardRef = useRef<number | null>(null);
+  const flashTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const clearFlashTimer = () => {
+    if (flashTimer.current) {
+      clearTimeout(flashTimer.current);
+      flashTimer.current = null;
+    }
+  };
+
+  useEffect(() => () => clearFlashTimer(), []);
 
   // Restore in-flight game on mount
   useEffect(() => {
@@ -51,7 +120,10 @@ export default function HiloPage() {
     api
       .get<HiloState | null>("/originals/hilo/active")
       .then((res) => {
-        if (!cancelled && res.data) setGame(res.data);
+        if (!cancelled && res.data) {
+          setGame(res.data);
+          prevCardRef.current = res.data.currentCard;
+        }
       })
       .catch(() => undefined);
     return () => {
@@ -69,7 +141,14 @@ export default function HiloPage() {
         walletType,
         useBonus,
       });
+      // Visuals: deal the first card with a fresh flip.
+      clearFlashTimer();
+      setFlash(null);
+      setLastAction(null);
+      prevCardRef.current = res.data.currentCard;
+      playSound("reveal");
       setGame(res.data);
+      setCardKey((k) => k + 1);
       await refreshWallet();
     } catch (e: any) {
       toast.error(e?.response?.data?.message || "Could not start game");
@@ -82,23 +161,50 @@ export default function HiloPage() {
     async (act: "higher" | "lower" | "skip") => {
       if (!game) return;
       setBusy(true);
+      setLastAction(act);
       try {
         const res = await api.post<HiloState>("/originals/hilo/action", {
           gameId: game.gameId,
           action: act,
         });
+
+        const newCard = res.data.currentCard;
+        const cardChanged = newCard !== prevCardRef.current;
+
+        // Drive the flip from the server-returned card.
+        clearFlashTimer();
+        setFlash(null);
+        if (cardChanged) {
+          playSound("reveal");
+          setCardKey((k) => k + 1);
+        }
+        prevCardRef.current = newCard;
         setGame(res.data);
+
         if (res.data.status === "LOST") {
+          // Wrong guess — red shake then game over (visuals follow server).
+          setFlash("bust");
+          playSound("lose");
           toast.error("Wrong guess — game over");
           await refreshWallet();
+        } else if (act !== "skip" && cardChanged) {
+          // Correct guess — green pop. Counter tweens via MultiplierCounter.
+          setFlash("win");
+          playSound("tick");
         }
+
+        // Clear the transient flash after the pop/shake plays.
+        flashTimer.current = setTimeout(
+          () => setFlash(null),
+          reduced ? 0 : 650,
+        );
       } catch (e: any) {
         toast.error(e?.response?.data?.message || "Action failed");
       } finally {
         setBusy(false);
       }
     },
-    [game, refreshWallet],
+    [game, refreshWallet, reduced],
   );
 
   const cashout = useCallback(async () => {
@@ -109,6 +215,15 @@ export default function HiloPage() {
         gameId: game.gameId,
       });
       setGame(res.data);
+      // Celebrate the server-confirmed cashout.
+      clearFlashTimer();
+      setFlash(null);
+      playSound("win");
+      if (res.data.multiplier >= 10) {
+        fireBigWin();
+      } else {
+        fireWin();
+      }
       toast.success(`Cashed out $${res.data.payout.toLocaleString("en-US")}`);
       await refreshWallet();
     } catch (e: any) {
@@ -120,6 +235,19 @@ export default function HiloPage() {
 
   const isActive = game?.status === "ACTIVE";
   const card = game ? cardLabel(game.currentCard) : null;
+
+  // Card flip transition tuned for reduced motion.
+  const flipTransition = reduced
+    ? { duration: 0 }
+    : { duration: 0.55, ease: [0.16, 1, 0.3, 1] as const };
+
+  // Outcome-driven wrapper animation (green pop / red shake).
+  const stageAnim =
+    flash === "win" && !reduced
+      ? { scale: [1, 1.08, 1] }
+      : flash === "bust" && !reduced
+        ? { x: [0, -14, 13, -10, 8, -4, 0] }
+        : { scale: 1, x: 0 };
 
   return (
     <OriginalsShell
@@ -169,9 +297,11 @@ export default function HiloPage() {
                 </div>
                 <div className="flex justify-between text-xs">
                   <span className="text-[#6b7280]">Multiplier</span>
-                  <span className="text-yellow-400 font-black">
-                    × {game.multiplier.toFixed(2)}
-                  </span>
+                  <MultiplierCounter
+                    value={game.multiplier}
+                    reduced={reduced}
+                    className="text-yellow-400 font-black"
+                  />
                 </div>
               </div>
             )
@@ -180,15 +310,39 @@ export default function HiloPage() {
       }
     >
       <div
-        className="relative w-full h-full flex flex-col items-center justify-center p-4 md:p-6"
+        className="relative w-full h-full flex flex-col items-center justify-center p-4 md:p-6 overflow-hidden"
         style={{
           background:
             "radial-gradient(ellipse at 50% 30%, #082028 0%, #07161d 40%, #040d12 100%)",
           minHeight: 360,
         }}
       >
+        {/* Outcome bloom behind the card (win = green, bust = red) */}
+        <AnimatePresence>
+          {flash && !reduced && (
+            <motion.div
+              key={`bloom-${flash}-${cardKey}`}
+              initial={{ opacity: 0, scale: 0.6 }}
+              animate={{ opacity: [0, 0.5, 0], scale: [0.6, 1.25, 1.5] }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.7, ease: "easeOut" }}
+              className="pointer-events-none absolute"
+              style={{
+                width: 320,
+                height: 320,
+                borderRadius: "9999px",
+                filter: "blur(40px)",
+                background:
+                  flash === "win"
+                    ? "radial-gradient(circle, rgba(34,197,94,0.55), transparent 70%)"
+                    : "radial-gradient(circle, rgba(239,68,68,0.55), transparent 70%)",
+              }}
+            />
+          )}
+        </AnimatePresence>
+
         {/* Status */}
-        <div className="absolute top-4 left-1/2 -translate-x-1/2 text-[#9ca3af] text-xs font-medium px-4 py-1.5 bg-black/40 backdrop-blur-md rounded-full border border-white/[0.06]">
+        <div className="absolute top-4 left-1/2 -translate-x-1/2 text-[#9ca3af] text-xs font-medium px-4 py-1.5 bg-black/40 backdrop-blur-md rounded-full border border-white/[0.06] z-10">
           {!game
             ? "Place a bet to deal a card"
             : game.status === "ACTIVE"
@@ -199,13 +353,19 @@ export default function HiloPage() {
         </div>
 
         {/* Card stage */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-8 items-center w-full max-w-3xl mt-12">
+        <div className="relative grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-8 items-center w-full max-w-3xl mt-12 z-[1]">
           {/* Higher */}
           <button
             type="button"
             onClick={() => action("higher")}
             disabled={!isActive || busy}
-            className="flex flex-col items-center gap-2 p-5 rounded-2xl border-2 border-amber-400/40 bg-amber-400/5 hover:bg-amber-400/10 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+            className={`flex flex-col items-center gap-2 p-5 rounded-2xl border-2 transition-colors disabled:opacity-30 disabled:cursor-not-allowed ${
+              lastAction === "higher" && flash
+                ? flash === "win"
+                  ? "border-green-400/70 bg-green-400/15"
+                  : "border-red-500/70 bg-red-500/15"
+                : "border-amber-400/40 bg-amber-400/5 hover:bg-amber-400/10"
+            }`}
           >
             <div className="w-14 h-14 rounded-full border-2 border-amber-300/40 flex items-center justify-center">
               <ChevronUp size={32} className="text-amber-300" />
@@ -219,34 +379,87 @@ export default function HiloPage() {
 
           {/* Card */}
           <div className="flex flex-col items-center gap-3">
-            <div
-              className={`w-36 h-52 rounded-2xl border-4 ${
-                card?.red ? "border-red-500" : "border-slate-300"
-              } bg-white shadow-2xl flex flex-col items-center justify-center select-none`}
+            <motion.div
+              className="relative"
+              style={{ perspective: 1000, width: 144, height: 208 }}
+              animate={stageAnim}
+              transition={
+                flash === "bust"
+                  ? { duration: 0.5, ease: "easeInOut" }
+                  : { duration: 0.4, ease: "easeOut" }
+              }
             >
-              {card ? (
-                <>
+              <AnimatePresence mode="popLayout" initial={false}>
+                <motion.div
+                  key={cardKey}
+                  className="absolute inset-0"
+                  style={{ transformStyle: "preserve-3d" }}
+                  initial={
+                    reduced
+                      ? { rotateY: 0, opacity: 1 }
+                      : { rotateY: -180, opacity: 0 }
+                  }
+                  animate={{ rotateY: 0, opacity: 1 }}
+                  exit={
+                    reduced
+                      ? { opacity: 0 }
+                      : { rotateY: 180, opacity: 0 }
+                  }
+                  transition={flipTransition}
+                >
                   <div
-                    className={`text-6xl font-black ${
-                      card.red ? "text-red-500" : "text-slate-900"
-                    }`}
+                    className={`w-36 h-52 rounded-2xl border-4 ${
+                      card?.red ? "border-red-500" : "border-slate-300"
+                    } bg-white shadow-2xl flex flex-col items-center justify-center select-none`}
+                    style={{
+                      backfaceVisibility: "hidden",
+                      boxShadow:
+                        flash === "win"
+                          ? "0 0 40px rgba(34,197,94,0.6)"
+                          : flash === "bust"
+                            ? "0 0 40px rgba(239,68,68,0.6)"
+                            : "0 12px 40px rgba(0,0,0,0.6)",
+                    }}
                   >
-                    {card.rank}
+                    {card ? (
+                      <>
+                        <div
+                          className={`text-6xl font-black ${
+                            card.red ? "text-red-500" : "text-slate-900"
+                          }`}
+                        >
+                          {card.rank}
+                        </div>
+                        <div
+                          className={`text-4xl ${
+                            card.red ? "text-red-500" : "text-slate-900"
+                          }`}
+                        >
+                          {card.suit}
+                        </div>
+                      </>
+                    ) : (
+                      <div className="text-slate-500 text-xs font-bold">
+                        Place a bet
+                      </div>
+                    )}
                   </div>
-                  <div
-                    className={`text-4xl ${
-                      card.red ? "text-red-500" : "text-slate-900"
-                    }`}
-                  >
-                    {card.suit}
+                </motion.div>
+              </AnimatePresence>
+
+              {/* Placeholder card when no game (no flip needed) */}
+              {!game && (
+                <div
+                  className="w-36 h-52 rounded-2xl border-4 border-slate-300 bg-white shadow-2xl flex flex-col items-center justify-center select-none"
+                  style={{ boxShadow: "0 12px 40px rgba(0,0,0,0.6)" }}
+                >
+                  <div className="text-slate-500 text-xs font-bold">
+                    Place a bet
                   </div>
-                </>
-              ) : (
-                <div className="text-slate-500 text-xs font-bold">
-                  Place a bet
                 </div>
               )}
-            </div>
+            </motion.div>
+
             <button
               type="button"
               onClick={() => action("skip")}
@@ -262,7 +475,13 @@ export default function HiloPage() {
             type="button"
             onClick={() => action("lower")}
             disabled={!isActive || busy}
-            className="flex flex-col items-center gap-2 p-5 rounded-2xl border-2 border-cyan-400/40 bg-cyan-400/5 hover:bg-cyan-400/10 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+            className={`flex flex-col items-center gap-2 p-5 rounded-2xl border-2 transition-colors disabled:opacity-30 disabled:cursor-not-allowed ${
+              lastAction === "lower" && flash
+                ? flash === "win"
+                  ? "border-green-400/70 bg-green-400/15"
+                  : "border-red-500/70 bg-red-500/15"
+                : "border-cyan-400/40 bg-cyan-400/5 hover:bg-cyan-400/10"
+            }`}
           >
             <div className="w-14 h-14 rounded-full border-2 border-cyan-300/40 flex items-center justify-center">
               <ChevronDown size={32} className="text-cyan-300" />
@@ -275,14 +494,39 @@ export default function HiloPage() {
           </button>
         </div>
 
+        {/* Live running multiplier badge while active */}
+        <AnimatePresence>
+          {isActive && (game?.step ?? 0) > 0 && (
+            <motion.div
+              key="run-mult"
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 8 }}
+              className="mt-5 px-4 py-1.5 rounded-full bg-black/40 border border-white/[0.08] backdrop-blur-md z-[1]"
+            >
+              <MultiplierCounter
+                value={game!.multiplier}
+                reduced={reduced}
+                className="text-lg font-black"
+                style={{ color: ORANGE }}
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         {/* History strip */}
         {game && game.history.length > 1 && (
-          <div className="mt-6 flex gap-1.5 flex-wrap justify-center max-w-3xl">
+          <div className="mt-6 flex gap-1.5 flex-wrap justify-center max-w-3xl z-[1]">
             {game.history.map((c, i) => {
               const cl = cardLabel(c);
               return (
-                <div
+                <motion.div
                   key={i}
+                  initial={{ opacity: 0, scale: 0.7, y: 6 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  transition={
+                    reduced ? { duration: 0 } : { duration: 0.25, delay: i * 0.01 }
+                  }
                   className={`w-9 h-12 rounded border ${
                     cl.red
                       ? "border-red-500/40 bg-red-500/5"
@@ -303,7 +547,7 @@ export default function HiloPage() {
                   >
                     {cl.suit}
                   </div>
-                </div>
+                </motion.div>
               );
             })}
           </div>

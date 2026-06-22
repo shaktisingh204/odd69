@@ -100,7 +100,7 @@ export class OriginalsAdminService {
 
     return this.configModel.create({
       gameKey: GLOBAL_ACCESS_KEY,
-      accessMode: 'ALLOW_LIST',
+      accessMode: 'ALL',
       allowedUserIds,
     });
   }

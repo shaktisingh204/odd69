@@ -9,6 +9,7 @@ import { ConfigService } from '@nestjs/config';
 import { Logger, OnModuleInit } from '@nestjs/common';
 import { LimboService } from './limbo.service';
 import { OriginalsAdminService } from '../originals/originals-admin.service';
+import { GGRService } from '../originals/ggr.service';
 
 interface AuthedSocket extends Socket {
   userId?: number;
@@ -28,6 +29,7 @@ export class LimboGateway implements OnGatewayConnection, OnGatewayDisconnect, O
     private readonly configService: ConfigService,
     private readonly limboService: LimboService,
     private readonly originalsAdminService: OriginalsAdminService,
+    private readonly ggrService: GGRService,
   ) {}
 
   onModuleInit() {
@@ -101,6 +103,29 @@ export class LimboGateway implements OnGatewayConnection, OnGatewayDisconnect, O
     if (!(await this.originalsAdminService.canUserPlayOriginals(userInfo.userId))) {
       client.emit('limbo:error', { message: 'ODD69 Originals access is not enabled for your account.' });
       return;
+    }
+
+    // Min/max bet enforcement from the GGR admin config (gateway-level guard;
+    // the service re-validates atomically before deducting funds).
+    const config = await this.ggrService.getConfig('limbo');
+    const betAmount = Number(data.betAmount);
+    if (config) {
+      if (config.maintenanceMode) {
+        client.emit('limbo:error', { message: config.maintenanceMessage || 'Limbo is under maintenance' });
+        return;
+      }
+      if (!(betAmount > 0)) {
+        client.emit('limbo:error', { message: 'Enter a valid bet amount' });
+        return;
+      }
+      if (typeof config.minBet === 'number' && betAmount < config.minBet) {
+        client.emit('limbo:error', { message: `Minimum bet is ${config.minBet}` });
+        return;
+      }
+      if (typeof config.maxBet === 'number' && betAmount > config.maxBet) {
+        client.emit('limbo:error', { message: `Maximum bet is ${config.maxBet}` });
+        return;
+      }
     }
 
     try {

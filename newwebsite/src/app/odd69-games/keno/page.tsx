@@ -1,12 +1,14 @@
 "use client";
 
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect, useRef } from "react";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { toast } from "react-hot-toast";
 import api from "@/services/api";
 import OriginalsShell from "@/components/originals/OriginalsShell";
 import OriginalsControls from "@/components/originals/OriginalsControls";
 import { useWallet } from "@/context/WalletContext";
 import { Sparkles, RotateCcw, Hash } from "lucide-react";
+import { fireWin, fireBigWin, playSound } from "@/utils/originalsFx";
 
 type Risk = "low" | "classic" | "medium" | "high";
 
@@ -25,6 +27,9 @@ const RISKS: Risk[] = ["low", "classic", "medium", "high"];
 const POOL = Array.from({ length: 40 }, (_, i) => i + 1);
 const MAX_PICK = 10;
 
+// Per-ball reveal cadence (ms). Reduced motion bypasses this entirely.
+const REVEAL_STEP_MS = 230;
+
 export default function KenoPage() {
   const { refreshWallet } = useWallet();
   const [betInput, setBetInput] = useState("10");
@@ -34,6 +39,94 @@ export default function KenoPage() {
   const [picks, setPicks] = useState<Set<number>>(new Set());
   const [busy, setBusy] = useState(false);
   const [result, setResult] = useState<KenoResult | null>(null);
+
+  // How many of result.drawn[] have been revealed so far. Drives the
+  // staggered one-by-one reveal of the SERVER-supplied draw.
+  const [revealCount, setRevealCount] = useState(0);
+  const [revealing, setRevealing] = useState(false);
+
+  const reducedMotion = useReducedMotion();
+  const revealTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const lastSoundRef = useRef(0);
+
+  const clearRevealTimer = () => {
+    if (revealTimer.current) {
+      clearTimeout(revealTimer.current);
+      revealTimer.current = null;
+    }
+  };
+
+  // Cleanup any pending timers on unmount.
+  useEffect(() => () => clearRevealTimer(), []);
+
+  // Throttled reveal blip so rapid balls don't stack into noise.
+  const playRevealThrottled = useCallback(() => {
+    const now = Date.now();
+    if (now - lastSoundRef.current < 90) return;
+    lastSoundRef.current = now;
+    playSound("reveal");
+  }, []);
+
+  // Fire celebrations once the full server draw has been revealed.
+  const finishReveal = useCallback(
+    (r: KenoResult) => {
+      setRevealing(false);
+      if (r.status === "WON") {
+        playSound("win");
+        if (r.multiplier >= 20) fireBigWin();
+        else fireWin();
+      } else {
+        playSound("lose");
+      }
+    },
+    [],
+  );
+
+  // When a new server result arrives, animate its `drawn` array in.
+  useEffect(() => {
+    clearRevealTimer();
+    if (!result) {
+      setRevealCount(0);
+      setRevealing(false);
+      return;
+    }
+
+    const total = result.drawn.length;
+
+    // Reduced motion: snap straight to the final, correct state.
+    if (reducedMotion) {
+      setRevealCount(total);
+      setRevealing(false);
+      if (result.status === "WON") {
+        playSound("win");
+        if (result.multiplier >= 20) fireBigWin();
+        else fireWin();
+      } else {
+        playSound("lose");
+      }
+      return;
+    }
+
+    setRevealCount(0);
+    setRevealing(true);
+
+    let i = 0;
+    const tick = () => {
+      i += 1;
+      setRevealCount(i);
+      playRevealThrottled();
+      if (i < total) {
+        revealTimer.current = setTimeout(tick, REVEAL_STEP_MS);
+      } else {
+        // Brief beat after the last ball lands before celebrating.
+        revealTimer.current = setTimeout(() => finishReveal(result), 260);
+      }
+    };
+    revealTimer.current = setTimeout(tick, REVEAL_STEP_MS);
+
+    return clearRevealTimer;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [result, reducedMotion]);
 
   const togglePick = (n: number) => {
     if (busy) return;
@@ -91,8 +184,14 @@ export default function KenoPage() {
     }
   }, [betInput, picks, risk, walletType, useBonus, refreshWallet]);
 
-  const drawnSet = new Set(result?.drawn || []);
-  const hitSet = new Set(result ? result.drawn.filter((n) => picks.has(n)) : []);
+  // Only the numbers revealed so far (a prefix of the SERVER draw) are "drawn".
+  const revealedDrawn = result ? result.drawn.slice(0, revealCount) : [];
+  const drawnSet = new Set(revealedDrawn);
+  const hitSet = new Set(revealedDrawn.filter((n) => picks.has(n)));
+  const revealDone = !!result && !revealing;
+
+  // Hits accumulate as balls land, for a live ticking counter.
+  const liveHits = hitSet.size;
 
   return (
     <OriginalsShell
@@ -172,7 +271,7 @@ export default function KenoPage() {
     >
       {/* GAME AREA */}
       <div
-        className="relative w-full h-full flex flex-col items-center justify-center p-4 md:p-6"
+        className="relative w-full h-full flex flex-col items-center justify-center p-4 md:p-6 overflow-hidden"
         style={{
           background:
             "radial-gradient(ellipse at 50% 30%, #2a0d16 0%, #14070b 40%, #0a0407 100%)",
@@ -180,16 +279,58 @@ export default function KenoPage() {
         }}
       >
         {/* Status bar */}
-        <div className="absolute top-4 left-1/2 -translate-x-1/2 text-[#9ca3af] text-xs font-medium px-4 py-1.5 bg-black/40 backdrop-blur-md rounded-full border border-white/[0.06] flex items-center gap-2">
+        <div className="absolute top-4 left-1/2 -translate-x-1/2 text-[#9ca3af] text-xs font-medium px-4 py-1.5 bg-black/40 backdrop-blur-md rounded-full border border-white/[0.06] flex items-center gap-2 z-20">
           <Hash size={11} className="text-rose-400" />
-          {result
-            ? result.status === "WON"
-              ? `🎯 ${result.hits}/${picks.size} hits · ×${result.multiplier} · +$${result.payout.toLocaleString("en-US")}`
-              : `${result.hits}/${picks.size} hits · no payout`
-            : picks.size === 0
-              ? "Pick 1–10 numbers to play"
-              : `${picks.size} number${picks.size === 1 ? "" : "s"} selected`}
+          {result ? (
+            revealing ? (
+              <span className="flex items-center gap-2">
+                <motion.span
+                  className="inline-block w-1.5 h-1.5 rounded-full bg-rose-400"
+                  animate={{ opacity: [0.3, 1, 0.3] }}
+                  transition={{ duration: 0.9, repeat: Infinity }}
+                />
+                Drawing… {revealCount}/{result.drawn.length}
+                {picks.size > 0 && (
+                  <span className="text-emerald-300 font-bold">
+                    · {liveHits} hit{liveHits === 1 ? "" : "s"}
+                  </span>
+                )}
+              </span>
+            ) : result.status === "WON" ? (
+              `🎯 ${result.hits}/${picks.size} hits · ×${result.multiplier} · +$${result.payout.toLocaleString("en-US")}`
+            ) : (
+              `${result.hits}/${picks.size} hits · no payout`
+            )
+          ) : picks.size === 0 ? (
+            "Pick 1–10 numbers to play"
+          ) : (
+            `${picks.size} number${picks.size === 1 ? "" : "s"} selected`
+          )}
         </div>
+
+        {/* WIN / LOSE banner once the server draw is fully revealed */}
+        <AnimatePresence>
+          {revealDone && (
+            <motion.div
+              key={result!.status}
+              initial={{ opacity: 0, y: -8, scale: 0.9 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              transition={{ type: "spring", stiffness: 320, damping: 22 }}
+              className="absolute top-14 left-1/2 -translate-x-1/2 z-20 pointer-events-none"
+            >
+              {result!.status === "WON" ? (
+                <div className="px-5 py-1.5 rounded-full font-black text-sm bg-gradient-to-r from-emerald-500 to-emerald-400 text-black shadow-[0_0_24px_rgba(16,185,129,0.55)]">
+                  WIN ×{result!.multiplier}
+                </div>
+              ) : (
+                <div className="px-5 py-1.5 rounded-full font-black text-sm bg-white/[0.08] border border-white/10 text-white/60">
+                  NO WIN
+                </div>
+              )}
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* Number board */}
         <div className="relative z-10 w-full max-w-2xl mt-12">
@@ -198,14 +339,44 @@ export default function KenoPage() {
               const isPicked = picks.has(n);
               const isDrawn = drawnSet.has(n);
               const isHit = hitSet.has(n);
+              // The index of this number within the server draw — used to know
+              // whether it's the ball that *just* landed (for the pop accent).
+              const drawOrder = result ? result.drawn.indexOf(n) : -1;
+              const justLanded =
+                revealing && drawOrder === revealCount - 1 && drawOrder >= 0;
+
               return (
-                <button
+                <motion.button
                   key={n}
                   type="button"
                   onClick={() => togglePick(n)}
-                  className={`aspect-square rounded-lg text-[11px] sm:text-sm font-black transition-all ${
+                  layout
+                  animate={
                     isHit
-                      ? "bg-emerald-500 border border-emerald-300 text-white scale-105 shadow-[0_0_12px_rgba(16,185,129,0.5)]"
+                      ? {
+                          scale: justLanded
+                            ? [1, 1.35, 1.08]
+                            : 1.08,
+                          boxShadow: justLanded
+                            ? [
+                                "0 0 0px rgba(16,185,129,0)",
+                                "0 0 26px rgba(16,185,129,0.9)",
+                                "0 0 12px rgba(16,185,129,0.5)",
+                              ]
+                            : "0 0 12px rgba(16,185,129,0.5)",
+                        }
+                      : isDrawn && !isPicked
+                        ? { scale: justLanded ? [1, 1.18, 1] : 1, opacity: 0.6 }
+                        : { scale: 1, opacity: 1 }
+                  }
+                  transition={
+                    justLanded
+                      ? { duration: 0.45, ease: "easeOut" }
+                      : { type: "spring", stiffness: 300, damping: 24 }
+                  }
+                  className={`relative aspect-square rounded-lg text-[11px] sm:text-sm font-black transition-colors ${
+                    isHit
+                      ? "bg-emerald-500 border border-emerald-300 text-white"
                       : isDrawn && !isPicked
                         ? "bg-white/[0.1] border border-white/30 text-white/60"
                         : isPicked
@@ -214,7 +385,22 @@ export default function KenoPage() {
                   }`}
                 >
                   {n}
-                </button>
+                  {/* Pop-in ring for the ball that just landed */}
+                  <AnimatePresence>
+                    {justLanded && (
+                      <motion.span
+                        key="ring"
+                        className={`absolute inset-0 rounded-lg border-2 ${
+                          isHit ? "border-emerald-200" : "border-white/60"
+                        }`}
+                        initial={{ opacity: 0.9, scale: 0.7 }}
+                        animate={{ opacity: 0, scale: 1.9 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.55, ease: "easeOut" }}
+                      />
+                    )}
+                  </AnimatePresence>
+                </motion.button>
               );
             })}
           </div>
