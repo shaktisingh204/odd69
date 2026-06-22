@@ -296,7 +296,7 @@ export default function ApiDocsPage() {
         <div className="min-h-[calc(100vh-64px)] bg-bg-odd69-3 text-white pb-32 overflow-y-auto">
             {/* Hero */}
             <div className="relative overflow-hidden bg-gradient-to-b from-brand-gold/6 via-[#0F1016] to-[#0C0D12] border-b border-white/[0.04]">
-                <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_0%,rgba(139,92,246,0.06),transparent_60%)]" />
+                <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_0%,rgba(255, 122, 26,0.06),transparent_60%)]" />
                 <div className="relative max-w-5xl mx-auto px-4 pt-12 pb-10">
                     <div className="inline-flex items-center gap-2 bg-brand-gold/10 border border-brand-gold/20 rounded-full px-4 py-1.5 text-brand-gold text-xs font-black uppercase tracking-widest mb-5">
                         Developer Reference

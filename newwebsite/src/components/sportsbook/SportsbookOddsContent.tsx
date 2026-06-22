@@ -157,7 +157,7 @@ export default function SportsbookOddsContent({ sportKey, sportTitle }: Sportsbo
                   onClick={() => setOddsFormat(f)}
                   className={`rounded-lg px-3 py-1.5 text-[11px] font-adx-bold transition-all ${
                     oddsFormat === f
-                      ? 'bg-brand-gold text-text-inverse shadow-[0_2px_8px_rgba(139,92,246,0.06)]'
+                      ? 'bg-brand-gold text-text-inverse shadow-[0_2px_8px_rgba(255, 122, 26,0.06)]'
                       : 'text-text-muted hover:text-text-primary'
                   }`}
                 >
@@ -206,7 +206,7 @@ export default function SportsbookOddsContent({ sportKey, sportTitle }: Sportsbo
                     onClick={() => setMarket(m.key)}
                     className={`rounded-full px-3 py-1.5 text-[11px] font-adx-bold transition-all active:scale-95 ${
                       market === m.key
-                        ? 'bg-brand-gold text-text-inverse shadow-[0_4px_14px_rgba(139,92,246,0.06)]'
+                        ? 'bg-brand-gold text-text-inverse shadow-[0_4px_14px_rgba(255, 122, 26,0.06)]'
                         : 'bg-bg-elevated text-text-muted hover:bg-bg-hover hover:text-text-primary'
                     }`}
                   >
@@ -230,7 +230,7 @@ export default function SportsbookOddsContent({ sportKey, sportTitle }: Sportsbo
                     onClick={() => setRegion(r.key)}
                     className={`rounded-full px-3 py-1.5 text-[11px] font-adx-bold transition-all active:scale-95 ${
                       region === r.key
-                        ? 'bg-brand-gold text-text-inverse shadow-[0_4px_14px_rgba(139,92,246,0.06)]'
+                        ? 'bg-brand-gold text-text-inverse shadow-[0_4px_14px_rgba(255, 122, 26,0.06)]'
                         : 'bg-bg-elevated text-text-muted hover:bg-bg-hover hover:text-text-primary'
                     }`}
                   >

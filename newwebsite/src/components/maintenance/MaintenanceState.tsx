@@ -17,7 +17,7 @@ export default function MaintenanceState({
     fullScreen = false,
 }: MaintenanceStateProps) {
     return (
-        <div className={`${fullScreen ? 'min-h-screen' : 'h-full min-h-[calc(100vh-64px)]'} bg-[radial-gradient(circle_at_top,_rgba(139,92,246,0.18),_transparent_40%),linear-gradient(180deg,_#09090b_0%,_#111827_100%)] text-white`}>
+        <div className={`${fullScreen ? 'min-h-screen' : 'h-full min-h-[calc(100vh-64px)]'} bg-[radial-gradient(circle_at_top,_rgba(255, 122, 26,0.18),_transparent_40%),linear-gradient(180deg,_#09090b_0%,_#111827_100%)] text-white`}>
             <div className="mx-auto flex h-full max-w-3xl items-center justify-center px-6 py-16">
                 <div className="w-full rounded-[28px] border border-amber-400/20 bg-black/30 p-8 shadow-[0_30px_120px_rgba(0,0,0,0.45)] backdrop-blur-xl sm:p-10">
                     <div className="mb-6 flex items-center gap-3 text-warning-bright">

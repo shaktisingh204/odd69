@@ -344,7 +344,7 @@ function CashoutButton({ bet, onSuccess }: { bet: Bet; onSuccess: () => void }) 
                                [&::-webkit-slider-thumb]:cursor-pointer
                                bg-white/[0.08]"
                     style={{
-                        background: `linear-gradient(to right, #8B5CF6 ${Math.round(fraction * 100)}%, rgba(255,255,255,0.1) ${Math.round(fraction * 100)}%)`,
+                        background: `linear-gradient(to right, #ff7a1a ${Math.round(fraction * 100)}%, rgba(255,255,255,0.1) ${Math.round(fraction * 100)}%)`,
                     }}
                 />
                 {/* Quick preset buttons */}

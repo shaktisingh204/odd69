@@ -100,7 +100,7 @@ export default function CasinoPlayPage() {
     if (maintenanceLoading) {
         return (
             <div className="min-h-screen bg-bg-deep flex items-center justify-center">
-                <div className="w-8 h-8 rounded-full border-2 border-[#8B5CF6]/20 border-t-[#8B5CF6] animate-spin" />
+                <div className="w-8 h-8 rounded-full border-2 border-[#ff7a1a]/20 border-t-[#ff7a1a] animate-spin" />
             </div>
         );
     }
@@ -131,7 +131,7 @@ export default function CasinoPlayPage() {
             return (
                 <div className="fixed inset-0 z-[300] bg-bg-deep flex flex-col items-center justify-center gap-4">
                     <div className="relative w-16 h-16">
-                        <div className="w-16 h-16 rounded-full border-2 border-[#8B5CF6]/20 border-t-[#8B5CF6] animate-spin" />
+                        <div className="w-16 h-16 rounded-full border-2 border-[#ff7a1a]/20 border-t-[#ff7a1a] animate-spin" />
                         <div className="absolute inset-0 flex items-center justify-center text-2xl">🎰</div>
                     </div>
                     <p className="text-white/40 text-xs font-semibold tracking-widest uppercase animate-pulse">
@@ -161,7 +161,7 @@ export default function CasinoPlayPage() {
                         </button>
                         <button
                             onClick={() => router.push('/casino')}
-                            className="flex-1 py-3 rounded-xl bg-brand-gold text-text-inverse text-sm font-bold active:scale-95 transition-transform shadow-[0_0_20px_rgba(139,92,246,0.06)]"
+                            className="flex-1 py-3 rounded-xl bg-brand-gold text-text-inverse text-sm font-bold active:scale-95 transition-transform shadow-[0_0_20px_rgba(255, 122, 26,0.06)]"
                         >
                             Casino
                         </button>
@@ -201,7 +201,7 @@ export default function CasinoPlayPage() {
                     {loading && (
                         <div className="flex flex-col items-center justify-center h-full min-h-[60vh] gap-5">
                             <div className="relative w-16 h-16">
-                                <div className="w-16 h-16 rounded-full border-2 border-[#8B5CF6]/20 border-t-[#8B5CF6] animate-spin" />
+                                <div className="w-16 h-16 rounded-full border-2 border-[#ff7a1a]/20 border-t-[#ff7a1a] animate-spin" />
                                 <div className="absolute inset-0 flex items-center justify-center text-2xl">🎰</div>
                             </div>
                             <div className="text-center">
@@ -212,7 +212,7 @@ export default function CasinoPlayPage() {
                             </div>
                             {/* Shimmer progress bar */}
                             <div className="w-48 h-1 bg-white/[0.04] rounded-full overflow-hidden">
-                                <div className="h-full w-1/2 bg-gradient-to-r from-[#8B5CF6] to-[#D4AF37] rounded-full animate-[shimmerBar_1.6s_ease-in-out_infinite]" />
+                                <div className="h-full w-1/2 bg-gradient-to-r from-[#ff7a1a] to-[#D4AF37] rounded-full animate-[shimmerBar_1.6s_ease-in-out_infinite]" />
                             </div>
                         </div>
                     )}
@@ -236,7 +236,7 @@ export default function CasinoPlayPage() {
                                 </button>
                                 <button
                                     onClick={() => router.push('/casino')}
-                                    className="px-5 py-2.5 rounded-xl bg-brand-gold hover:brightness-110 text-text-inverse text-sm font-bold transition-all shadow-[0_0_20px_rgba(139,92,246,0.05)]"
+                                    className="px-5 py-2.5 rounded-xl bg-brand-gold hover:brightness-110 text-text-inverse text-sm font-bold transition-all shadow-[0_0_20px_rgba(255, 122, 26,0.05)]"
                                 >
                                     Casino Lobby
                                 </button>

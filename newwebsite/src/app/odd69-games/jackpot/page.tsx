@@ -72,7 +72,7 @@ export default function JackpotPage() {
           useBonus={useBonus}
           setUseBonus={setUseBonus}
           locked={busy}
-          accent="#8B5CF6"
+          accent="#ff7a1a"
           action={
             <button
               type="button"

@@ -36,7 +36,7 @@ function colorForMultiplier(m: number): string {
   if (m < 1.3) return "#3b82f6";
   if (m < 2) return "#10b981";
   if (m < 5) return "#a855f7";
-  return "#A78BFA";
+  return "#ff9a3d";
 }
 
 function arcPath(

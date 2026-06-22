@@ -306,7 +306,7 @@ export default function SportsBetCashoutWidget({
                     onChange={(e) => setFraction(parseInt(e.target.value, 10) / 100)}
                     className="h-1.5 w-full cursor-pointer appearance-none rounded-full bg-white/[0.08] [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-amber-400 [&::-webkit-slider-thumb]:cursor-pointer"
                     style={{
-                        background: `linear-gradient(to right, #8B5CF6 ${Math.round(fraction * 100)}%, rgba(255,255,255,0.1) ${Math.round(fraction * 100)}%)`,
+                        background: `linear-gradient(to right, #ff7a1a ${Math.round(fraction * 100)}%, rgba(255,255,255,0.1) ${Math.round(fraction * 100)}%)`,
                     }}
                 />
                 <div className="flex justify-center gap-1.5">

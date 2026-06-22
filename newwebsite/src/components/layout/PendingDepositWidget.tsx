@@ -415,8 +415,8 @@ export default function PendingDepositWidget() {
                             <div
                                 className={`pending-icon ${isMobile ? 'w-10 h-10' : 'w-12 h-12'} rounded-full flex items-center justify-center`}
                                 style={{
-                                    background: 'linear-gradient(135deg, #8B5CF6, #7C3AED)',
-                                    boxShadow: '0 4px 16px rgba(139, 92, 246, 0.35)',
+                                    background: 'linear-gradient(135deg, #ff7a1a, #e85f00)',
+                                    boxShadow: '0 4px 16px rgba(255, 122, 26, 0.35)',
                                 }}
                             >
                                 <span className={`text-white ${isMobile ? 'text-[15px]' : 'text-[18px]'} font-bold`}>$</span>
@@ -446,7 +446,7 @@ export default function PendingDepositWidget() {
                             <div className="flex items-center justify-between px-3 py-2.5" style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
                                 <span className="text-[11px] text-white/40">Status</span>
                                 <div className="flex items-center gap-1.5">
-                                    <span className="pending-dot w-1.5 h-1.5 rounded-full" style={{ background: '#8B5CF6' }} />
+                                    <span className="pending-dot w-1.5 h-1.5 rounded-full" style={{ background: '#ff7a1a' }} />
                                     <span className="text-[11px] font-semibold text-amber-400">Processing</span>
                                 </div>
                             </div>
@@ -577,7 +577,7 @@ export default function PendingDepositWidget() {
                                 data-nodrag
                                 onClick={() => openUPIDeposit()}
                                 className="flex flex-1 items-center justify-center gap-1.5 py-2.5 rounded-lg text-[11px] font-bold transition-colors text-white"
-                                style={{ background: 'linear-gradient(135deg, #8B5CF6, #7C3AED)' }}
+                                style={{ background: 'linear-gradient(135deg, #ff7a1a, #e85f00)' }}
                             >
                                 Retry <ArrowRight size={12} />
                             </button>

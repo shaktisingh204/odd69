@@ -103,8 +103,8 @@ export default function WageringCard() {
                                     className="h-full rounded-full transition-all duration-500"
                                     style={{
                                         width: `${depositPct}%`,
-                                        background: 'linear-gradient(90deg, #8B5CF6, #f97316)',
-                                        boxShadow: '0 0 4px rgba(139,92,246,0.08)',
+                                        background: 'linear-gradient(90deg, #ff7a1a, #f97316)',
+                                        boxShadow: '0 0 4px rgba(255, 122, 26,0.08)',
                                     }}
                                 />
                             </div>
@@ -183,7 +183,7 @@ export default function WageringCard() {
                                     className="h-full rounded-full transition-all duration-500"
                                     style={{
                                         width: `${casinoPct}%`,
-                                        background: 'linear-gradient(90deg, #a855f7, #6366f1)',
+                                        background: 'linear-gradient(90deg, #a855f7, #ff7a1a)',
                                         boxShadow: '0 0 4px rgba(168,85,247,0.08)',
                                     }}
                                 />

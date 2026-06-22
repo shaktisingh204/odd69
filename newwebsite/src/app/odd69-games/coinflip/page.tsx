@@ -64,7 +64,7 @@ export default function CoinflipPage() {
           useBonus={useBonus}
           setUseBonus={setUseBonus}
           locked={busy}
-          accent="#A78BFA"
+          accent="#ff9a3d"
           action={
             <button
               type="button"

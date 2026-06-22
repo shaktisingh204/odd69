@@ -30,20 +30,20 @@ const SPORT_FILTERS: SportFilter[] = [
     { id: null,            name: 'Basketball',      emoji: '🏀', color: '#ec4899' },
     { id: 'sr:sport:20',   name: 'Baseball',        emoji: '⚾', color: '#f97316' },
     { id: 'sr:sport:4',    name: 'Ice Hockey',      emoji: '🏒', color: '#38bdf8' },
-    { id: 'sr:sport:2',    name: 'Tennis',          emoji: '🎾', color: '#8B5CF6' },
+    { id: 'sr:sport:2',    name: 'Tennis',          emoji: '🎾', color: '#ff7a1a' },
     { id: 'sr:sport:20',   name: 'Soccer',          emoji: '⚽', color: '#4ade80' },
     { id: 'sr:sport:22',   name: 'Counter-Strike',  emoji: '🎮', color: '#f97316' },
-    { id: 'sr:sport:29',   name: 'Dota 2',          emoji: '⚔️', color: '#a78bfa' },
+    { id: 'sr:sport:29',   name: 'Dota 2',          emoji: '⚔️', color: '#ff9a3d' },
     { id: 'sr:sport:9',    name: 'Boxing',          emoji: '🥊', color: '#ef4444' },
-    { id: 'sr:sport:1',    name: 'American Football',emoji: '🏈', color: '#8B5CF6' },
+    { id: 'sr:sport:1',    name: 'American Football',emoji: '🏈', color: '#ff7a1a' },
 ];
 
 // Hero card gradient colors (matching odd69.com purple/blue/teal gradients)
 const HERO_CARD_COLORS = [
-    { from: '#3b1fa8', to: '#7c3aed', accent: '#a78bfa' }, // Deep purple
+    { from: '#3b1fa8', to: '#e85f00', accent: '#ff9a3d' }, // Deep purple
     { from: '#1e3a8a', to: '#2563eb', accent: '#60a5fa' }, // Deep blue
     { from: '#0d4f4f', to: '#0f766e', accent: '#2dd4bf' }, // Teal
-    { from: '#4c1d95', to: '#7c3aed', accent: '#c084fc' }, // Violet
+    { from: '#4c1d95', to: '#e85f00', accent: '#c084fc' }, // Violet
     { from: '#164e63', to: '#0e7490', accent: '#22d3ee' }, // Cyan
 ];
 
@@ -451,7 +451,7 @@ function EmptyState({ onRefresh }: { onRefresh: () => void }) {
             </p>
             <button onClick={onRefresh}
                 className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold transition-all hover:brightness-110"
-                style={{ background: 'rgba(99,102,241,0.15)', border: '1px solid rgba(99,102,241,0.3)', color: '#818cf8' }}>
+                style={{ background: 'rgba(255, 122, 26,0.15)', border: '1px solid rgba(255, 122, 26,0.3)', color: '#818cf8' }}>
                 ↻ Refresh
             </button>
         </div>

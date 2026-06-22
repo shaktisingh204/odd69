@@ -161,7 +161,7 @@ const GamePlayInterface: React.FC<GamePlayInterfaceProps> = ({
                         <div className="absolute inset-0 flex items-center justify-center bg-bg-deep z-10">
                             <div className="flex flex-col items-center gap-3">
                                 <div className="relative w-14 h-14">
-                                    <div className="w-14 h-14 rounded-full border-2 border-[#8B5CF6]/20 border-t-[#8B5CF6] animate-spin" />
+                                    <div className="w-14 h-14 rounded-full border-2 border-[#ff7a1a]/20 border-t-[#ff7a1a] animate-spin" />
                                     <div className="absolute inset-0 flex items-center justify-center text-xl">🎰</div>
                                 </div>
                                 <p className="text-white/50 text-xs font-semibold tracking-widest uppercase animate-pulse">
@@ -221,7 +221,7 @@ const GamePlayInterface: React.FC<GamePlayInterfaceProps> = ({
 
                 {/* Provider badge */}
                 <div className="flex items-center gap-2">
-                    <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-[#8B5CF6]/20 to-[#D4AF37]/10 border border-[#8B5CF6]/20 flex items-center justify-center text-xs font-black text-brand-gold">
+                    <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-[#ff7a1a]/20 to-[#D4AF37]/10 border border-[#ff7a1a]/20 flex items-center justify-center text-xs font-black text-brand-gold">
                         {game.provider.charAt(0).toUpperCase()}
                     </div>
                     <div>
@@ -316,7 +316,7 @@ const GamePlayInterface: React.FC<GamePlayInterfaceProps> = ({
                 {!iframeLoaded && !iframeError && (
                     <div className="absolute inset-0 flex flex-col items-center justify-center bg-bg-deep z-10 gap-4">
                         <div className="relative w-16 h-16">
-                            <div className="w-16 h-16 rounded-full border-2 border-[#8B5CF6]/20 border-t-[#8B5CF6] animate-spin" />
+                            <div className="w-16 h-16 rounded-full border-2 border-[#ff7a1a]/20 border-t-[#ff7a1a] animate-spin" />
                             <div className="absolute inset-0 flex items-center justify-center text-2xl">🎰</div>
                         </div>
                         <div className="flex flex-col items-center gap-1">
@@ -327,7 +327,7 @@ const GamePlayInterface: React.FC<GamePlayInterfaceProps> = ({
                         </div>
                         {/* Shimmer bar */}
                         <div className="w-48 h-1 bg-white/[0.04] rounded-full overflow-hidden mt-2">
-                            <div className="h-full bg-gradient-to-r from-[#8B5CF6] to-[#D4AF37] rounded-full animate-[shimmerBar_1.6s_ease-in-out_infinite]" />
+                            <div className="h-full bg-gradient-to-r from-[#ff7a1a] to-[#D4AF37] rounded-full animate-[shimmerBar_1.6s_ease-in-out_infinite]" />
                         </div>
                     </div>
                 )}

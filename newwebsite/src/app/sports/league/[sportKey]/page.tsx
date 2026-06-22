@@ -360,7 +360,7 @@ export default function SportLeaguePage() {
                   <button key={f} type="button" onClick={() => setFilter(f)}
                     className={`rounded-lg px-3 py-1.5 text-[12px] font-adx-bold capitalize transition active:scale-95
                       ${filter === f
-                        ? 'bg-brand-gold text-text-inverse shadow-[0_2px_8px_rgba(139,92,246,0.06)]'
+                        ? 'bg-brand-gold text-text-inverse shadow-[0_2px_8px_rgba(255, 122, 26,0.06)]'
                         : 'text-text-muted hover:text-text-primary'}`}>
                     {f === 'all' ? 'All' : f === 'live' ? '🔴 Live' : '📅 Upcoming'}
                   </button>

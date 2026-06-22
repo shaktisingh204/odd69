@@ -75,9 +75,9 @@ function getSlotGradient(_index: number, _totalCols: number, multiplier: number)
   if (multiplier >= 100) return "linear-gradient(180deg, #ff2d6b 0%, #d91044 100%)";
   if (multiplier >= 20) return "linear-gradient(180deg, #fa4950 0%, #c8353c 100%)";
   if (multiplier >= 5) return "linear-gradient(180deg, #f97316 0%, #c2570d 100%)";
-  if (multiplier >= 2) return "linear-gradient(180deg, #8B5CF6 0%, #7C3AED 100%)";
-  if (multiplier >= 1) return "linear-gradient(180deg, #A78BFA 0%, #7C3AED 100%)";
-  return "linear-gradient(180deg, #A78BFA 0%, #7C3AED 100%)";
+  if (multiplier >= 2) return "linear-gradient(180deg, #ff7a1a 0%, #e85f00 100%)";
+  if (multiplier >= 1) return "linear-gradient(180deg, #ff9a3d 0%, #e85f00 100%)";
+  return "linear-gradient(180deg, #ff9a3d 0%, #e85f00 100%)";
 }
 
 function getSlotTextColor(multiplier: number): string {

@@ -38,11 +38,11 @@ const SignupDepositPrompt: React.FC = () => {
                             transform: "rotateX(2deg) rotateY(-1deg)",
                             transformStyle: "preserve-3d",
                             boxShadow:
-                                "0 25px 60px rgba(0,0,0,0.5), 0 0 80px rgba(139,92,246,0.03), inset 0 1px 0 rgba(255,255,255,0.1)",
+                                "0 25px 60px rgba(0,0,0,0.5), 0 0 80px rgba(255, 122, 26,0.03), inset 0 1px 0 rgba(255,255,255,0.1)",
                         }}
                     >
                         {/* Glow effects */}
-                        <div className="absolute -top-20 -right-20 w-60 h-60 bg-[#8B5CF6]/20 rounded-full blur-[80px] pointer-events-none" />
+                        <div className="absolute -top-20 -right-20 w-60 h-60 bg-[#ff7a1a]/20 rounded-full blur-[80px] pointer-events-none" />
                         <div className="absolute -bottom-16 -left-16 w-48 h-48 bg-indigo-500/15 rounded-full blur-[60px] pointer-events-none" />
 
                         {/* Close button */}
@@ -59,7 +59,7 @@ const SignupDepositPrompt: React.FC = () => {
                                 className="relative mb-6"
                                 style={{ transform: "translateZ(40px)", transformStyle: "preserve-3d" }}
                             >
-                                <div className="w-24 h-24 rounded-2xl bg-gradient-to-br from-[#8B5CF6] to-[#7C3AED] flex items-center justify-center shadow-lg shadow-[#8B5CF6]/30 rotate-6">
+                                <div className="w-24 h-24 rounded-2xl bg-gradient-to-br from-[#ff7a1a] to-[#e85f00] flex items-center justify-center shadow-lg shadow-[#ff7a1a]/30 rotate-6">
                                     <Wallet size={44} className="text-white drop-shadow-lg -rotate-6" />
                                 </div>
                                 {/* Floating sparkle */}
@@ -95,7 +95,7 @@ const SignupDepositPrompt: React.FC = () => {
                             {/* CTA Button */}
                             <button
                                 onClick={handleDeposit}
-                                className="group w-full h-[54px] rounded-xl bg-gradient-to-r from-[#8B5CF6] to-[#8B5CF6] hover:from-[#8B5CF6] hover:to-[#8B5CF6] text-white font-extrabold text-base uppercase tracking-wider flex items-center justify-center gap-2 transition-all duration-300 shadow-lg shadow-[#8B5CF6]/25 hover:shadow-[#8B5CF6]/40 hover:-translate-y-0.5 active:translate-y-0"
+                                className="group w-full h-[54px] rounded-xl bg-gradient-to-r from-[#ff7a1a] to-[#ff7a1a] hover:from-[#ff7a1a] hover:to-[#ff7a1a] text-white font-extrabold text-base uppercase tracking-wider flex items-center justify-center gap-2 transition-all duration-300 shadow-lg shadow-[#ff7a1a]/25 hover:shadow-[#ff7a1a]/40 hover:-translate-y-0.5 active:translate-y-0"
                             >
                                 Make a Deposit
                                 <ArrowRight
@@ -126,11 +126,11 @@ const SignupDepositPrompt: React.FC = () => {
                         className="relative bg-gradient-to-br from-[#0F1016] via-[#141620] to-[#1C1E28] border-t border-x border-white/[0.06] rounded-t-3xl"
                         style={{
                             boxShadow:
-                                "0 -15px 50px rgba(0,0,0,0.4), 0 0 60px rgba(139,92,246,0.02), inset 0 1px 0 rgba(255,255,255,0.1)",
+                                "0 -15px 50px rgba(0,0,0,0.4), 0 0 60px rgba(255, 122, 26,0.02), inset 0 1px 0 rgba(255,255,255,0.1)",
                         }}
                     >
                         {/* Glow effects */}
-                        <div className="absolute -top-16 right-8 w-40 h-40 bg-[#8B5CF6]/20 rounded-full blur-[60px] pointer-events-none" />
+                        <div className="absolute -top-16 right-8 w-40 h-40 bg-[#ff7a1a]/20 rounded-full blur-[60px] pointer-events-none" />
                         <div className="absolute -bottom-12 left-4 w-32 h-32 bg-indigo-500/10 rounded-full blur-[50px] pointer-events-none" />
 
                         {/* Drag handle */}
@@ -144,7 +144,7 @@ const SignupDepositPrompt: React.FC = () => {
                                 className="relative mb-5"
                                 style={{ transform: "translateZ(30px)", transformStyle: "preserve-3d" }}
                             >
-                                <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-[#8B5CF6] to-[#7C3AED] flex items-center justify-center shadow-lg shadow-[#8B5CF6]/30 rotate-6">
+                                <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-[#ff7a1a] to-[#e85f00] flex items-center justify-center shadow-lg shadow-[#ff7a1a]/30 rotate-6">
                                     <Wallet size={36} className="text-white drop-shadow-lg -rotate-6" />
                                 </div>
                                 <div className="absolute -top-1.5 -right-1.5 w-7 h-7 rounded-full bg-yellow-400/90 flex items-center justify-center shadow-lg shadow-yellow-400/30 animate-bounce">
@@ -178,7 +178,7 @@ const SignupDepositPrompt: React.FC = () => {
                             {/* CTA Button */}
                             <button
                                 onClick={handleDeposit}
-                                className="group w-full h-[52px] rounded-xl bg-gradient-to-r from-[#8B5CF6] to-[#8B5CF6] hover:from-[#8B5CF6] hover:to-[#8B5CF6] text-white font-extrabold text-[15px] uppercase tracking-wider flex items-center justify-center gap-2 transition-all duration-300 shadow-lg shadow-[#8B5CF6]/25"
+                                className="group w-full h-[52px] rounded-xl bg-gradient-to-r from-[#ff7a1a] to-[#ff7a1a] hover:from-[#ff7a1a] hover:to-[#ff7a1a] text-white font-extrabold text-[15px] uppercase tracking-wider flex items-center justify-center gap-2 transition-all duration-300 shadow-lg shadow-[#ff7a1a]/25"
                             >
                                 Make a Deposit
                                 <ArrowRight

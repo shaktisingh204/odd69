@@ -70,13 +70,13 @@ export default function DailyCheckInButton({ compact = false }: Props) {
           height: 38,
           borderRadius: 10,
           background: isGlowing
-            ? "linear-gradient(135deg, rgba(139,92,246,0.18) 0%, rgba(200,136,12,0.10) 100%)"
+            ? "linear-gradient(135deg, rgba(255, 122, 26,0.18) 0%, rgba(200,136,12,0.10) 100%)"
             : "rgba(255,255,255,0.04)",
           border: isGlowing
-            ? "1.5px solid rgba(139,92,246,0.6)"
+            ? "1.5px solid rgba(255, 122, 26,0.6)"
             : "1px solid rgba(255,255,255,0.09)",
           boxShadow: isGlowing
-            ? "0 0 12px rgba(139,92,246,0.6), 0 0 28px rgba(139,92,246,0.28), 0 0 56px rgba(139,92,246,0.025)"
+            ? "0 0 12px rgba(255, 122, 26,0.6), 0 0 28px rgba(255, 122, 26,0.28), 0 0 56px rgba(255, 122, 26,0.025)"
             : "none",
           color: isGlowing ? "#EFA05B" : "#66635F",
         }}
@@ -90,7 +90,7 @@ export default function DailyCheckInButton({ compact = false }: Props) {
               position: "absolute",
               inset: -1,
               borderRadius: 11,
-              border: "2px solid rgba(139,92,246,0.55)",
+              border: "2px solid rgba(255, 122, 26,0.55)",
               pointerEvents: "none",
             }}
           />
@@ -104,7 +104,7 @@ export default function DailyCheckInButton({ compact = false }: Props) {
               position: "absolute",
               inset: -1,
               borderRadius: 11,
-              border: "2px solid rgba(139,92,246,0.28)",
+              border: "2px solid rgba(255, 122, 26,0.28)",
               pointerEvents: "none",
             }}
           />

@@ -175,7 +175,7 @@ export default function TermsPage() {
 
             {/* Header */}
             <div className="relative overflow-hidden bg-gradient-to-b from-brand-gold/6 via-[#0F1016] to-[#0C0D12] border-b border-white/[0.04]">
-                <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_0%,rgba(139,92,246,0.06),transparent_60%)]" />
+                <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_0%,rgba(255, 122, 26,0.06),transparent_60%)]" />
                 <div className="relative max-w-3xl mx-auto px-4 pt-10 pb-8 text-center">
                     <div className="hidden md:flex absolute top-6 left-4">
                         <Link href="/" className="flex items-center gap-2 text-text-muted hover:text-white transition-colors text-sm font-medium bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.04] px-4 py-2 rounded-full">

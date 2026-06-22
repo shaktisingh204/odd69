@@ -46,22 +46,22 @@ function SignupContent() {
             <div className="absolute w-96 h-96 bg-brand-gold/8 rounded-full blur-3xl pointer-events-none" />
 
             <div className="relative z-10 flex flex-col items-center gap-4">
-                <div className="w-20 h-20 rounded-2xl bg-brand-gold/10 border border-[#8B5CF6]/20 flex items-center justify-center">
-                    <Gift size={36} className="text-[#8B5CF6]" />
+                <div className="w-20 h-20 rounded-2xl bg-brand-gold/10 border border-[#ff7a1a]/20 flex items-center justify-center">
+                    <Gift size={36} className="text-[#ff7a1a]" />
                 </div>
 
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-gold/10 border border-[#8B5CF6]/20 text-[#8B5CF6] text-xs font-bold uppercase tracking-wider">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-gold/10 border border-[#ff7a1a]/20 text-[#ff7a1a] text-xs font-bold uppercase tracking-wider">
                     🎁 Referral Invite
                 </div>
 
                 <h1 className="text-2xl font-bold text-white">You've been invited!</h1>
                 <p className="text-text-muted text-sm max-w-xs leading-relaxed">
                     {refCode
-                        ? <>Your referral code <span className="text-[#8B5CF6] font-mono font-bold">{refCode}</span> has been saved. Opening sign up for you...</>
+                        ? <>Your referral code <span className="text-[#ff7a1a] font-mono font-bold">{refCode}</span> has been saved. Opening sign up for you...</>
                         : 'Opening sign up for you...'}
                 </p>
 
-                <Loader2 className="w-6 h-6 text-[#8B5CF6] animate-spin mt-2" />
+                <Loader2 className="w-6 h-6 text-[#ff7a1a] animate-spin mt-2" />
             </div>
         </div>
     );
@@ -72,7 +72,7 @@ export default function AuthSignupPage() {
         <Suspense
             fallback={
                 <div className="min-h-screen bg-bg-deep flex items-center justify-center">
-                    <Loader2 className="w-8 h-8 text-[#8B5CF6] animate-spin" />
+                    <Loader2 className="w-8 h-8 text-[#ff7a1a] animate-spin" />
                 </div>
             }
         >

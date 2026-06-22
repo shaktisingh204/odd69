@@ -347,10 +347,10 @@ export default function MobileBottomNav() {
         const content = (
             <div className={`flex flex-col items-center justify-center flex-1 gap-1 relative transition-all h-[64px] ${active ? 'text-brand-gold' : 'text-white/40'}`}>
                 {active && (
-                    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-6 h-[2px] bg-gradient-to-r from-brand-gold to-brand-gold-hover rounded-b-full shadow-[0_0_8px_rgba(139,92,246,0.02)]" />
+                    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-6 h-[2px] bg-gradient-to-r from-brand-gold to-brand-gold-hover rounded-b-full shadow-[0_0_8px_rgba(255, 122, 26,0.02)]" />
                 )}
                 <div className="relative flex items-center justify-center">
-                    <Icon size={21} className={active ? 'drop-shadow-[0_0_10px_rgba(139,92,246,0.08)]' : ''} />
+                    <Icon size={21} className={active ? 'drop-shadow-[0_0_10px_rgba(255, 122, 26,0.08)]' : ''} />
                     {isBetsTab && bets.length > 0 && (
                         <span className="absolute -top-1.5 -right-2 bg-brand-gold text-text-inverse text-[9px] font-black h-[14px] min-w-[14px] px-0.5 rounded-full flex items-center justify-center shadow-glow-gold">
                             {bets.length}
@@ -411,9 +411,9 @@ export default function MobileBottomNav() {
                 <button onClick={handleMenuPress} className="flex flex-1">
                     <div className={`flex flex-1 flex-col items-center justify-center gap-1 relative transition-all h-[64px] ${menuOpen ? 'text-brand-gold' : 'text-white/40'}`}>
                         {menuOpen && (
-                            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-6 h-[2px] bg-gradient-to-r from-brand-gold to-brand-gold-hover rounded-b-full shadow-[0_0_8px_rgba(139,92,246,0.02)]" />
+                            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-6 h-[2px] bg-gradient-to-r from-brand-gold to-brand-gold-hover rounded-b-full shadow-[0_0_8px_rgba(255, 122, 26,0.02)]" />
                         )}
-                        <MenuButtonIcon size={21} className={menuOpen ? 'drop-shadow-[0_0_10px_rgba(139,92,246,0.08)]' : ''} />
+                        <MenuButtonIcon size={21} className={menuOpen ? 'drop-shadow-[0_0_10px_rgba(255, 122, 26,0.08)]' : ''} />
                         <span className={`text-[10px] font-bold uppercase tracking-wide leading-none ${menuOpen ? 'text-brand-gold' : ''}`}>
                             {menuButtonLabel}
                         </span>

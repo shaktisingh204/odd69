@@ -100,7 +100,7 @@ interface PremiumHomeContentProps {
 
 /** Parse CSS gradient string → 2-stop gradient for inline style */
 function gradientToCss(g?: string) {
-    return g || 'linear-gradient(135deg, #7c3aed, #4c1d95)';
+    return g || 'linear-gradient(135deg, #e85f00, #4c1d95)';
 }
 
 export default function PremiumHomeContent({

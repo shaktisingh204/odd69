@@ -37,7 +37,7 @@ const PROMOS: Promo[] = [
 const SKINS: Skin[] = [
   { name: 'Exposure', weapon: 'UMP-45', price: '7.42$', wear: 'BS', icon: 'gem', art: 'from-[#a855f7] to-[#6d28d9]', floatDelay: 0 },
   { name: 'Rocket Pop', weapon: 'Galil AR', price: '2.25$', icon: 'gem', art: 'from-[#22c55e] to-[#0d9488]', floatDelay: 0.3 },
-  { name: 'ZX Spectron', weapon: 'USP-S', price: '81.27$', wear: 'FN', icon: 'gem', art: 'from-[#ec4899] to-[#7c3aed]', floatDelay: 0.6 },
+  { name: 'ZX Spectron', weapon: 'USP-S', price: '81.27$', wear: 'FN', icon: 'gem', art: 'from-[#ec4899] to-[#e85f00]', floatDelay: 0.6 },
   { name: 'Cortex', weapon: 'M9 Bayonet', price: '81.27$', icon: 'knife', art: 'from-[#ef4444] to-[#7f1d1d]', floatDelay: 0.9 },
   { name: 'Souvenir', weapon: 'FAMAS', price: '81.27$', wear: 'FN', icon: 'gem', art: 'from-[#f59e0b] to-[#b45309]', floatDelay: 1.2 },
   { name: 'Dual Berettas', weapon: 'FAMAS', price: '1.49$', icon: 'dagger', art: 'from-[#38bdf8] to-[#1d4ed8]', floatDelay: 1.5 },

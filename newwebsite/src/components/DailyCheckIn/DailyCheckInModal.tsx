@@ -71,7 +71,7 @@ function CircularProgress({ value, max, size = 56 }: { value: number; max: numbe
       />
       <defs>
         <linearGradient id="ciGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-          <stop offset="0%" stopColor="#8B5CF6" />
+          <stop offset="0%" stopColor="#ff7a1a" />
           <stop offset="100%" stopColor="#EF4444" />
         </linearGradient>
       </defs>
@@ -99,7 +99,7 @@ function DayCard({ day, reward, currency, claimed, isCurrent, index, locked }: D
           ${claimed
             ? "bg-gradient-to-b from-success-primary/20 to-success-soft border border-success-primary/40"
             : isCurrent && !locked
-              ? "bg-gradient-to-b from-amber-500/25 to-orange-900/20 border border-amber-400/70 shadow-[0_0_20px_rgba(139,92,246,0.4)]"
+              ? "bg-gradient-to-b from-amber-500/25 to-orange-900/20 border border-amber-400/70 shadow-[0_0_20px_rgba(255, 122, 26,0.4)]"
               : isLastDay && !locked
                 ? "bg-gradient-to-b from-yellow-500/15 to-yellow-900/10 border border-yellow-400/30"
                 : "bg-white/[0.04] border border-white/[0.07]"
@@ -369,9 +369,9 @@ export default function DailyCheckInModal({ onClose, hasDeposited = false }: Pro
             transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
             className="inline-flex items-center justify-center w-16 h-16 rounded-2xl mb-3 text-4xl"
             style={{
-              background: "linear-gradient(135deg, rgba(139,92,246,0.25) 0%, rgba(239,68,68,0.15) 100%)",
-              border: "1px solid rgba(139,92,246,0.35)",
-              boxShadow: "0 0 30px rgba(139,92,246,0.25)",
+              background: "linear-gradient(135deg, rgba(255, 122, 26,0.25) 0%, rgba(239,68,68,0.15) 100%)",
+              border: "1px solid rgba(255, 122, 26,0.35)",
+              boxShadow: "0 0 30px rgba(255, 122, 26,0.25)",
             }}
           >🎁</motion.div>
 
@@ -390,8 +390,8 @@ export default function DailyCheckInModal({ onClose, hasDeposited = false }: Pro
           transition={{ delay: 0.2 }}
           className="rounded-2xl mb-4 overflow-hidden"
           style={{
-            background: "linear-gradient(120deg, rgba(139,92,246,0.12) 0%, rgba(239,68,68,0.06) 100%)",
-            border: "1px solid rgba(139,92,246,0.18)",
+            background: "linear-gradient(120deg, rgba(255, 122, 26,0.12) 0%, rgba(239,68,68,0.06) 100%)",
+            border: "1px solid rgba(255, 122, 26,0.18)",
             opacity: hasDeposited ? 1 : 0.5,
           }}
         >
@@ -411,7 +411,7 @@ export default function DailyCheckInModal({ onClose, hasDeposited = false }: Pro
                   animate={{ opacity: 1, y: 0 }}
                   className="text-2xl font-black"
                   style={{
-                    background: "linear-gradient(135deg, #8B5CF6 0%, #EF4444 100%)",
+                    background: "linear-gradient(135deg, #ff7a1a 0%, #EF4444 100%)",
                     WebkitBackgroundClip: "text",
                     WebkitTextFillColor: "transparent",
                   }}
@@ -457,8 +457,8 @@ export default function DailyCheckInModal({ onClose, hasDeposited = false }: Pro
                 whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}
                 className="w-full py-2.5 rounded-xl font-bold text-[13px] text-[#1A1208] relative overflow-hidden"
                 style={{
-                  background: "linear-gradient(135deg, #8B5CF6 0%, #EF4444 100%)",
-                  boxShadow: "0 6px 20px rgba(139,92,246,0.35)",
+                  background: "linear-gradient(135deg, #ff7a1a 0%, #EF4444 100%)",
+                  boxShadow: "0 6px 20px rgba(255, 122, 26,0.35)",
                 }}
               >
                 <motion.span
@@ -501,7 +501,7 @@ export default function DailyCheckInModal({ onClose, hasDeposited = false }: Pro
                   animate={{ width: `${(progressVal / 7) * 100}%` }}
                   transition={{ duration: 1.2, ease: "easeOut", delay: 0.5 }}
                   className="h-full rounded-full"
-                  style={{ background: "linear-gradient(90deg, #8B5CF6, #EF4444)" }}
+                  style={{ background: "linear-gradient(90deg, #ff7a1a, #EF4444)" }}
                 />
               </div>
               <span className="text-[10px] text-white/25 font-semibold">{progressVal}/7</span>
@@ -566,10 +566,10 @@ export default function DailyCheckInModal({ onClose, hasDeposited = false }: Pro
             whileTap={{ scale: isClaiming ? 1 : 0.975 }}
             className="w-full py-4 rounded-2xl font-black text-[15px] relative overflow-hidden disabled:opacity-60"
             style={{
-              background: "linear-gradient(135deg, #8B5CF6 0%, #EF4444 60%, #8B5CF6 100%)",
+              background: "linear-gradient(135deg, #ff7a1a 0%, #EF4444 60%, #ff7a1a 100%)",
               backgroundSize: "200% 100%",
               color: "#1A1208",
-              boxShadow: "0 10px 32px rgba(139,92,246,0.5), 0 2px 8px rgba(239,68,68,0.3)",
+              boxShadow: "0 10px 32px rgba(255, 122, 26,0.5), 0 2px 8px rgba(239,68,68,0.3)",
             }}
           >
             {/* Sweep shimmer */}
@@ -677,8 +677,8 @@ export default function DailyCheckInModal({ onClose, hasDeposited = false }: Pro
                   maxHeight: "90dvh",
                   borderRadius: 28,
                   background: "linear-gradient(160deg, #12141C 0%, #0F1016 55%, #0C0D12 100%)",
-                  border: "1px solid rgba(139,92,246,0.025)",
-                  boxShadow: "0 32px 80px rgba(0,0,0,0.8), 0 0 60px rgba(139,92,246,0.06), inset 0 1px 0 rgba(255,255,255,0.04)",
+                  border: "1px solid rgba(255, 122, 26,0.025)",
+                  boxShadow: "0 32px 80px rgba(0,0,0,0.8), 0 0 60px rgba(255, 122, 26,0.06), inset 0 1px 0 rgba(255,255,255,0.04)",
                   display: "flex",
                   flexDirection: "column",
                 }

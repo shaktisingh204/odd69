@@ -317,8 +317,8 @@ export default function WagerProgressWidget() {
                                 style={{
                                     width: 30,
                                     height: 30,
-                                    background: 'linear-gradient(135deg, #a855f7, #7c3aed)',
-                                    boxShadow: '0 3px 10px rgba(139, 92, 246, 0.4)',
+                                    background: 'linear-gradient(135deg, #a855f7, #e85f00)',
+                                    boxShadow: '0 3px 10px rgba(255, 122, 26, 0.4)',
                                 }}
                             >
                                 <Wallet size={14} className="text-white" />
@@ -350,8 +350,8 @@ export default function WagerProgressWidget() {
                                 style={{
                                     width: 36,
                                     height: 36,
-                                    background: 'linear-gradient(135deg, #a855f7, #7c3aed)',
-                                    boxShadow: '0 4px 14px rgba(139, 92, 246, 0.4)',
+                                    background: 'linear-gradient(135deg, #a855f7, #e85f00)',
+                                    boxShadow: '0 4px 14px rgba(255, 122, 26, 0.4)',
                                 }}
                             >
                                 <Wallet size={18} className="text-white" />
@@ -418,8 +418,8 @@ export default function WagerProgressWidget() {
                             <div
                                 className={`wager-icon ${isMobile ? 'w-9 h-9' : 'w-11 h-11'} rounded-full flex items-center justify-center mb-1`}
                                 style={{
-                                    background: 'linear-gradient(135deg, #a855f7, #7c3aed)',
-                                    boxShadow: '0 4px 14px rgba(139, 92, 246, 0.4)',
+                                    background: 'linear-gradient(135deg, #a855f7, #e85f00)',
+                                    boxShadow: '0 4px 14px rgba(255, 122, 26, 0.4)',
                                 }}
                             >
                                 <Wallet size={isMobile ? 16 : 20} className="text-white" />

@@ -178,7 +178,7 @@ export default function OddsCompareCard({ event, format, visibleBookmakers, onOd
                     onClick={() => onOddsClick?.(event, outcome.name, price, bmKey)}
                     className={`relative flex items-center justify-center rounded-lg border py-1.5 px-1 transition-all active:scale-95 ${
                       best
-                        ? 'border-brand-gold/50 bg-brand-gold/12 shadow-[0_0_12px_rgba(139,92,246,0.04)] hover:bg-brand-gold/20'
+                        ? 'border-brand-gold/50 bg-brand-gold/12 shadow-[0_0_12px_rgba(255, 122, 26,0.04)] hover:bg-brand-gold/20'
                         : 'border-white/[0.06] bg-bg-elevated hover:border-brand-gold/25 hover:bg-bg-hover'
                     }`}
                   >

@@ -25,7 +25,7 @@
   .v2-spin-slow     { animation: v2-spin 22s linear infinite; }
 }
 .v2-grad-text {
-  background: linear-gradient(108deg, #ff2e9a 0%, #b14dff 46%, #22d3ee 100%);
+  background: linear-gradient(108deg, #ff9a3d 0%, #ff7a1a 50%, #e85f00 100%);
   -webkit-background-clip: text; background-clip: text; color: transparent;
 }
 .v2-marquee-mask {
@@ -168,7 +168,7 @@
   --accent-blue: #3B82F6;
   --accent-teal: #14B8A6;
   --accent-teal-bright: #2DD4BF;  /* Tether/USDT green-teal */
-  --accent-purple: #8B5CF6;
+  --accent-purple: #ff7a1a;
   --accent-purple-soft: #12101F;  /* Purple background */
   --accent-purple-alpha: rgba(255, 122, 26, 0.30);
   --accent-cyan: #06B6D4;         /* New: cyan for contrast accents */
@@ -350,12 +350,12 @@
    ══════════════════════════════════════════════ */
 [data-wallet="crypto"] {
   /* ── Core brand token override ── */
-  --action-primary: #A78BFA;        /* Purple CTA */
-  --action-hover: #C4B5FD;          /* Bright Purple Hover */
-  --action-active: #7C3AED;         /* Deep Purple Active */
-  --gold-soft: #DDD6FE;             /* Soft Purple Glow */
-  --gold-muted: #8B7BBE;            /* Muted Purple */
-  --brown-accent: #2E1A5E;          /* Dark Purple Accent */
+  --action-primary: #ff9a3d;        /* Purple CTA */
+  --action-hover: #ffc08a;          /* Bright Purple Hover */
+  --action-active: #e85f00;         /* Deep Purple Active */
+  --gold-soft: #ffd9b3;             /* Soft Purple Glow */
+  --gold-muted: #d98a3a;            /* Muted Purple */
+  --brown-accent: #3a1c08;          /* Dark Purple Accent */
   --text-inverse: #FFFFFF;          /* White text on purple */
 
   /* Brand alpha tints → purple */

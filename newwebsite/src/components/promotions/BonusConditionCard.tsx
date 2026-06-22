@@ -25,7 +25,7 @@ const TYPE_CONFIG = {
         badgeBg: 'bg-purple-500/15 text-purple-300 border-purple-500/25',
         gradientBar: 'from-purple-500 to-violet-500',
         borderHover: 'hover:border-purple-500/25',
-        glowShadow: 'hover:shadow-[0_8px_32px_rgba(139,92,246,0.1)]',
+        glowShadow: 'hover:shadow-[0_8px_32px_rgba(255, 122, 26,0.1)]',
     },
     SPORTS: {
         icon: Trophy,

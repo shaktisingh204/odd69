@@ -47,7 +47,7 @@ export default function EventHero({
         {/* wordmark */}
         <div className="shrink-0 text-center md:text-left">
           <span className="block text-3xl font-extrabold italic leading-[0.95] tracking-tight text-transparent md:text-4xl"
-            style={{ backgroundImage: 'linear-gradient(135deg,#a78bfa,#7c3aed 55%,#6d28d9)', WebkitBackgroundClip: 'text', backgroundClip: 'text' }}
+            style={{ backgroundImage: 'linear-gradient(135deg,#ff9a3d,#e85f00 55%,#6d28d9)', WebkitBackgroundClip: 'text', backgroundClip: 'text' }}
           >
             {line1}
           </span>

@@ -541,8 +541,8 @@ function RouletteWheel({ rotation }: { rotation: number }) {
           style={{
             borderLeft: "8px solid transparent",
             borderRight: "8px solid transparent",
-            borderTop: "12px solid #A78BFA",
-            filter: "drop-shadow(0 2px 3px rgba(167,139,250,0.4))",
+            borderTop: "12px solid #ff9a3d",
+            filter: "drop-shadow(0 2px 3px rgba(255, 154, 61,0.4))",
           }}
         />
       </div>
@@ -594,7 +594,7 @@ function RouletteWheel({ rotation }: { rotation: number }) {
           stroke="#1e293b"
           strokeWidth={2}
         />
-        <circle cx={CX} cy={CY} r={6} fill="#A78BFA" />
+        <circle cx={CX} cy={CY} r={6} fill="#ff9a3d" />
       </svg>
     </div>
   );

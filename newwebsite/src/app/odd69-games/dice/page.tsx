@@ -180,8 +180,8 @@ export default function DicePage() {
   const won = lastResult?.status === "WON";
 
   const sliderGrad = direction === "over"
-    ? `linear-gradient(to right, #22c55e 0%, #22c55e ${target}%, #8B5CF6 ${target}%, #8B5CF6 100%)`
-    : `linear-gradient(to right, #8B5CF6 0%, #8B5CF6 ${target}%, #22c55e ${target}%, #22c55e 100%)`;
+    ? `linear-gradient(to right, #22c55e 0%, #22c55e ${target}%, #ff7a1a ${target}%, #ff7a1a 100%)`
+    : `linear-gradient(to right, #ff7a1a 0%, #ff7a1a ${target}%, #22c55e ${target}%, #22c55e 100%)`;
 
   const stopRollAnimation = useCallback(() => {
     if (animationRef.current !== null) {
@@ -631,9 +631,9 @@ export default function DicePage() {
                   disabled={isRolling}
                   className="w-full py-4 rounded-lg font-black text-base transition-all disabled:opacity-50 active:scale-[0.98]"
                   style={{
-                    background: "linear-gradient(135deg, #8B5CF6, #7C3AED)",
+                    background: "linear-gradient(135deg, #ff7a1a, #e85f00)",
                     color: "white",
-                    boxShadow: "0 4px 20px rgba(139,92,246,0.28)",
+                    boxShadow: "0 4px 20px rgba(255, 122, 26,0.28)",
                   }}
                 >
                   Start Auto

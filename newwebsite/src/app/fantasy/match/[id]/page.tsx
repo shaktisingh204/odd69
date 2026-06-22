@@ -520,7 +520,7 @@ function ContestsList({
             <div className="px-4 pb-2.5">
               <div className="w-full h-1.5 rounded-full bg-gray-100 overflow-hidden">
                 <div
-                  className={`h-full rounded-full transition-all ${pct >= 90 ? "bg-[#d13239]" : "bg-[#8B5CF6]"}`}
+                  className={`h-full rounded-full transition-all ${pct >= 90 ? "bg-[#d13239]" : "bg-[#ff7a1a]"}`}
                   style={{ width: `${pct}%` }}
                 />
               </div>

@@ -2067,7 +2067,7 @@ export default function DepositModal({ isOpen, onClose }: DepositModalProps) {
     return (
         <>
             <div
-                className="fixed inset-0 z-50 bg-[radial-gradient(circle_at_top,rgba(139,92,246,0.08),transparent_28%),rgba(0,0,0,0.85)] backdrop-blur-md"
+                className="fixed inset-0 z-50 bg-[radial-gradient(circle_at_top,rgba(255, 122, 26,0.08),transparent_28%),rgba(0,0,0,0.85)] backdrop-blur-md"
                 onClick={onClose}
             />
 

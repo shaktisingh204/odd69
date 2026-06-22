@@ -110,7 +110,7 @@ function MineIcon({ size = 40 }: { size?: number }) {
       {/* Fuse */}
       <path d="M32 16 Q38 8 44 10 Q50 12 48 6" stroke="#78716c" strokeWidth="2.5" fill="none" strokeLinecap="round" />
       {/* Fuse tip spark */}
-      <circle cx="48" cy="6" r="3" fill="#A78BFA" />
+      <circle cx="48" cy="6" r="3" fill="#ff9a3d" />
       <circle cx="48" cy="6" r="5" fill="#C4B5FD" opacity="0.5" />
       {/* Highlight on bomb */}
       <ellipse cx="26" cy="27" rx="5" ry="4" fill="white" opacity="0.15" transform="rotate(-30,26,27)" />

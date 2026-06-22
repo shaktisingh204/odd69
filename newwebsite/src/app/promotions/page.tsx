@@ -76,7 +76,7 @@ function PromotionsContent() {
 
                     {/* Hero */}
                     <div className="relative overflow-hidden">
-                        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_rgba(139,92,246,0.025),_transparent_60%)]" />
+                        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_rgba(255, 122, 26,0.025),_transparent_60%)]" />
                         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,_rgba(123,92,214,0.08),_transparent_60%)]" />
                         <div className="absolute -right-20 top-10 w-60 h-60 rounded-full bg-brand-gold/5 blur-3xl pointer-events-none" />
 
@@ -131,7 +131,7 @@ function PromotionsContent() {
                                                 ? 'bg-brand-gold text-text-inverse border-brand-gold'
                                                 : 'bg-bg-elevated text-text-muted border-white/[0.04] hover:border-white/[0.1] hover:text-text-secondary'
                                             }`}
-                                            style={activeCategory === cat.id ? { boxShadow: '0 4px 12px -2px rgba(139,92,246,0.05)' } : undefined}>
+                                            style={activeCategory === cat.id ? { boxShadow: '0 4px 12px -2px rgba(255, 122, 26,0.05)' } : undefined}>
                                             <Icon size={13} />
                                             {cat.label}
                                             {count > 0 && (
@@ -237,7 +237,7 @@ function PromotionsContent() {
                             <div>
                                 <div className="mb-4 flex items-center gap-3">
                                     <div className="w-8 h-8 rounded-lg bg-brand-gold/10 border border-brand-gold/20 flex items-center justify-center flex-shrink-0"
-                                        style={{ boxShadow: '0 4px 12px -2px rgba(139,92,246,0.02)' }}>
+                                        style={{ boxShadow: '0 4px 12px -2px rgba(255, 122, 26,0.02)' }}>
                                         <ShieldCheck size={15} className="text-brand-gold" />
                                     </div>
                                     <div>

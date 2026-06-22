@@ -223,7 +223,7 @@ export default function ManualDepositScreen({ isOpen, onClose, onBackToGateway, 
                         ) : (
                             <div className="flex items-center gap-2.5">
                                 <div className="w-9 h-9 rounded-xl flex items-center justify-center"
-                                    style={{ background: 'linear-gradient(135deg,#f97316,#7C3AED)' }}>
+                                    style={{ background: 'linear-gradient(135deg,#f97316,#e85f00)' }}>
                                     <Wallet className="w-4 h-4 text-white" />
                                 </div>
                                 <div>
@@ -236,7 +236,7 @@ export default function ManualDepositScreen({ isOpen, onClose, onBackToGateway, 
                         <div className="flex items-center gap-2">
                             {/* Manual badge */}
                             <span className="text-[10px] font-bold px-2 py-0.5 rounded-full border"
-                                style={{ background: 'rgba(249,115,22,0.12)', borderColor: 'rgba(249,115,22,0.35)', color: '#8B5CF6' }}>
+                                style={{ background: 'rgba(249,115,22,0.12)', borderColor: 'rgba(249,115,22,0.35)', color: '#ff7a1a' }}>
                                 Manual UPI
                             </span>
                             <button onClick={onClose} className="p-2 rounded-xl text-gray-500 hover:text-white hover:bg-white/[0.06] transition-all">
@@ -356,7 +356,7 @@ export default function ManualDepositScreen({ isOpen, onClose, onBackToGateway, 
                                                 <div>
                                                     {config.accountTag && (
                                                         <div className="mb-2 inline-flex max-w-full items-center rounded-full border px-2.5 py-1 text-[10px] font-semibold"
-                                                            style={{ background: 'rgba(249,115,22,0.12)', borderColor: 'rgba(249,115,22,0.35)', color: '#8B5CF6' }}>
+                                                            style={{ background: 'rgba(249,115,22,0.12)', borderColor: 'rgba(249,115,22,0.35)', color: '#ff7a1a' }}>
                                                             <span className="truncate">{config.accountTag}</span>
                                                         </div>
                                                     )}
@@ -389,7 +389,7 @@ export default function ManualDepositScreen({ isOpen, onClose, onBackToGateway, 
                                                     ].map((step, i) => (
                                                         <div key={i} className="flex items-start gap-2">
                                                             <span className="shrink-0 w-4 h-4 rounded-full text-[9px] font-bold flex items-center justify-center mt-0.5"
-                                                                style={{ background: 'rgba(249,115,22,0.2)', color: '#8B5CF6' }}>{i + 1}</span>
+                                                                style={{ background: 'rgba(249,115,22,0.2)', color: '#ff7a1a' }}>{i + 1}</span>
                                                             <span className="text-[10px] text-gray-400 leading-tight">{step}</span>
                                                         </div>
                                                     ))}
@@ -429,7 +429,7 @@ export default function ManualDepositScreen({ isOpen, onClose, onBackToGateway, 
                                             <button key={v} onClick={() => setAmount(v)}
                                                 className="px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all shrink-0 border"
                                                 style={{
-                                                    background: amount === v ? 'linear-gradient(135deg,#f97316,#7C3AED)' : 'rgba(255,255,255,0.04)',
+                                                    background: amount === v ? 'linear-gradient(135deg,#f97316,#e85f00)' : 'rgba(255,255,255,0.04)',
                                                     borderColor: amount === v ? 'transparent' : 'rgba(255,255,255,0.08)',
                                                     color: amount === v ? '#fff' : '#9ca3af',
                                                     boxShadow: amount === v ? '0 0 12px rgba(249,115,22,0.4)' : 'none',

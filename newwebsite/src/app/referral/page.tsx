@@ -53,14 +53,14 @@ function ReferralContent() {
                 </div>
 
                 <div className="container mx-auto px-6 md:px-12 relative z-10 text-center">
-                    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-brand-gold/10 text-[#8B5CF6] text-sm font-bold mb-6 border border-[#8B5CF6]/20">
+                    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-brand-gold/10 text-[#ff7a1a] text-sm font-bold mb-6 border border-[#ff7a1a]/20">
                         <Gift size={16} />
                         <span>Refer & Earn Program</span>
                     </div>
 
                     <h1 className="text-4xl md:text-6xl font-adx-bold text-white mb-6 tracking-tight">
                         Invite Friends,<br />
-                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#8B5CF6] to-[#C4B5FD]">Earn Real Rewards</span>
+                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#ff7a1a] to-[#C4B5FD]">Earn Real Rewards</span>
                     </h1>
 
                     <p className="text-text-muted text-lg md:text-xl max-w-2xl mx-auto mb-10 leading-relaxed">
@@ -94,8 +94,8 @@ function ReferralContent() {
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-                        <div className="bg-bg-elevated p-8 rounded-2xl border border-white/[0.04] hover:border-[#8B5CF6]/30 transition-colors group">
-                            <div className="w-16 h-16 rounded-2xl bg-brand-gold/10 flex items-center justify-center text-[#8B5CF6] mb-6 group-hover:scale-110 transition-transform">
+                        <div className="bg-bg-elevated p-8 rounded-2xl border border-white/[0.04] hover:border-[#ff7a1a]/30 transition-colors group">
+                            <div className="w-16 h-16 rounded-2xl bg-brand-gold/10 flex items-center justify-center text-[#ff7a1a] mb-6 group-hover:scale-110 transition-transform">
                                 <Users size={32} />
                             </div>
                             <h3 className="text-xl font-bold text-white mb-3">1. Invite Friends</h3>
@@ -104,7 +104,7 @@ function ReferralContent() {
                             </p>
                         </div>
 
-                        <div className="bg-bg-elevated p-8 rounded-2xl border border-white/[0.04] hover:border-[#8B5CF6]/30 transition-colors group">
+                        <div className="bg-bg-elevated p-8 rounded-2xl border border-white/[0.04] hover:border-[#ff7a1a]/30 transition-colors group">
                             <div className="w-16 h-16 rounded-2xl bg-brand-gold/10 flex items-center justify-center text-blue-500 mb-6 group-hover:scale-110 transition-transform">
                                 <TrendingUp size={32} />
                             </div>
@@ -114,7 +114,7 @@ function ReferralContent() {
                             </p>
                         </div>
 
-                        <div className="bg-bg-elevated p-8 rounded-2xl border border-white/[0.04] hover:border-[#8B5CF6]/30 transition-colors group">
+                        <div className="bg-bg-elevated p-8 rounded-2xl border border-white/[0.04] hover:border-[#ff7a1a]/30 transition-colors group">
                             <div className="w-16 h-16 rounded-2xl bg-green-500/10 flex items-center justify-center text-green-500 mb-6 group-hover:scale-110 transition-transform">
                                 <Gift size={32} />
                             </div>
@@ -135,14 +135,14 @@ function ReferralContent() {
                             <h2 className="text-3xl md:text-4xl font-adx-bold text-white mb-6">Why Join Our Referral Program?</h2>
                             <div className="space-y-4">
                                 <div className="flex items-start gap-4">
-                                    <ShieldCheck className="text-[#8B5CF6] mt-1 shrink-0" />
+                                    <ShieldCheck className="text-[#ff7a1a] mt-1 shrink-0" />
                                     <div>
                                         <h4 className="font-bold text-white text-lg">Transparent Tracking</h4>
                                         <p className="text-text-muted">Monitor every click, sign-up, and reward in real-time from your dashboard.</p>
                                     </div>
                                 </div>
                                 <div className="flex items-start gap-4">
-                                    <Gift className="text-[#8B5CF6] mt-1 shrink-0" />
+                                    <Gift className="text-[#ff7a1a] mt-1 shrink-0" />
                                     <div>
                                         <h4 className="font-bold text-white text-lg">Unlimited Earning Potential</h4>
                                         <p className="text-text-muted">There is no cap on how many friends you can invite or how much you can earn.</p>

@@ -9,7 +9,7 @@ import api from '@/services/api';
 const MOCK_CARDS: Partial<PromoCardProps>[] = [
     { _id: '1', title: 'WELCOME BONUS', subtitle: '100% UP TO €500', gradient: 'linear-gradient(to left, #4f46e5, transparent)', tag: 'BONUS' },
     { _id: '2', title: 'WEEKLY CASHBACK', subtitle: 'GET 10% BACK', gradient: 'linear-gradient(to left, #be185d, transparent)', tag: 'PROMO' },
-    { _id: '3', title: 'VIP LOUNGE', subtitle: 'EXCLUSIVE ACCESS', gradient: 'linear-gradient(to left, #7C3AED, transparent)', tag: 'VIP' },
+    { _id: '3', title: 'VIP LOUNGE', subtitle: 'EXCLUSIVE ACCESS', gradient: 'linear-gradient(to left, #e85f00, transparent)', tag: 'VIP' },
 ];
 
 export default function PromoCarousel() {

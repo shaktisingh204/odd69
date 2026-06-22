@@ -107,7 +107,7 @@ function StepCard({ step, icon: Icon, title, desc, color }: {
     color: string;
 }) {
     return (
-        <div className="relative flex flex-col items-center text-center p-6 rounded-2xl bg-bg-modal border border-white/[0.04] group hover:border-[#8B5CF6]/30 transition-all duration-300 hover:bg-bg-modal">
+        <div className="relative flex flex-col items-center text-center p-6 rounded-2xl bg-bg-modal border border-white/[0.04] group hover:border-[#ff7a1a]/30 transition-all duration-300 hover:bg-bg-modal">
             <div className={`absolute -top-4 left-1/2 -translate-x-1/2 w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold bg-brand-gold text-white shadow-lg shadow-orange-900/30`}>
                 {step}
             </div>
@@ -133,7 +133,7 @@ function StatCard({ icon: Icon, label, value, sub, iconBg, iconColor, highlight 
 }) {
     return (
         <div className={`rounded-2xl p-6 flex items-center gap-5 border transition-all duration-300 ${highlight
-            ? 'bg-gradient-to-br from-[#8B5CF6]/15 to-[#C4B5FD]/5 border-[#8B5CF6]/25 hover:border-[#8B5CF6]/50'
+            ? 'bg-gradient-to-br from-[#ff7a1a]/15 to-[#C4B5FD]/5 border-[#ff7a1a]/25 hover:border-[#ff7a1a]/50'
             : 'bg-bg-modal border-white/[0.04] hover:border-white/[0.06]'
             }`}>
             <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 ${iconBg} ${iconColor}`}>
@@ -141,7 +141,7 @@ function StatCard({ icon: Icon, label, value, sub, iconBg, iconColor, highlight 
             </div>
             <div className="min-w-0">
                 <p className="text-text-muted text-xs uppercase tracking-wider font-medium mb-1">{label}</p>
-                <p className={`text-2xl font-bold truncate ${highlight ? 'text-[#8B5CF6]' : 'text-white'}`}>{value}</p>
+                <p className={`text-2xl font-bold truncate ${highlight ? 'text-[#ff7a1a]' : 'text-white'}`}>{value}</p>
                 {sub && <p className="text-text-faint text-xs mt-0.5">{sub}</p>}
             </div>
         </div>
@@ -261,9 +261,9 @@ export default function ReferralPage() {
         return (
             <div className="flex flex-col items-center justify-center min-h-[500px] gap-4">
                 <div className="relative w-16 h-16">
-                    <div className="absolute inset-0 rounded-full border-2 border-[#8B5CF6]/20" />
-                    <div className="absolute inset-0 rounded-full border-2 border-[#8B5CF6] border-t-transparent animate-spin" />
-                    <Gift className="absolute inset-0 m-auto text-[#8B5CF6]" size={24} />
+                    <div className="absolute inset-0 rounded-full border-2 border-[#ff7a1a]/20" />
+                    <div className="absolute inset-0 rounded-full border-2 border-[#ff7a1a] border-t-transparent animate-spin" />
+                    <Gift className="absolute inset-0 m-auto text-[#ff7a1a]" size={24} />
                 </div>
                 <p className="text-text-faint text-sm animate-pulse">Loading your referral dashboard...</p>
             </div>
@@ -279,12 +279,12 @@ export default function ReferralPage() {
 
                 <div className="relative z-10 flex flex-col items-center max-w-sm">
                     {/* Icon */}
-                    <div className="w-20 h-20 rounded-2xl bg-brand-gold/10 border border-[#8B5CF6]/20 flex items-center justify-center mb-6">
-                        <Gift size={36} className="text-[#8B5CF6]" />
+                    <div className="w-20 h-20 rounded-2xl bg-brand-gold/10 border border-[#ff7a1a]/20 flex items-center justify-center mb-6">
+                        <Gift size={36} className="text-[#ff7a1a]" />
                     </div>
 
                     {/* Badge */}
-                    <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-brand-gold/10 border border-[#8B5CF6]/20 text-[#8B5CF6] text-xs font-bold uppercase tracking-wider mb-4">
+                    <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-brand-gold/10 border border-[#ff7a1a]/20 text-[#ff7a1a] text-xs font-bold uppercase tracking-wider mb-4">
                         <Zap size={11} />
                         Referral Program
                     </div>
@@ -294,7 +294,7 @@ export default function ReferralPage() {
                         Invite your friends to play on ODD69 and earn real rewards.
                         Get bonuses every time a friend signs up and deposits!
                         <br /><br />
-                        <span className="text-[#8B5CF6] font-medium">Please log in or create an account</span> to access your personal referral link and dashboard.
+                        <span className="text-[#ff7a1a] font-medium">Please log in or create an account</span> to access your personal referral link and dashboard.
                     </p>
 
                     {/* Benefit bullets */}
@@ -306,7 +306,7 @@ export default function ReferralPage() {
                         ].map(({ icon: Icon, text }, i) => (
                             <div key={i} className="flex items-center gap-3 text-sm text-text-secondary">
                                 <div className="w-6 h-6 rounded-full bg-brand-gold/10 flex items-center justify-center shrink-0">
-                                    <Icon size={11} className="text-[#8B5CF6]" />
+                                    <Icon size={11} className="text-[#ff7a1a]" />
                                 </div>
                                 {text}
                             </div>
@@ -337,9 +337,9 @@ export default function ReferralPage() {
         return (
             <div className="flex flex-col items-center justify-center min-h-[500px] gap-4">
                 <div className="relative w-16 h-16">
-                    <div className="absolute inset-0 rounded-full border-2 border-[#8B5CF6]/20" />
-                    <div className="absolute inset-0 rounded-full border-2 border-[#8B5CF6] border-t-transparent animate-spin" />
-                    <Gift className="absolute inset-0 m-auto text-[#8B5CF6]" size={24} />
+                    <div className="absolute inset-0 rounded-full border-2 border-[#ff7a1a]/20" />
+                    <div className="absolute inset-0 rounded-full border-2 border-[#ff7a1a] border-t-transparent animate-spin" />
+                    <Gift className="absolute inset-0 m-auto text-[#ff7a1a]" size={24} />
                 </div>
                 <p className="text-text-faint text-sm animate-pulse">Loading your referral dashboard...</p>
             </div>
@@ -364,7 +364,7 @@ export default function ReferralPage() {
 
                     <div className="relative z-10 p-6 md:p-8">
                         {/* Badge */}
-                        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-brand-gold/10 border border-[#8B5CF6]/20 text-[#8B5CF6] text-xs font-bold uppercase tracking-wider mb-4">
+                        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-brand-gold/10 border border-[#ff7a1a]/20 text-[#ff7a1a] text-xs font-bold uppercase tracking-wider mb-4">
                             <Zap size={12} />
                             <span>Referral Program</span>
                         </div>
@@ -385,8 +385,8 @@ export default function ReferralPage() {
                                     {/* Link display */}
                                     <div className="flex items-center gap-2 mb-3">
                                         <div className="flex-1 min-w-0 flex items-center gap-2 bg-white/[0.04] rounded-lg px-3 py-2.5 border border-white/[0.05]">
-                                            <Link2 size={14} className="text-[#8B5CF6] shrink-0" />
-                                            <span className="text-[#8B5CF6] font-mono text-sm truncate">{referralLink}</span>
+                                            <Link2 size={14} className="text-[#ff7a1a] shrink-0" />
+                                            <span className="text-[#ff7a1a] font-mono text-sm truncate">{referralLink}</span>
                                         </div>
                                         <button
                                             onClick={copyLink}
@@ -493,7 +493,7 @@ export default function ReferralPage() {
                 {/* ─── How It Works ─── */}
                 <div className="bg-bg-deep rounded-2xl border border-white/[0.04] p-6">
                     <h2 className="text-white font-bold text-lg mb-6 flex items-center gap-2">
-                        <TrendingUp size={18} className="text-[#8B5CF6]" />
+                        <TrendingUp size={18} className="text-[#ff7a1a]" />
                         How It Works
                     </h2>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8 pt-6">
@@ -502,7 +502,7 @@ export default function ReferralPage() {
                             icon={Share2}
                             title="Share Your Link"
                             desc="Copy your unique referral link and share it via WhatsApp, social media, or directly with friends."
-                            color="bg-brand-gold/10 text-[#8B5CF6]"
+                            color="bg-brand-gold/10 text-[#ff7a1a]"
                         />
                         <StepCard
                             step="2"
@@ -525,10 +525,10 @@ export default function ReferralPage() {
                 <div className="bg-bg-deep rounded-2xl border border-white/[0.04] overflow-hidden">
                     <div className="flex items-center justify-between px-6 py-4 border-b border-white/[0.04]">
                         <h2 className="text-white font-bold text-lg flex items-center gap-2">
-                            <Users size={18} className="text-[#8B5CF6]" />
+                            <Users size={18} className="text-[#ff7a1a]" />
                             My Referrals
                             {(stats?.totalInvited ?? 0) > 0 && (
-                                <span className="ml-1 px-2 py-0.5 rounded-full bg-brand-gold/15 text-[#8B5CF6] text-xs font-bold">
+                                <span className="ml-1 px-2 py-0.5 rounded-full bg-brand-gold/15 text-[#ff7a1a] text-xs font-bold">
                                     {stats?.totalInvited}
                                 </span>
                             )}
@@ -551,7 +551,7 @@ export default function ReferralPage() {
                                 >
                                     {/* Avatar + Name */}
                                     <div className="col-span-5 flex items-center gap-3">
-                                        <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[#8B5CF6]/30 to-[#8B5CF6]/10 flex items-center justify-center text-[#8B5CF6] font-bold text-sm shrink-0 border border-[#8B5CF6]/20">
+                                        <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[#ff7a1a]/30 to-[#ff7a1a]/10 flex items-center justify-center text-[#ff7a1a] font-bold text-sm shrink-0 border border-[#ff7a1a]/20">
                                             {ref.username?.substring(0, 2).toUpperCase() || '??'}
                                         </div>
                                         <div className="min-w-0">
@@ -592,7 +592,7 @@ export default function ReferralPage() {
                             {stats?.referralCode && (
                                 <button
                                     onClick={copyLink}
-                                    className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-brand-gold/10 text-[#8B5CF6] hover:bg-brand-gold/20 transition-colors text-sm font-medium border border-[#8B5CF6]/20"
+                                    className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-brand-gold/10 text-[#ff7a1a] hover:bg-brand-gold/20 transition-colors text-sm font-medium border border-[#ff7a1a]/20"
                                 >
                                     <Copy size={14} />
                                     Copy Referral Link
@@ -607,7 +607,7 @@ export default function ReferralPage() {
                     <div className="bg-bg-deep rounded-2xl border border-white/[0.04] overflow-hidden">
                         <div className="flex items-center justify-between px-6 py-4 border-b border-white/[0.04]">
                             <h2 className="text-white font-bold text-lg flex items-center gap-2">
-                                <Award size={18} className="text-[#8B5CF6]" />
+                                <Award size={18} className="text-[#ff7a1a]" />
                                 Reward History
                             </h2>
                         </div>
@@ -652,7 +652,7 @@ export default function ReferralPage() {
                 )}
 
                 {/* ─── Benefits CTA ─── */}
-                <div className="relative overflow-hidden rounded-2xl border border-[#8B5CF6]/15 bg-gradient-to-br from-[#100C08] via-[#0F1016] to-[#0C0D12] p-6 md:p-8">
+                <div className="relative overflow-hidden rounded-2xl border border-[#ff7a1a]/15 bg-gradient-to-br from-[#100C08] via-[#0F1016] to-[#0C0D12] p-6 md:p-8">
                     <div className="absolute right-0 bottom-0 opacity-[0.03] pointer-events-none">
                         <Gift size={250} />
                     </div>
@@ -666,7 +666,7 @@ export default function ReferralPage() {
                             ].map(({ icon: Icon, text }, i) => (
                                 <li key={i} className="flex items-start gap-3 text-text-secondary text-sm">
                                     <div className="w-5 h-5 rounded-full bg-brand-gold/15 flex items-center justify-center shrink-0 mt-0.5">
-                                        <Icon size={10} className="text-[#8B5CF6]" />
+                                        <Icon size={10} className="text-[#ff7a1a]" />
                                     </div>
                                     {text}
                                 </li>

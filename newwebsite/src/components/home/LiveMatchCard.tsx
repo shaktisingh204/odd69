@@ -87,7 +87,7 @@ export default function LiveMatchCard({ event }: LiveMatchCardProps) {
                     )}
                 </div>
                 {hasEarlySix && (
-                    <div className="bg-gradient-to-r from-purple-500 to-indigo-500 text-white text-[9px] font-black uppercase px-2 py-1 rounded shadow-[0_0_8px_rgba(139,92,246,0.3)] border border-purple-400/30 whitespace-nowrap">
+                    <div className="bg-gradient-to-r from-purple-500 to-indigo-500 text-white text-[9px] font-black uppercase px-2 py-1 rounded shadow-[0_0_8px_rgba(255, 122, 26,0.3)] border border-purple-400/30 whitespace-nowrap">
                         🎯 Early 6 Refund
                     </div>
                 )}
@@ -114,7 +114,7 @@ export default function LiveMatchCard({ event }: LiveMatchCardProps) {
                 {/* Center VS Indicator */}
                 <div className="flex items-center py-1 w-full relative z-10 md:justify-center justify-start ml-2 md:ml-0">
                     <div className="w-5 h-5 md:w-6 md:h-6 rounded-full bg-bg-elevated border border-white/[0.06] flex items-center justify-center shadow-inner relative z-10">
-                        <span className="w-1.5 h-1.5 bg-brand-gold rounded-full shadow-[0_0_8px_rgba(167,139,250,0.12)]"></span>
+                        <span className="w-1.5 h-1.5 bg-brand-gold rounded-full shadow-[0_0_8px_rgba(255, 154, 61,0.12)]"></span>
                     </div>
                 </div>
 

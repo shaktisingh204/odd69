@@ -274,7 +274,7 @@ function SupportAvatar({ mobile = false }: { mobile?: boolean }) {
       style={{ zIndex: 20 }}
     >
       {/* Glow */}
-      <div className={`pointer-events-none absolute bottom-0 left-1/2 -translate-x-1/2 rounded-full bg-[radial-gradient(circle,rgba(139,92,246,0.45)_0%,rgba(139,92,246,0.10)_55%,transparent_74%)] ${mobile ? "h-[62px] w-[62px]" : "h-[88px] w-[88px]"}`} />
+      <div className={`pointer-events-none absolute bottom-0 left-1/2 -translate-x-1/2 rounded-full bg-[radial-gradient(circle,rgba(255, 122, 26,0.45)_0%,rgba(255, 122, 26,0.10)_55%,transparent_74%)] ${mobile ? "h-[62px] w-[62px]" : "h-[88px] w-[88px]"}`} />
       {/* Head */}
       <div className={`pointer-events-none absolute left-1/2 -translate-x-1/2 rounded-full bg-[linear-gradient(180deg,#f3d7bf_0%,#d6a482_100%)] shadow-[0_8px_20px_rgba(0,0,0,0.26)] ${mobile ? "bottom-[16px] h-[28px] w-[28px]" : "bottom-[20px] h-[40px] w-[40px]"}`} />
       {/* Face */}
@@ -284,7 +284,7 @@ function SupportAvatar({ mobile = false }: { mobile?: boolean }) {
         <span className={`${mobile ? "h-3 w-1.5" : "h-4 w-2"} rounded-full bg-text-inverse`} />
       </div>
       {/* Body — overflow-visible so the button can extend left */}
-      <div className={`absolute bottom-0 left-1/2 -translate-x-1/2 overflow-visible bg-[linear-gradient(180deg,#8B5CF6_0%,#7C3AED_100%)] shadow-[0_16px_36px_rgba(200,136,12,0.35)] ${mobile ? "h-[58px] w-[58px] rounded-t-[22px]" : "h-[78px] w-[82px] rounded-t-[30px]"}`}>
+      <div className={`absolute bottom-0 left-1/2 -translate-x-1/2 overflow-visible bg-[linear-gradient(180deg,#ff7a1a_0%,#e85f00_100%)] shadow-[0_16px_36px_rgba(200,136,12,0.35)] ${mobile ? "h-[58px] w-[58px] rounded-t-[22px]" : "h-[78px] w-[82px] rounded-t-[30px]"}`}>
         <div className={`absolute rounded-full border border-white/16 ${mobile ? "inset-x-2 top-3 h-5" : "inset-x-3 top-4 h-8"}`} />
         {/* Contact support button — anchored to the body, extends left */}
         {!mobile && (
@@ -311,7 +311,7 @@ function SupportCard({ mobile = false }: { mobile?: boolean }) {
     >
       {/* Clipped gradient background */}
       <div className="absolute inset-0 overflow-hidden rounded-[26px]">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_48%_100%,rgba(139,92,246,0.20),transparent_36%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_48%_100%,rgba(255, 122, 26,0.20),transparent_36%)]" />
       </div>
       <div className={`relative z-10 ${mobile ? "pr-[74px]" : "pr-[240px]"}`}>
         <div className={mobile ? "" : "max-w-[255px]"}>

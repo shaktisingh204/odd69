@@ -748,7 +748,7 @@ const WithdrawModal: React.FC<WithdrawModalProps> = ({ onClose }) => {
                                             <div className="h-1.5 bg-white/[0.04] rounded-full overflow-hidden">
                                                 <div
                                                     className="h-full rounded-full"
-                                                    style={{ width: `${wageringPct}%`, background: 'linear-gradient(90deg, #8B5CF6, #f97316)' }}
+                                                    style={{ width: `${wageringPct}%`, background: 'linear-gradient(90deg, #ff7a1a, #f97316)' }}
                                                 />
                                             </div>
                                             <div className="flex justify-between text-[9px] text-white/25">

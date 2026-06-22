@@ -582,7 +582,7 @@ export default function SupportPage() {
 
             {/* ── Hero ── */}
             <div className="relative bg-gradient-to-b from-brand-gold/10 via-[#0F1016] to-[#0C0D12] border-b border-white/[0.04]">
-                <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_0%,rgba(139,92,246,0.025),transparent_60%)]" />
+                <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_0%,rgba(255, 122, 26,0.025),transparent_60%)]" />
                 <div className="relative max-w-3xl mx-auto px-4 pt-10 pb-8 text-center">
                     {/* Back to website — PC only */}
                     <div className="hidden md:flex absolute top-6 left-4">
