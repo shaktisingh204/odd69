@@ -95,15 +95,15 @@ export default function PrivacyPolicyPage() {
         <div className="min-h-[calc(100vh-64px)] bg-bg-odd69-3 text-white pb-24">
 
             {/* Header */}
-            <div className="relative overflow-hidden bg-gradient-to-b from-purple-500/6 via-[#0F1016] to-[#0C0D12] border-b border-white/[0.04]">
-                <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_0%,rgba(168,85,247,0.08),transparent_60%)]" />
+            <div className="relative overflow-hidden bg-gradient-to-b from-orange-500/6 via-[#0F1016] to-[#0C0D12] border-b border-white/[0.04]">
+                <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_0%,rgba(255, 122, 26,0.08),transparent_60%)]" />
                 <div className="relative max-w-3xl mx-auto px-4 pt-10 pb-8 text-center">
                     <div className="hidden md:flex absolute top-6 left-4">
                         <Link href="/" className="flex items-center gap-2 text-text-muted hover:text-white transition-colors text-sm font-medium bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.04] px-4 py-2 rounded-full">
                             <Home size={14} /> Back to Home
                         </Link>
                     </div>
-                    <div className="inline-flex items-center gap-2 bg-purple-500/10 border border-purple-500/20 rounded-full px-4 py-1.5 text-accent-purple text-xs font-black uppercase tracking-widest mb-5">
+                    <div className="inline-flex items-center gap-2 bg-orange-500/10 border border-orange-500/20 rounded-full px-4 py-1.5 text-accent-purple text-xs font-black uppercase tracking-widest mb-5">
                         <Lock size={13} /> Legal
                     </div>
                     <h1 className="text-3xl md:text-4xl font-black text-white tracking-tight mb-3">

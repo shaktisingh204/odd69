@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { useModal } from '@/context/ModalContext';
+import { useWallet } from '@/context/WalletContext';
 import api from '@/services/api';
 import { getCurrencySymbol } from '@/utils/currency';
 import QRCode from 'react-qr-code';
@@ -345,10 +346,12 @@ const getApiErrorMessage = (error: unknown, fallback: string) => {
 export default function DepositModal({ isOpen, onClose }: DepositModalProps) {
     const { user } = useAuth();
     const { openManualDeposit, depositInitialTab, depositAllowFiatTab } = useModal();
+    const { cryptoOnly } = useWallet();
 
     // STRICT: fiat is ONLY for users whose registered country is exactly 'IN'.
     // Do NOT use a fallback of 'IN' — missing/null country means NOT India.
-    const isIndia = user?.country === 'IN';
+    // When cryptoOnly is true, fiat UI is fully suppressed regardless of country.
+    const isIndia = !cryptoOnly && user?.country === 'IN';
     // Dynamic fiat currency symbol
     const fiatSymbol = getCurrencySymbol('USD');
     const currentCountry = countries.find((country) => country.code === user?.country) ?? countries[0];
@@ -2088,7 +2091,7 @@ export default function DepositModal({ isOpen, onClose }: DepositModalProps) {
                             </div>
                         </div>
 
-                        {!isIndia && (
+                        {!cryptoOnly && !isIndia && (
                             <div className="shrink-0 border-b border-brand-gold/20 bg-brand-gold/10 px-4 py-3 text-sm text-text-secondary">
                                 UPI and fiat routes are available for India registrations only. This account stays in crypto mode here.
                             </div>

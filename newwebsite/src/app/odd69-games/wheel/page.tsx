@@ -69,7 +69,7 @@ function arcPath(
 export default function WheelPage() {
   const { refreshWallet } = useWallet();
   const [betInput, setBetInput] = useState("10");
-  const [walletType, setWalletType] = useState<"fiat" | "crypto">("fiat");
+  const [walletType, setWalletType] = useState<"fiat" | "crypto">("crypto");
   const [useBonus, setUseBonus] = useState(false);
   const [risk, setRisk] = useState<Risk>("low");
   const [segments, setSegments] = useState<SegCount>(20);

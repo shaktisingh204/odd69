@@ -21,10 +21,10 @@ const TYPE_CONFIG = {
     CASINO: {
         icon: Gamepad2,
         label: 'Casino',
-        accentColor: 'text-purple-400',
-        badgeBg: 'bg-purple-500/15 text-purple-300 border-purple-500/25',
-        gradientBar: 'from-purple-500 to-violet-500',
-        borderHover: 'hover:border-purple-500/25',
+        accentColor: 'text-orange-400',
+        badgeBg: 'bg-orange-500/15 text-orange-300 border-orange-500/25',
+        gradientBar: 'from-orange-500 to-orange-500',
+        borderHover: 'hover:border-orange-500/25',
         glowShadow: 'hover:shadow-[0_8px_32px_rgba(255, 122, 26,0.1)]',
     },
     SPORTS: {

@@ -23,7 +23,7 @@ const baseMenuItems = [
         label: 'Casino Transactions',
         desc: 'View betting history and game logs',
         color: 'text-accent-purple',
-        bg: 'bg-purple-500/10',
+        bg: 'bg-orange-500/10',
     },
     {
         href: '/fantasy/history',

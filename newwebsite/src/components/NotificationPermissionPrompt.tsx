@@ -56,9 +56,9 @@ const BENEFITS = [
         emoji: '🎁',
         title: 'Exclusive Offers & Bonuses',
         desc: 'Be first to grab limited-time promos, reloads and tournament entries.',
-        color: 'from-purple-500/20 to-purple-500/5',
+        color: 'from-orange-500/20 to-orange-500/5',
         border: 'border-accent-purple/20',
-        dot: 'bg-purple-400',
+        dot: 'bg-orange-400',
     },
 ];
 

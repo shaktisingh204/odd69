@@ -162,7 +162,7 @@ export default function MinesPage() {
   // Control state
   const [betMode, setBetMode] = useState<BetMode>("manual");
   const [betInput, setBetInput] = useState("10");
-  const [walletType, setWalletType] = useState<"fiat" | "crypto">("fiat");
+  const [walletType, setWalletType] = useState<"fiat" | "crypto">("crypto");
   const [mineCount, setMineCount] = useState(4);
   const [useBonus, setUseBonus] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -383,7 +383,7 @@ export default function MinesPage() {
         const username = (data.username as string) || "Player";
         const amount = (data.betAmount as number) || 0;
         if (amount > 0) {
-          toast(`${username} bet ${walletType === "fiat" ? "$" : "$"}${amount.toFixed(0)} on Mines`, {
+          toast(`${username} bet ${"$"}${amount.toFixed(0)} on Mines`, {
             duration: 2000,
             style: { background: "#1a1d24", border: "1px solid rgba(255,255,255,0.08)", color: "#9ca3af", fontSize: 11, padding: "6px 10px" },
           });
@@ -563,7 +563,7 @@ export default function MinesPage() {
                   </div>
                   <div className="flex items-center gap-1.5">
                     <div className="flex-1 relative flex items-center bg-bg-deep-3 border border-white/[0.06] rounded-lg overflow-hidden focus-within:border-green-500/40">
-                      <div className="pl-3 pr-1 text-sm font-bold text-[#9ca3af]">{walletType === "fiat" ? "$" : "$"}</div>
+                      <div className="pl-3 pr-1 text-sm font-bold text-[#9ca3af]">{"$"}</div>
                       <input type="number" value={betInput} disabled={isGameActive || isAutoRunning}
                         onChange={(e) => setBetInput(e.target.value)}
                         className="flex-1 bg-transparent py-2.5 pr-2 text-white text-sm font-bold outline-none min-w-0" />
@@ -656,7 +656,7 @@ export default function MinesPage() {
                     <div>
                       <label className="text-[11px] text-[#9ca3af] block mb-1">Stop on Win (profit ≥)</label>
                       <div className="flex items-center gap-1.5">
-                        <span className="text-[#6b7280] text-xs">{walletType === "fiat" ? "$" : "$"}</span>
+                        <span className="text-[#6b7280] text-xs">{"$"}</span>
                         <input type="number" value={autoStopOnWin || ""}
                           onChange={e => setAutoStopOnWin(parseFloat(e.target.value) || 0)}
                           placeholder="0 = disabled"
@@ -668,7 +668,7 @@ export default function MinesPage() {
                     <div>
                       <label className="text-[11px] text-[#9ca3af] block mb-1">Stop on Loss (loss ≥)</label>
                       <div className="flex items-center gap-1.5">
-                        <span className="text-[#6b7280] text-xs">{walletType === "fiat" ? "$" : "$"}</span>
+                        <span className="text-[#6b7280] text-xs">{"$"}</span>
                         <input type="number" value={autoStopOnLoss || ""}
                           onChange={e => setAutoStopOnLoss(parseFloat(e.target.value) || 0)}
                           placeholder="0 = disabled"
@@ -686,7 +686,7 @@ export default function MinesPage() {
                         <div className="flex justify-between text-xs">
                           <span className="text-[#6b7280]">Net profit</span>
                           <span className={`font-black ${autoProfit >= 0 ? "text-green-400" : "text-danger"}`}>
-                            {autoProfit >= 0 ? "+" : ""}{walletType === "fiat" ? "$" : "$"}{autoProfit.toFixed(2)}
+                            {autoProfit >= 0 ? "+" : ""}{"$"}{autoProfit.toFixed(2)}
                           </span>
                         </div>
                       </div>
@@ -711,7 +711,7 @@ export default function MinesPage() {
                 {/* Balance */}
                 <div className="flex items-center justify-between text-[11px]">
                   <span className="text-[#6b7280]">Balance</span>
-                  <span className="text-white font-black">{walletType === "fiat" ? "$" : "$"}{activeBalance.toFixed(2)}</span>
+                  <span className="text-white font-black">{"$"}{activeBalance.toFixed(2)}</span>
                 </div>
 
                 {/* Live stats while active */}
@@ -727,7 +727,7 @@ export default function MinesPage() {
                     </div>
                     <div className="flex justify-between text-xs">
                       <span className="text-[#6b7280]">Cash out</span>
-                      <span className="text-green-400 font-black">{walletType === "fiat" ? "$" : "$"}{potentialPayout.toFixed(2)}</span>
+                      <span className="text-green-400 font-black">{"$"}{potentialPayout.toFixed(2)}</span>
                     </div>
                   </div>
                 )}
@@ -761,7 +761,7 @@ export default function MinesPage() {
                   <button onClick={handleCashout} disabled={isLoading || gemsRevealed === 0}
                     className="w-full py-4 bg-green-500 hover:bg-green-400 disabled:opacity-40 text-white font-black text-base rounded-xl transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2">
                     {isLoading ? <RotateCcw size={18} className="animate-spin" /> : null}
-                    Cash Out {walletType === "fiat" ? "$" : "$"}{potentialPayout.toFixed(2)}
+                    Cash Out {"$"}{potentialPayout.toFixed(2)}
                   </button>
                 ) : (
                   <button onClick={handleReset}

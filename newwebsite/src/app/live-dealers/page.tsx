@@ -17,7 +17,7 @@ const LIVE_SECTIONS = [
     { title: 'Popular Live',   icon: <PlayCircle size={15} className="text-red-400"      />, category: 'popular',    sectionKey: 'live'      },
     { title: 'Live Roulette',  icon: <PlayCircle size={15} className="text-amber-400"    />, category: 'roulette',   sectionKey: 'roulette'  },
     { title: 'Live Blackjack', icon: <Dice5      size={15} className="text-brand-gold"   />, category: 'blackjack',  sectionKey: 'blackjack' },
-    { title: 'Live Baccarat',  icon: <Coffee     size={15} className="text-violet-400"   />, category: 'baccarat',   sectionKey: 'baccarat'  },
+    { title: 'Live Baccarat',  icon: <Coffee     size={15} className="text-orange-400"   />, category: 'baccarat',   sectionKey: 'baccarat'  },
     { title: 'Game Shows',     icon: <Tv         size={15} className="text-pink-400"     />, category: 'game_shows', sectionKey: 'shows'     },
     { title: 'Live Poker',     icon: <Gamepad2   size={15} className="text-teal-400"     />, category: 'poker',      sectionKey: 'poker'     },
 ];

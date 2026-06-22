@@ -23,13 +23,13 @@ const getRandomUser = () => {
 };
 
 const CARD_COLORS = [
-    'from-purple-700 to-purple-900',
+    'from-orange-700 to-orange-900',
     'from-blue-600 to-blue-900',
     'from-teal-600 to-teal-900',
     'from-red-700 to-red-900',
     'from-orange-600 to-orange-900',
     'from-pink-600 to-pink-900',
-    'from-indigo-600 to-indigo-900',
+    'from-orange-600 to-orange-900',
     'from-green-600 to-green-900',
 ];
 

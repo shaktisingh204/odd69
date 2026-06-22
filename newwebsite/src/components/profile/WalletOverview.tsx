@@ -21,6 +21,7 @@ export default function WalletOverview() {
         activeSymbol,
         refreshWallet,
         loading,
+        cryptoOnly,
     } = useWallet();
 
 
@@ -35,7 +36,7 @@ export default function WalletOverview() {
 
             {/* ── Wallet switcher label ── */}
             <div className="flex items-center justify-between px-1">
-                <h2 className="text-xs font-bold text-white/20 uppercase tracking-wider">My Wallets</h2>
+                <h2 className="text-xs font-bold text-white/20 uppercase tracking-wider">{cryptoOnly ? 'My Wallet' : 'My Wallets'}</h2>
                 <button
                     onClick={refreshWallet}
                     className={`p-1.5 rounded-lg hover:bg-white/[0.05] transition-colors ${loading ? 'animate-spin' : ''}`}
@@ -46,6 +47,7 @@ export default function WalletOverview() {
             </div>
 
             {/* ── Fiat Wallet Card ── */}
+            {!cryptoOnly && (
             <button
                 onClick={() => setSelectedWallet('fiat')}
                 className={`w-full text-left bg-gradient-to-br from-[#1a1d21] to-[#252830] rounded-xl p-5 border relative overflow-hidden transition-all ${selectedWallet === 'fiat'
@@ -120,13 +122,14 @@ export default function WalletOverview() {
                     </div>
                 )}
             </button>
+            )}
 
             {/* ── Crypto Wallet Card ── */}
             <button
                 onClick={() => setSelectedWallet('crypto')}
                 className={`w-full text-left bg-gradient-to-br from-[#1a1221] to-[#1e1528] rounded-xl p-5 border relative overflow-hidden transition-all ${selectedWallet === 'crypto'
-                    ? 'border-purple-500/50 shadow-[0_0_20px_rgba(168,85,247,0.12)]'
-                    : 'border-purple-500/15 hover:border-purple-500/30'
+                    ? 'border-orange-500/50 shadow-[0_0_20px_rgba(255, 122, 26,0.12)]'
+                    : 'border-orange-500/15 hover:border-orange-500/30'
                     }`}
             >
                 <div className="absolute -right-8 -top-8 w-32 h-32 rounded-full bg-accent-purple-alpha blur-2xl" />
@@ -150,7 +153,7 @@ export default function WalletOverview() {
                 <div className="text-3xl font-black text-white mb-0.5">
                     ${formatUSD(cryptoBalance)}
                 </div>
-                <span className="text-xs text-purple-300/40 font-medium">USD · Funded by NOWPayments crypto deposits</span>
+                <span className="text-xs text-orange-300/40 font-medium">USD · Funded by NOWPayments crypto deposits</span>
 
                 {/* Crypto Bonus mini-chip */}
                 {cryptoBonus > 0 && (
@@ -165,7 +168,7 @@ export default function WalletOverview() {
                     <div className="space-y-2 mt-4" onClick={e => e.stopPropagation()}>
                         <button
                             onClick={openDeposit}
-                            className="w-full flex items-center justify-center gap-2 bg-purple-600/20 hover:bg-purple-600/30 text-purple-300 border border-purple-500/30 font-bold py-2.5 rounded-lg transition-colors text-sm"
+                            className="w-full flex items-center justify-center gap-2 bg-orange-600/20 hover:bg-orange-600/30 text-orange-300 border border-orange-500/30 font-bold py-2.5 rounded-lg transition-colors text-sm"
                         >
                             <Bitcoin size={14} />
                             Add Crypto

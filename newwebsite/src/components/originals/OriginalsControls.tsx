@@ -56,9 +56,17 @@ export default function OriginalsControls({
   footer,
   accent = "#22c55e",
 }: OriginalsControlsProps) {
-  const { fiatBalance, cryptoBalance } = useWallet();
+  const { fiatBalance, cryptoBalance, cryptoOnly } = useWallet();
   const balance = walletType === "crypto" ? cryptoBalance : fiatBalance;
   const sym = walletType === "crypto" ? "$" : "$";
+
+  // Crypto-only mode: force the wallet type to crypto and disable any fiat bonus path.
+  React.useEffect(() => {
+    if (cryptoOnly && walletType !== "crypto") {
+      setWalletType("crypto");
+      setUseBonus(false);
+    }
+  }, [cryptoOnly, walletType, setWalletType, setUseBonus]);
 
   const adjust = (mult: number | "half") => {
     if (locked) return;
@@ -103,6 +111,7 @@ export default function OriginalsControls({
             <label className="text-[11px] text-[#6b7280] font-bold uppercase tracking-wider">
               Amount
             </label>
+            {!cryptoOnly && (
             <div className="flex items-center gap-1 text-[11px] text-[#6b7280]">
               <span
                 className={`px-1.5 py-0.5 rounded cursor-pointer hover:text-white transition-colors ${
@@ -127,6 +136,7 @@ export default function OriginalsControls({
                 $
               </span>
             </div>
+            )}
           </div>
           <div className="flex items-center gap-1.5">
             <div className="flex-1 relative flex items-center bg-bg-deep-3 border border-white/[0.06] rounded-lg overflow-hidden focus-within:border-green-500/40">

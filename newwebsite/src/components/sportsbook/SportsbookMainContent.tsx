@@ -38,7 +38,7 @@ const GROUP_GRADIENT: Record<string, string> = {
   'Basketball': 'from-orange-600/80 via-orange-700/60 to-orange-900/80',
   'Tennis': 'from-lime-600/80 via-lime-700/60 to-lime-900/80',
   'American Football': 'from-red-600/80 via-red-800/60 to-red-900/80',
-  'Baseball': 'from-sky-600/80 via-sky-800/60 to-indigo-900/80',
+  'Baseball': 'from-sky-600/80 via-sky-800/60 to-orange-900/80',
   'Ice Hockey': 'from-cyan-600/80 via-cyan-800/60 to-slate-900/80',
   'Mixed Martial Arts': 'from-rose-600/80 via-rose-800/60 to-rose-900/80',
   'Boxing': 'from-rose-600/80 via-rose-800/60 to-rose-900/80',

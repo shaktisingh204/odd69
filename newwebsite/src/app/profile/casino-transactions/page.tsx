@@ -114,7 +114,7 @@ function CasinoTransactionsContent() {
                                                     'bg-white/[0.04] text-white/50'
                                                 }`}>{txn.type}</span>
                                             {txn.wallet_type === 'crypto' && (
-                                                <span className="px-1.5 py-0.5 rounded text-[9px] font-bold bg-purple-500/10 text-accent-purple border border-purple-500/20">USD</span>
+                                                <span className="px-1.5 py-0.5 rounded text-[9px] font-bold bg-orange-500/10 text-accent-purple border border-orange-500/20">USD</span>
                                             )}
                                         </div>
                                     </td>
@@ -146,7 +146,7 @@ function CasinoTransactionsContent() {
                                             'bg-white/[0.04] text-white/50'
                                         }`}>{txn.type}</span>
                                     {txn.wallet_type === 'crypto' && (
-                                        <span className="px-1 py-0.5 rounded text-[8px] font-bold bg-purple-500/10 text-accent-purple border border-purple-500/20 flex-shrink-0">USD</span>
+                                        <span className="px-1 py-0.5 rounded text-[8px] font-bold bg-orange-500/10 text-accent-purple border border-orange-500/20 flex-shrink-0">USD</span>
                                     )}
                                 </div>
                                 <div className="text-[10px] text-white/25 mt-0.5">{txn.provider} · {formatDate(txn.timestamp)}</div>

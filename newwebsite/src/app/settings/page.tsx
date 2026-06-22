@@ -723,7 +723,7 @@ function ChangePassword() {
 
 // ─── Wallet Preference Section ────────────────────────────────────────────────
 function WalletPreference() {
-    const { selectedWallet, setSelectedWallet, fiatBalance, cryptoBalance, fiatCurrency, activeSymbol } = useWallet();
+    const { selectedWallet, setSelectedWallet, fiatBalance, cryptoBalance, fiatCurrency, activeSymbol, cryptoOnly } = useWallet();
     const [saving, setSaving] = useState(false);
 
     const handleSelect = async (wallet: 'fiat' | 'crypto') => {
@@ -746,7 +746,7 @@ function WalletPreference() {
         new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2 }).format(n);
 
     const options = [
-        {
+        ...(cryptoOnly ? [] : [{
             id: 'fiat' as const,
             label: 'Fiat Wallet',
             desc: `${fiatCurrency} · Deposits & withdrawals`,
@@ -756,7 +756,7 @@ function WalletPreference() {
             activeClass: 'border-brand-gold/60 bg-brand-gold/5 shadow-[0_0_16px_rgba(212,175,55,0.1)]',
             dotClass: 'bg-brand-gold shadow-[0_0_6px_rgba(212,175,55,0.6)]',
             labelClass: 'text-brand-gold',
-        },
+        }]),
         {
             id: 'crypto' as const,
             label: 'Crypto Wallet',
@@ -764,9 +764,9 @@ function WalletPreference() {
             emoji: '💎',
             balance: formatUSD(cryptoBalance),
             active: selectedWallet === 'crypto',
-            activeClass: 'border-purple-500/60 bg-purple-500/5 shadow-[0_0_16px_rgba(168,85,247,0.1)]',
-            dotClass: 'bg-purple-500 shadow-[0_0_6px_rgba(168,85,247,0.6)]',
-            labelClass: 'text-accent-purple',
+            activeClass: 'border-[#ff7a1a]/60 bg-[#ff7a1a]/5 shadow-[0_0_16px_rgba(255,122,26,0.12)]',
+            dotClass: 'bg-[#ff7a1a] shadow-[0_0_6px_rgba(255,122,26,0.6)]',
+            labelClass: 'text-[#ff7a1a]',
         },
     ];
 
@@ -887,7 +887,7 @@ export default function SettingsPage() {
                     title="Wallet Preference"
                     subtitle="Set your default active wallet for bets and balance display"
                     iconColor="text-accent-purple"
-                    iconBg="bg-purple-500/10"
+                    iconBg="bg-orange-500/10"
                 >
                     <WalletPreference />
                 </SettingsSection>

@@ -53,7 +53,7 @@ const CATEGORY_META: Record<string, { icon: React.ComponentType<{ size: number }
     payments: { icon: Zap, color: 'text-brand-gold', bg: 'bg-brand-gold/10', label: 'Deposits & Withdrawals' },
     bonuses: { icon: BookOpen, color: 'text-pink-400', bg: 'bg-pink-400/10', label: 'Bonuses & Promotions' },
     sports: { icon: Globe, color: 'text-teal-400', bg: 'bg-teal-400/10', label: 'Sports Betting' },
-    casino: { icon: Zap, color: 'text-purple-400', bg: 'bg-purple-400/10', label: 'Casino' },
+    casino: { icon: Zap, color: 'text-orange-400', bg: 'bg-orange-400/10', label: 'Casino' },
     technical: { icon: FileText, color: 'text-orange-400', bg: 'bg-orange-400/10', label: 'Technical' },
     general: { icon: HelpCircle, color: 'text-slate-400', bg: 'bg-slate-400/10', label: 'General' },
 };

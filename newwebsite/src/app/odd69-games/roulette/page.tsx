@@ -45,7 +45,7 @@ const CHIP_VALUES = [1, 5, 10, 50, 100, 500, 1000];
 const CHIP_COLORS: Record<number, string> = {
   1: "from-emerald-400 to-emerald-600",
   5: "from-cyan-400 to-cyan-600",
-  10: "from-violet-400 to-violet-600",
+  10: "from-orange-400 to-orange-600",
   50: "from-blue-400 to-blue-600",
   100: "from-pink-400 to-pink-600",
   500: "from-amber-400 to-amber-600",
@@ -61,7 +61,7 @@ const TABLE_ROWS: number[][] = [
 export default function RoulettePage() {
   const { fiatBalance, cryptoBalance, refreshWallet } = useWallet();
   const [chipValue, setChipValue] = useState<number>(10);
-  const [walletType, setWalletType] = useState<"fiat" | "crypto">("fiat");
+  const [walletType, setWalletType] = useState<"fiat" | "crypto">("crypto");
   const [useBonus, setUseBonus] = useState(false);
   const [bets, setBets] = useState<ChipBet[]>([]);
   const [history, setHistory] = useState<ChipBet[][]>([]);
@@ -178,7 +178,7 @@ export default function RoulettePage() {
             {/* Wallet */}
             <div className="flex items-center justify-between text-[11px]">
               <div className="flex bg-bg-deep-3 border border-white/[0.06] rounded-lg overflow-hidden">
-                {(["fiat", "crypto"] as const).map((w) => (
+                {(["crypto"] as const).map((w) => (
                   <button
                     key={w}
                     type="button"

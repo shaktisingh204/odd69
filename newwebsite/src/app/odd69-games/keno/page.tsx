@@ -28,7 +28,7 @@ const MAX_PICK = 10;
 export default function KenoPage() {
   const { refreshWallet } = useWallet();
   const [betInput, setBetInput] = useState("10");
-  const [walletType, setWalletType] = useState<"fiat" | "crypto">("fiat");
+  const [walletType, setWalletType] = useState<"fiat" | "crypto">("crypto");
   const [useBonus, setUseBonus] = useState(false);
   const [risk, setRisk] = useState<Risk>("classic");
   const [picks, setPicks] = useState<Set<number>>(new Set());

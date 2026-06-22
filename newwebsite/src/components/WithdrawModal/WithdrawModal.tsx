@@ -61,6 +61,7 @@ const WithdrawModal: React.FC<WithdrawModalProps> = ({ onClose }) => {
         depositWageringRequired,
         depositWageringDone,
         refreshWallet,
+        cryptoOnly,
     } = useWallet();
 
     // Total active fiat bonuses (casino + sports)
@@ -78,13 +79,16 @@ const WithdrawModal: React.FC<WithdrawModalProps> = ({ onClose }) => {
     // Dynamic fiat currency symbol based on user's registered currency
     const fiatSymbol = getCurrencySymbol('USD');
 
-    // Determine available methods
-    const availableMethods: WithdrawMethod[] = isIndia
-        ? ['bank', ...(hasCryptoBalance ? ['crypto' as WithdrawMethod] : [])]
-        : hasCryptoBalance ? ['crypto'] : [];
+    // Determine available methods.
+    // When cryptoOnly: hide all fiat (bank/UPI/INR) methods — show ONLY crypto.
+    const availableMethods: WithdrawMethod[] = cryptoOnly
+        ? ['crypto']
+        : isIndia
+            ? ['bank', ...(hasCryptoBalance ? ['crypto' as WithdrawMethod] : [])]
+            : hasCryptoBalance ? ['crypto'] : [];
 
-    // Always start on first available method
-    const [method, setMethod] = useState<WithdrawMethod>(availableMethods[0] ?? 'bank');
+    // Always start on first available method (crypto when cryptoOnly)
+    const [method, setMethod] = useState<WithdrawMethod>(availableMethods[0] ?? (cryptoOnly ? 'crypto' : 'bank'));
 
     // Shared
     const [amount, setAmount] = useState('');
@@ -108,10 +112,10 @@ const WithdrawModal: React.FC<WithdrawModalProps> = ({ onClose }) => {
     useEffect(() => {
         // Update method if available methods change (e.g. wallet loaded)
         if (!availableMethods.includes(method)) {
-            setMethod(availableMethods[0] ?? 'bank');
+            setMethod(availableMethods[0] ?? (cryptoOnly ? 'crypto' : 'bank'));
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [isIndia, hasCryptoBalance]);
+    }, [isIndia, hasCryptoBalance, cryptoOnly]);
 
     useEffect(() => {
         api.get('/settings/public')
@@ -374,6 +378,8 @@ const WithdrawModal: React.FC<WithdrawModalProps> = ({ onClose }) => {
                             <div className="flex flex-col lg:flex-row lg:gap-0">
                                 {/* ═══ LEFT PANEL — Method + Info (desktop sidebar) ═══ */}
                                 <aside className="lg:w-[280px] lg:shrink-0 lg:border-r border-white/[0.04] p-4 sm:p-6 lg:p-6 space-y-5">
+                                    {/* Method switcher — hidden when cryptoOnly (crypto is the only option) */}
+                                    {!cryptoOnly && (
                                     <div>
                                         <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-2.5 block">Choose Method</label>
 
@@ -418,6 +424,7 @@ const WithdrawModal: React.FC<WithdrawModalProps> = ({ onClose }) => {
                                             </div>
                                         )}
                                     </div>
+                                    )}
 
                                     {/* Balance card (mobile) */}
                                     {!isCrypto && user && (

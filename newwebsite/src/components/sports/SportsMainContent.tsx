@@ -95,7 +95,7 @@ interface SrEvent {
 // ─── Sport meta ───────────────────────────────────────────────────────────────
 const SPORT_META: Record<string, { emoji: string; label: string; color: string; badgeClass: string; ringClass: string }> = {
   'sr:sport:1':   { emoji: '⚽', label: 'Soccer',       color: '#10b981', badgeClass: 'from-emerald-700 to-emerald-500 text-white',  ringClass: 'from-emerald-600 via-emerald-700 to-emerald-900' },
-  'sr:sport:21':  { emoji: '🏏', label: 'Cricket',      color: '#ff7a1a', badgeClass: 'from-indigo-700 to-indigo-500 text-white',    ringClass: 'from-indigo-600 via-indigo-700 to-indigo-900' },
+  'sr:sport:21':  { emoji: '🏏', label: 'Cricket',      color: '#ff7a1a', badgeClass: 'from-orange-700 to-orange-500 text-white',    ringClass: 'from-orange-600 via-orange-700 to-orange-900' },
   'sr:sport:2':   { emoji: '🏀', label: 'Basketball',   color: '#f97316', badgeClass: 'from-orange-700 to-orange-500 text-white',    ringClass: 'from-orange-600 via-orange-800 to-orange-900' },
   'sr:sport:5':   { emoji: '🎾', label: 'Tennis',       color: '#84cc16', badgeClass: 'from-lime-700 to-lime-500 text-white',        ringClass: 'from-lime-600 via-lime-700 to-lime-900' },
   'sr:sport:16':  { emoji: '🏈', label: 'Am. Football', color: '#ef4444', badgeClass: 'from-red-700 to-red-500 text-white',          ringClass: 'from-red-600 via-red-800 to-red-900' },
@@ -104,7 +104,7 @@ const SPORT_META: Record<string, { emoji: string; label: string; color: string; 
   'sr:sport:117': { emoji: '🥊', label: 'MMA',          color: '#f43f5e', badgeClass: 'from-rose-700 to-rose-500 text-white',        ringClass: 'from-rose-600 via-rose-800 to-rose-900' },
   'sr:sport:12':  { emoji: '🏉', label: 'Rugby',        color: '#ff7a1a', badgeClass: 'from-amber-700 to-amber-500 text-white',      ringClass: 'from-amber-600 via-amber-800 to-amber-900' },
   'sr:sport:20':  { emoji: '🏓', label: 'Table Tennis', color: '#22c55e', badgeClass: 'from-green-700 to-green-500 text-white',      ringClass: 'from-green-600 via-green-800 to-green-900' },
-  'sr:sport:31':  { emoji: '🏸', label: 'Badminton',    color: '#a855f7', badgeClass: 'from-purple-700 to-purple-500 text-white',    ringClass: 'from-purple-600 via-purple-800 to-purple-900' },
+  'sr:sport:31':  { emoji: '🏸', label: 'Badminton',    color: '#a855f7', badgeClass: 'from-orange-700 to-orange-500 text-white',    ringClass: 'from-orange-600 via-orange-800 to-orange-900' },
   'sr:sport:23':  { emoji: '🏐', label: 'Volleyball',   color: '#3b82f6', badgeClass: 'from-blue-700 to-blue-500 text-white',        ringClass: 'from-blue-600 via-blue-800 to-blue-900' },
   'sr:sport:19':  { emoji: '🎱', label: 'Snooker',      color: '#065f46', badgeClass: 'from-emerald-900 to-emerald-700 text-white',  ringClass: 'from-emerald-900 via-emerald-800 to-green-900' },
   'sr:sport:22':  { emoji: '🎯', label: 'Darts',        color: '#dc2626', badgeClass: 'from-red-800 to-red-600 text-white',          ringClass: 'from-red-800 via-red-700 to-red-900' },

@@ -96,6 +96,7 @@ export default function Header() {
         sportsBonus,
         cryptoBonus,
         activeBalance,
+        cryptoOnly,
     } = useWallet();
 
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -205,8 +206,8 @@ export default function Header() {
             badge:   'bg-brand-gold text-text-inverse',
         },
         purple: {
-            active:  'border-accent-purple/70 shadow-[0_0_10px_rgba(168,85,247,0.15)]',
-            dot:     'bg-accent-purple shadow-[0_0_6px_rgba(168,85,247,0.6)]',
+            active:  'border-accent-purple/70 shadow-[0_0_10px_rgba(255, 122, 26,0.15)]',
+            dot:     'bg-accent-purple shadow-[0_0_6px_rgba(255, 122, 26,0.6)]',
             hover:   'hover:border-accent-purple/30',
             bg:      'bg-accent-purple-alpha',
             badge:   'bg-accent-purple text-text-white',
@@ -230,8 +231,8 @@ export default function Header() {
     const allWallets = [...fiatWallets, ...cryptoWallets];
     const activeMeta = allWallets.find(w => w.id === selectedSubWallet);
     const pillLabel = activeMeta?.label ?? 'Wallet';
-    const pillBorder = selectedWallet === 'crypto' ? 'border-purple-500/40' : 'border-divider';
-    const pillText   = selectedWallet === 'crypto' ? 'text-purple-300' : 'text-text-primary';
+    const pillBorder = selectedWallet === 'crypto' ? 'border-orange-500/40' : 'border-divider';
+    const pillText   = selectedWallet === 'crypto' ? 'text-orange-300' : 'text-text-primary';
 
     // ──────────────────────────────────────────────────────────────────────────
 
@@ -371,7 +372,8 @@ export default function Header() {
                                                     Select Active Wallet
                                                 </div>
 
-                                                {/* ─ FIAT GROUP ─ */}
+                                                {/* ─ FIAT GROUP ─ (hidden when crypto-only) */}
+                                                {!cryptoOnly && (
                                                 <div className="mb-2">
                                                     <div className="flex items-center gap-1.5 mb-1.5">
                                                         <span className="text-[9px] font-bold uppercase tracking-widest text-brand-gold/80">🏦 Fiat Wallet</span>
@@ -408,13 +410,17 @@ export default function Header() {
                                                         })}
                                                     </div>
                                                 </div>
+                                                )}
 
                                                 {/* ─ CRYPTO GROUP ─ */}
                                                 <div>
+                                                    {/* Group header is redundant when crypto is the only wallet type */}
+                                                    {!cryptoOnly && (
                                                     <div className="flex items-center gap-1.5 mb-1.5">
                                                         <span className="text-[9px] font-bold uppercase tracking-widest text-accent-purple/80">💎 Crypto Wallet</span>
-                                                        <div className="flex-1 h-px bg-purple-500/20" />
+                                                        <div className="flex-1 h-px bg-orange-500/20" />
                                                     </div>
+                                                    )}
                                                     <div className="flex flex-col gap-1">
                                                         {cryptoWallets.map(w => {
                                                             const active = selectedSubWallet === w.id;
@@ -424,7 +430,7 @@ export default function Header() {
                                                                     key={w.id}
                                                                     onClick={() => { setSelectedSubWallet(w.id); setIsDropdownOpen(false); }}
                                                                     className={`w-full ${c.bg} rounded-lg px-3 py-2 flex justify-between items-center transition-all border ${
-                                                                        active ? c.active : `border-purple-500/10 ${c.hover}`
+                                                                        active ? c.active : `border-orange-500/10 ${c.hover}`
                                                                     }`}
                                                                 >
                                                                     <div className="text-left">

@@ -11,7 +11,7 @@ const BANNERS = [
         subtitle: "Stay Untamed",
         cta: "JOIN NOW",
         image: "/banner-bg-1.jpg", // Placeholder, we'll use a gradient for now
-        gradient: "from-purple-900 to-indigo-900",
+        gradient: "from-orange-900 to-orange-900",
         accent: "text-brand-gold"
     },
     {

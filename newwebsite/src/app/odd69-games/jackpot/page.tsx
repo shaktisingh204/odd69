@@ -20,7 +20,7 @@ const TIERS: { tier: JackpotResult["tier"]; mult: number; color: string }[] = [
   { tier: "BUST", mult: 0, color: "bg-slate-700 text-slate-300 border border-slate-600" },
   { tier: "MINI", mult: 1.4, color: "bg-emerald-500/20 text-emerald-200 border border-emerald-400/40" },
   { tier: "SMALL", mult: 2.8, color: "bg-cyan-500/20 text-cyan-200 border border-cyan-400/40" },
-  { tier: "BIG", mult: 8, color: "bg-violet-500/20 text-violet-200 border border-violet-400/40" },
+  { tier: "BIG", mult: 8, color: "bg-orange-500/20 text-orange-200 border border-orange-400/40" },
   { tier: "MEGA", mult: 28, color: "bg-pink-500/20 text-pink-200 border border-pink-400/40" },
   { tier: "GRAND", mult: 180, color: "bg-yellow-500/20 text-yellow-200 border border-yellow-400/40" },
 ];
@@ -28,7 +28,7 @@ const TIERS: { tier: JackpotResult["tier"]; mult: number; color: string }[] = [
 export default function JackpotPage() {
   const { refreshWallet } = useWallet();
   const [betInput, setBetInput] = useState("10");
-  const [walletType, setWalletType] = useState<"fiat" | "crypto">("fiat");
+  const [walletType, setWalletType] = useState<"fiat" | "crypto">("crypto");
   const [useBonus, setUseBonus] = useState(false);
   const [busy, setBusy] = useState(false);
   const [result, setResult] = useState<JackpotResult | null>(null);

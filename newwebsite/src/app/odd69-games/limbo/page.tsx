@@ -500,7 +500,7 @@ export default function LimboPage() {
                     <div className="flex items-center justify-between gap-2">
                       <div className="text-[10px] text-zinc-500 font-bold uppercase tracking-wider">Amount</div>
                       <div className="flex items-center gap-1 rounded-full border border-white/[0.06] bg-white/[0.04] p-0.5">
-                        {(["fiat", "crypto"] as const).map((type) => (
+                        {(["crypto"] as const).map((type) => (
                           <button
                             key={type}
                             onClick={() => handleWalletTypeChange(type)}
@@ -511,7 +511,7 @@ export default function LimboPage() {
                               background: walletType === type ? "rgba(46,204,113,0.18)" : "transparent",
                             }}
                           >
-                            {type === "fiat" ? "$" : "$"}
+                            {"$"}
                           </button>
                         ))}
                       </div>

@@ -35,8 +35,8 @@ const SECTIONS = [
     {
         icon: BarChart2,
         color: 'text-accent-purple',
-        bg: 'bg-purple-400/10',
-        border: 'border-purple-400/20',
+        bg: 'bg-orange-400/10',
+        border: 'border-orange-400/20',
         title: 'Return to Player (RTP)',
         body: [
             'Each game on ODD69 has a published Return to Player (RTP) percentage. This indicates the theoretical average payout over a statistically significant number of rounds.',

@@ -608,11 +608,11 @@ export default function SRMatchDetailPage() {
 
                             {/* Live glow layer */}
                             {isLive && <div className="absolute inset-0 bg-success-primary/5 pointer-events-none" />}
-                            {isVirtual && <div className="absolute inset-0 bg-violet-500/[0.03] pointer-events-none" />}
+                            {isVirtual && <div className="absolute inset-0 bg-orange-500/[0.03] pointer-events-none" />}
 
                             {/* Top stripe */}
                             {isLive && <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-success-primary/70 to-transparent" />}
-                            {isVirtual && <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-violet-500/60 to-transparent" />}
+                            {isVirtual && <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-orange-500/60 to-transparent" />}
 
                             {/* Breadcrumb bar */}
                             <div className="flex items-center justify-between px-4 py-3 border-b border-white/[0.05] relative z-10">

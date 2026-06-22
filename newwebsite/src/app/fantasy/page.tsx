@@ -221,7 +221,7 @@ function MatchCard({ match }: { match: FantasyMatch }) {
         </span>
         <div className="flex items-center gap-1.5 shrink-0">
           {match.isManaged && isUpcoming && (
-            <span className="flex items-center gap-1 text-[9px] font-extrabold text-indigo-700 bg-indigo-50 border border-indigo-200 px-2 py-0.5 rounded-md uppercase tracking-wide">
+            <span className="flex items-center gap-1 text-[9px] font-extrabold text-orange-700 bg-orange-50 border border-orange-200 px-2 py-0.5 rounded-md uppercase tracking-wide">
               <ShieldCheck size={8} />
               Pre-Squad
             </span>

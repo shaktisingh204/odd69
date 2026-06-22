@@ -30,7 +30,7 @@ const METHOD_STYLES: Record<Method, string> = {
     POST: 'bg-sky-500/15 text-sky-400 border-sky-500/30',
     PATCH: 'bg-amber-500/15 text-amber-400 border-amber-500/30',
     DELETE: 'bg-red-500/15 text-red-400 border-red-500/30',
-    WS: 'bg-purple-500/15 text-purple-400 border-purple-500/30',
+    WS: 'bg-orange-500/15 text-orange-400 border-orange-500/30',
 };
 
 const SECTIONS: Section[] = [
@@ -375,7 +375,7 @@ export default function ApiDocsPage() {
                                 <div key={e.event} className="flex flex-col gap-1 px-4 py-3 border-b border-white/[0.04] last:border-b-0">
                                     <div className="flex flex-wrap items-center gap-2.5">
                                         <MethodBadge method="WS" />
-                                        <code className="text-[13px] font-semibold text-purple-300">{e.event}</code>
+                                        <code className="text-[13px] font-semibold text-orange-300">{e.event}</code>
                                         <code className="text-[11.5px] text-gray-500">{e.payload}</code>
                                     </div>
                                     <p className="text-[13px] text-gray-400 pl-[70px] max-md:pl-0">{e.desc}</p>
@@ -389,7 +389,7 @@ export default function ApiDocsPage() {
                                 <div key={e.event} className="flex flex-col gap-1 px-4 py-3 border-b border-white/[0.04] last:border-b-0">
                                     <div className="flex flex-wrap items-center gap-2.5">
                                         <MethodBadge method="WS" />
-                                        <code className="text-[13px] font-semibold text-purple-300">{e.event}</code>
+                                        <code className="text-[13px] font-semibold text-orange-300">{e.event}</code>
                                     </div>
                                     <p className="text-[13px] text-gray-400 pl-[70px] max-md:pl-0">{e.desc}</p>
                                     <p className="text-[12px] text-gray-500 pl-[70px] max-md:pl-0"><code className="text-emerald-300/70">{e.payload}</code></p>

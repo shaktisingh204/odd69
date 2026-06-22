@@ -151,7 +151,7 @@ export default function ForgotPasswordPage() {
                                 type="button"
                                 onClick={() => { setMode(m); setPhoneError(""); setEmailError(""); }}
                                 className={`flex-1 flex items-center justify-center gap-2 py-2.5 text-sm font-semibold rounded-lg transition-all ${mode === m
-                                    ? "bg-indigo-600 text-white shadow-sm"
+                                    ? "bg-orange-600 text-white shadow-sm"
                                     : "text-text-muted hover:text-text-primary"
                                     }`}
                             >
@@ -207,7 +207,7 @@ export default function ForgotPasswordPage() {
                                 <div className="flex items-center gap-2 mb-5">
                                     {["enter_phone", "verify_otp", "new_password"].map((s, i) => (
                                         <React.Fragment key={s}>
-                                            <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold border-2 transition-all ${phoneStep === s ? "border-indigo-500 bg-indigo-600 text-white" : ["verify_otp", "new_password", "done"].indexOf(phoneStep) > i ? "border-green-500 bg-green-500/20 text-green-400" : "border-divider text-text-muted"}`}>
+                                            <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold border-2 transition-all ${phoneStep === s ? "border-orange-500 bg-orange-600 text-white" : ["verify_otp", "new_password", "done"].indexOf(phoneStep) > i ? "border-green-500 bg-green-500/20 text-green-400" : "border-divider text-text-muted"}`}>
                                                 {["verify_otp", "new_password", "done"].indexOf(phoneStep) > i ? "✓" : i + 1}
                                             </div>
                                             {i < 2 && <div className={`flex-1 h-0.5 ${["verify_otp", "new_password", "done"].indexOf(phoneStep) > i ? "bg-green-500" : "bg-divider"}`} />}
@@ -234,7 +234,7 @@ export default function ForgotPasswordPage() {
                                         </div>
                                         {phoneError && <p className="text-danger text-xs mt-1.5 ml-1 flex items-center gap-1"><AlertCircle size={11} />{phoneError}</p>}
                                     </div>
-                                    <button type="submit" disabled={phoneLoading} className="w-full bg-indigo-600 hover:bg-indigo-700 text-white h-[52px] rounded-xl font-extrabold text-base uppercase tracking-wide transition-all hover:-translate-y-0.5 shadow-lg disabled:opacity-50 flex items-center justify-center gap-2">
+                                    <button type="submit" disabled={phoneLoading} className="w-full bg-orange-600 hover:bg-orange-700 text-white h-[52px] rounded-xl font-extrabold text-base uppercase tracking-wide transition-all hover:-translate-y-0.5 shadow-lg disabled:opacity-50 flex items-center justify-center gap-2">
                                         {phoneLoading ? <><Loader2 size={18} className="animate-spin" />Sending OTP...</> : "Send OTP"}
                                     </button>
                                 </form>
@@ -257,12 +257,12 @@ export default function ForgotPasswordPage() {
                                                 placeholder="6-digit code"
                                                 value={otp}
                                                 onChange={(e) => { setOtp(e.target.value.replace(/\D/g, "").slice(0, 6)); setPhoneError(""); }}
-                                                className={`w-full h-[52px] bg-bg-elevated border rounded-xl pl-11 pr-4 text-text-primary text-[20px] font-bold tracking-[0.4em] outline-none transition-all focus:ring-[1.5px] placeholder:text-text-muted placeholder:text-base placeholder:tracking-normal ${phoneError ? "border-red-500 focus:ring-red-500/30" : "border-divider focus:border-indigo-500 focus:ring-indigo-500/40"}`}
+                                                className={`w-full h-[52px] bg-bg-elevated border rounded-xl pl-11 pr-4 text-text-primary text-[20px] font-bold tracking-[0.4em] outline-none transition-all focus:ring-[1.5px] placeholder:text-text-muted placeholder:text-base placeholder:tracking-normal ${phoneError ? "border-red-500 focus:ring-red-500/30" : "border-divider focus:border-orange-500 focus:ring-orange-500/40"}`}
                                             />
                                         </div>
                                         {phoneError && <p className="text-danger text-xs mt-1.5 ml-1 flex items-center gap-1"><AlertCircle size={11} />{phoneError}</p>}
                                     </div>
-                                    <button type="submit" disabled={phoneLoading} className="w-full bg-indigo-600 hover:bg-indigo-700 text-white h-[52px] rounded-xl font-extrabold text-base uppercase tracking-wide transition-all hover:-translate-y-0.5 shadow-lg disabled:opacity-50 flex items-center justify-center gap-2">
+                                    <button type="submit" disabled={phoneLoading} className="w-full bg-orange-600 hover:bg-orange-700 text-white h-[52px] rounded-xl font-extrabold text-base uppercase tracking-wide transition-all hover:-translate-y-0.5 shadow-lg disabled:opacity-50 flex items-center justify-center gap-2">
                                         {phoneLoading ? <><Loader2 size={18} className="animate-spin" />Verifying...</> : "Verify OTP"}
                                     </button>
                                     <button type="button" onClick={() => setPhoneStep("enter_phone")} className="text-text-muted text-sm hover:text-brand-gold transition-colors text-center">
@@ -283,7 +283,7 @@ export default function ForgotPasswordPage() {
                                                 placeholder="Min. 6 characters"
                                                 value={newPass}
                                                 onChange={(e) => { setNewPass(e.target.value); setPhoneError(""); }}
-                                                className={`w-full h-[52px] bg-bg-elevated border rounded-xl pl-11 pr-12 text-text-primary text-[15px] font-medium outline-none transition-all focus:ring-[1.5px] placeholder:text-text-muted ${phoneError ? "border-red-500 focus:ring-red-500/30" : "border-divider focus:border-indigo-500 focus:ring-indigo-500/40"}`}
+                                                className={`w-full h-[52px] bg-bg-elevated border rounded-xl pl-11 pr-12 text-text-primary text-[15px] font-medium outline-none transition-all focus:ring-[1.5px] placeholder:text-text-muted ${phoneError ? "border-red-500 focus:ring-red-500/30" : "border-divider focus:border-orange-500 focus:ring-orange-500/40"}`}
                                             />
                                             <button type="button" onClick={() => setShowPass(!showPass)} className="absolute inset-y-0 right-4 flex items-center text-text-muted hover:text-text-primary">
                                                 {showPass ? <EyeOff size={18} /> : <Eye size={18} />}
@@ -299,12 +299,12 @@ export default function ForgotPasswordPage() {
                                                 placeholder="Repeat new password"
                                                 value={confirmPass}
                                                 onChange={(e) => { setConfirmPass(e.target.value); setPhoneError(""); }}
-                                                className={`w-full h-[52px] bg-bg-elevated border rounded-xl pl-11 pr-4 text-text-primary text-[15px] font-medium outline-none transition-all focus:ring-[1.5px] placeholder:text-text-muted ${phoneError ? "border-red-500 focus:ring-red-500/30" : "border-divider focus:border-indigo-500 focus:ring-indigo-500/40"}`}
+                                                className={`w-full h-[52px] bg-bg-elevated border rounded-xl pl-11 pr-4 text-text-primary text-[15px] font-medium outline-none transition-all focus:ring-[1.5px] placeholder:text-text-muted ${phoneError ? "border-red-500 focus:ring-red-500/30" : "border-divider focus:border-orange-500 focus:ring-orange-500/40"}`}
                                             />
                                         </div>
                                         {phoneError && <p className="text-danger text-xs mt-1.5 ml-1 flex items-center gap-1"><AlertCircle size={11} />{phoneError}</p>}
                                     </div>
-                                    <button type="submit" disabled={phoneLoading} className="w-full bg-indigo-600 hover:bg-indigo-700 text-white h-[52px] rounded-xl font-extrabold text-base uppercase tracking-wide transition-all hover:-translate-y-0.5 shadow-lg disabled:opacity-50 flex items-center justify-center gap-2">
+                                    <button type="submit" disabled={phoneLoading} className="w-full bg-orange-600 hover:bg-orange-700 text-white h-[52px] rounded-xl font-extrabold text-base uppercase tracking-wide transition-all hover:-translate-y-0.5 shadow-lg disabled:opacity-50 flex items-center justify-center gap-2">
                                         {phoneLoading ? <><Loader2 size={18} className="animate-spin" />Resetting...</> : "Reset Password"}
                                     </button>
                                 </form>

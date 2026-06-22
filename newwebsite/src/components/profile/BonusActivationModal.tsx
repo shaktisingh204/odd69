@@ -287,9 +287,9 @@ export default function BonusActivationModal({ isOpen, onClose }: Props) {
                                     label="Casino Bonus"
                                     icon={Gamepad2}
                                     iconColor="text-accent-purple"
-                                    bgColor="bg-purple-500/8"
+                                    bgColor="bg-orange-500/8"
                                     borderColor="border-white/[0.06]"
-                                    activeBorderColor="border-purple-500/50"
+                                    activeBorderColor="border-orange-500/50"
                                     bonusObj={activeCasinoBonus}
                                     wageringDone={activeCasinoBonus.wageringDone ?? 0}
                                     wageringRequired={activeCasinoBonus.wageringRequired ?? 0}

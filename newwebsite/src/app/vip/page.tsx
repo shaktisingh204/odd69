@@ -20,7 +20,7 @@ const TIER_ICONS: Record<string, React.ElementType> = {
 const TIER_META: Record<string, { name: string; color: string; glow: string; bgFrom: string; bgTo: string; borderColor: string; iconBg: string }> = {
     SILVER:   { name: 'Silver',   color: '#94A3B8', glow: 'shadow-slate-400/20',   bgFrom: 'from-slate-500/8',   bgTo: 'to-slate-600/3',   borderColor: 'border-slate-400/15', iconBg: 'bg-gradient-to-br from-slate-300/20 to-slate-500/10' },
     GOLD:     { name: 'Gold',     color: '#ff7a1a', glow: 'shadow-amber-400/25',   bgFrom: 'from-amber-500/8',   bgTo: 'to-amber-600/3',   borderColor: 'border-amber-400/15', iconBg: 'bg-gradient-to-br from-amber-300/20 to-amber-500/10' },
-    PLATINUM: { name: 'Platinum', color: '#ff7a1a', glow: 'shadow-purple-400/25',  bgFrom: 'from-purple-500/8',  bgTo: 'to-purple-600/3',  borderColor: 'border-purple-400/15', iconBg: 'bg-gradient-to-br from-purple-300/20 to-purple-500/10' },
+    PLATINUM: { name: 'Platinum', color: '#ff7a1a', glow: 'shadow-orange-400/25',  bgFrom: 'from-orange-500/8',  bgTo: 'to-orange-600/3',  borderColor: 'border-orange-400/15', iconBg: 'bg-gradient-to-br from-orange-300/20 to-orange-500/10' },
     DIAMOND:  { name: 'Diamond',  color: '#3B82F6', glow: 'shadow-blue-400/30',    bgFrom: 'from-blue-500/8',    bgTo: 'to-blue-600/3',    borderColor: 'border-blue-400/15', iconBg: 'bg-gradient-to-br from-blue-300/20 to-blue-500/10' },
 };
 
@@ -28,7 +28,7 @@ const TIER_META: Record<string, { name: string; color: string; glow: string; bgF
 const VIP_PERKS = [
     { icon: Zap, color: 'from-yellow-500/20 to-orange-500/10', iconColor: 'text-yellow-400', title: 'Instant Lossback', description: 'Earn rewards back instantly as you play — no waiting, no conditions.' },
     { icon: RotateCcw, color: 'from-blue-500/20 to-blue-600/10', iconColor: 'text-brand-gold', title: 'Reload Bonuses', description: 'Receive rewards every day — the more you play, the higher you climb.' },
-    { icon: Gamepad2, color: 'from-purple-500/20 to-purple-600/10', iconColor: 'text-accent-purple', title: 'Gameplay Bonuses', description: 'Play across different game types to unlock richer, exclusive rewards.' },
+    { icon: Gamepad2, color: 'from-orange-500/20 to-orange-600/10', iconColor: 'text-accent-purple', title: 'Gameplay Bonuses', description: 'Play across different game types to unlock richer, exclusive rewards.' },
     { icon: Trophy, color: 'from-amber-500/20 to-amber-600/10', iconColor: 'text-warning-bright', title: 'Top Player Bonuses', description: 'Play at the top to unlock exclusive high-roller rewards and recognition.' },
     { icon: Wallet, color: 'from-success-primary/20 to-success-primary/10', iconColor: 'text-success-bright', title: 'Fee-Free D & W', description: 'All deposits and withdrawals are completely fee-free — fiat and crypto.' },
     { icon: Star, color: 'from-pink-500/20 to-pink-600/10', iconColor: 'text-pink-400', title: 'IRL VIP Events & Rewards', description: 'Exclusive real-world VIP experiences — events, gifts, and beyond.' },
@@ -71,7 +71,7 @@ function StatusBadge({ status }: { status: string }) {
         UNDER_REVIEW: { icon: AlertCircle, label: 'Under Review', color: 'text-brand-gold', bg: 'bg-brand-gold/10 border-brand-gold/20' },
         APPROVED: { icon: BadgeCheck, label: 'VIP Approved!', color: 'text-success-bright', bg: 'bg-success-alpha-10 border-success-primary/20' },
         REJECTED: { icon: XCircle, label: 'Application Declined', color: 'text-danger', bg: 'bg-danger-alpha-10 border-danger/20' },
-        TRANSFER_REQUESTED: { icon: ArrowRight, label: 'Transfer Requested', color: 'text-accent-purple', bg: 'bg-purple-500/10 border-purple-500/20' },
+        TRANSFER_REQUESTED: { icon: ArrowRight, label: 'Transfer Requested', color: 'text-accent-purple', bg: 'bg-orange-500/10 border-orange-500/20' },
     };
     const c = config[status] || config['PENDING'];
     const Icon = c.icon;
@@ -150,7 +150,7 @@ function VipDashboard({ vipStatus }: { vipStatus: VipStatus }) {
                             </span>
                         )}
                         {tier.dedicatedHost && (
-                            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-purple-500/10 border border-purple-500/20 text-purple-400 backdrop-blur-md">
+                            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-orange-500/10 border border-orange-500/20 text-orange-400 backdrop-blur-md">
                                 <Headphones size={12} /> Dedicated Host
                             </span>
                         )}
@@ -494,7 +494,7 @@ function VIPContent() {
                         <div className="absolute -right-20 top-10 w-80 h-80 rounded-full bg-brand-gold/5 blur-3xl pointer-events-none" />
                         {/* 3D floating orbs */}
                         <div className="absolute left-1/4 top-1/3 w-3 h-3 rounded-full bg-brand-gold/20 blur-sm animate-pulse pointer-events-none" />
-                        <div className="absolute right-1/3 bottom-1/4 w-2 h-2 rounded-full bg-purple-400/20 blur-sm animate-pulse pointer-events-none" style={{ animationDelay: '1s' }} />
+                        <div className="absolute right-1/3 bottom-1/4 w-2 h-2 rounded-full bg-orange-400/20 blur-sm animate-pulse pointer-events-none" style={{ animationDelay: '1s' }} />
 
                         <div className="relative px-4 md:px-8 lg:px-12 pt-10 pb-14 md:pt-16 md:pb-20">
                           <div className="max-w-6xl mx-auto">

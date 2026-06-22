@@ -43,7 +43,7 @@ const SignupDepositPrompt: React.FC = () => {
                     >
                         {/* Glow effects */}
                         <div className="absolute -top-20 -right-20 w-60 h-60 bg-[#ff7a1a]/20 rounded-full blur-[80px] pointer-events-none" />
-                        <div className="absolute -bottom-16 -left-16 w-48 h-48 bg-indigo-500/15 rounded-full blur-[60px] pointer-events-none" />
+                        <div className="absolute -bottom-16 -left-16 w-48 h-48 bg-orange-500/15 rounded-full blur-[60px] pointer-events-none" />
 
                         {/* Close button */}
                         <button
@@ -87,7 +87,7 @@ const SignupDepositPrompt: React.FC = () => {
                                     <span className="text-[11px] text-white/70 font-medium">Secure</span>
                                 </div>
                                 <div className="flex items-center gap-1.5 bg-white/[0.04] border border-white/[0.06] rounded-full px-3 py-1.5">
-                                    <Sparkles size={12} className="text-purple-400" />
+                                    <Sparkles size={12} className="text-orange-400" />
                                     <span className="text-[11px] text-white/70 font-medium">Bonus</span>
                                 </div>
                             </div>
@@ -131,7 +131,7 @@ const SignupDepositPrompt: React.FC = () => {
                     >
                         {/* Glow effects */}
                         <div className="absolute -top-16 right-8 w-40 h-40 bg-[#ff7a1a]/20 rounded-full blur-[60px] pointer-events-none" />
-                        <div className="absolute -bottom-12 left-4 w-32 h-32 bg-indigo-500/10 rounded-full blur-[50px] pointer-events-none" />
+                        <div className="absolute -bottom-12 left-4 w-32 h-32 bg-orange-500/10 rounded-full blur-[50px] pointer-events-none" />
 
                         {/* Drag handle */}
                         <div className="flex justify-center pt-3 pb-2">
@@ -170,7 +170,7 @@ const SignupDepositPrompt: React.FC = () => {
                                     <span className="text-[10px] text-white/70 font-medium">Secure</span>
                                 </div>
                                 <div className="flex items-center gap-1.5 bg-white/[0.04] border border-white/[0.06] rounded-full px-3 py-1.5">
-                                    <Sparkles size={11} className="text-purple-400" />
+                                    <Sparkles size={11} className="text-orange-400" />
                                     <span className="text-[10px] text-white/70 font-medium">Bonus</span>
                                 </div>
                             </div>

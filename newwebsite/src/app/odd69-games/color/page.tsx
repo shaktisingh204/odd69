@@ -33,18 +33,18 @@ function colorsForNumber(n: number) {
 function bg(colors: string[]) {
   if (colors.includes("violet") && colors.length > 1) {
     return colors[0] === "red"
-      ? "bg-gradient-to-br from-red-500 to-violet-500"
-      : "bg-gradient-to-br from-emerald-500 to-violet-500";
+      ? "bg-gradient-to-br from-red-500 to-orange-500"
+      : "bg-gradient-to-br from-emerald-500 to-orange-500";
   }
   if (colors[0] === "red") return "bg-red-500";
   if (colors[0] === "green") return "bg-emerald-500";
-  return "bg-violet-500";
+  return "bg-orange-500";
 }
 
 export default function ColorPage() {
   const { refreshWallet } = useWallet();
   const [betInput, setBetInput] = useState("10");
-  const [walletType, setWalletType] = useState<"fiat" | "crypto">("fiat");
+  const [walletType, setWalletType] = useState<"fiat" | "crypto">("crypto");
   const [useBonus, setUseBonus] = useState(false);
   const [pick, setPick] = useState<Pick>("red");
   const [pickNumber, setPickNumber] = useState<number>(0);
@@ -119,7 +119,7 @@ export default function ColorPage() {
                         ? "bg-red-500/30 text-red-200 border border-red-400/50"
                         : c === "green"
                           ? "bg-emerald-500/30 text-emerald-200 border border-emerald-400/50"
-                          : "bg-violet-500/30 text-violet-200 border border-violet-400/50"
+                          : "bg-orange-500/30 text-orange-200 border border-orange-400/50"
                       : "bg-bg-deep-3 border border-white/[0.06] text-[#9ca3af]"
                   }`}
                 >

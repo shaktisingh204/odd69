@@ -87,7 +87,7 @@ export default function LiveMatchCard({ event }: LiveMatchCardProps) {
                     )}
                 </div>
                 {hasEarlySix && (
-                    <div className="bg-gradient-to-r from-purple-500 to-indigo-500 text-white text-[9px] font-black uppercase px-2 py-1 rounded shadow-[0_0_8px_rgba(255, 122, 26,0.3)] border border-purple-400/30 whitespace-nowrap">
+                    <div className="bg-gradient-to-r from-orange-500 to-orange-500 text-white text-[9px] font-black uppercase px-2 py-1 rounded shadow-[0_0_8px_rgba(255, 122, 26,0.3)] border border-orange-400/30 whitespace-nowrap">
                         🎯 Early 6 Refund
                     </div>
                 )}

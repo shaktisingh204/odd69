@@ -61,9 +61,9 @@ const DAY_ICONS: { icon: React.ElementType; gradient: string; shadow: string }[]
     { icon: Star,    gradient: 'from-yellow-400 to-amber-500', shadow: 'rgba(250,204,21,0.4)' },
     { icon: Trophy,  gradient: 'from-amber-500 to-yellow-600', shadow: 'rgba(255, 122, 26,0.4)' },
     { icon: Crown,   gradient: 'from-yellow-400 to-amber-600', shadow: 'rgba(217,179,16,0.4)' },
-    { icon: Target,  gradient: 'from-violet-500 to-purple-600', shadow: 'rgba(255, 122, 26,0.4)' },
+    { icon: Target,  gradient: 'from-orange-500 to-orange-600', shadow: 'rgba(255, 122, 26,0.4)' },
     { icon: Sparkles, gradient: 'from-pink-500 to-rose-600',   shadow: 'rgba(236,72,153,0.4)' },
-    { icon: Rocket,  gradient: 'from-blue-500 to-indigo-600',  shadow: 'rgba(59,130,246,0.4)' },
+    { icon: Rocket,  gradient: 'from-blue-500 to-orange-600',  shadow: 'rgba(59,130,246,0.4)' },
     { icon: Award,   gradient: 'from-emerald-500 to-teal-600', shadow: 'rgba(16,185,129,0.4)' },
     { icon: Coins,   gradient: 'from-yellow-500 to-orange-500', shadow: 'rgba(255, 122, 26,0.4)' },
     { icon: Medal,   gradient: 'from-sky-500 to-blue-600',     shadow: 'rgba(14,165,233,0.4)' },
@@ -91,13 +91,13 @@ function Icon3D({ index, size = 28, pulse = false }: { index: number; size?: num
 
 // ─── Achievement icon map ────────────────────────────────────────────────────
 const ACHIEVEMENT_ICONS: Record<string, { icon: React.ElementType; gradient: string; shadow: string }> = {
-    'first_claim': { icon: Target,     gradient: 'from-blue-500 to-indigo-600',    shadow: 'rgba(59,130,246,0.4)' },
+    'first_claim': { icon: Target,     gradient: 'from-blue-500 to-orange-600',    shadow: 'rgba(59,130,246,0.4)' },
     'streak_3':    { icon: Flame,      gradient: 'from-orange-500 to-red-600',     shadow: 'rgba(249,115,22,0.4)' },
     'streak_7':    { icon: Trophy,     gradient: 'from-amber-500 to-yellow-600',   shadow: 'rgba(255, 122, 26,0.4)' },
     'streak_14':   { icon: ShieldCheck, gradient: 'from-sky-500 to-cyan-600',      shadow: 'rgba(14,165,233,0.4)' },
     'streak_30':   { icon: Crown,      gradient: 'from-yellow-400 to-amber-600',   shadow: 'rgba(255, 122, 26,0.4)' },
     'streak_60':   { icon: Diamond,    gradient: 'from-cyan-400 to-blue-500',      shadow: 'rgba(34,211,238,0.4)' },
-    'streak_100':  { icon: Award,      gradient: 'from-purple-500 to-violet-700',  shadow: 'rgba(255, 122, 26,0.5)' },
+    'streak_100':  { icon: Award,      gradient: 'from-orange-500 to-orange-700',  shadow: 'rgba(255, 122, 26,0.5)' },
     'total_10k':   { icon: Coins,      gradient: 'from-emerald-500 to-green-600',  shadow: 'rgba(16,185,129,0.4)' },
 };
 
@@ -463,7 +463,7 @@ function SpinWheel({ slices, onSpin, spinning, result }: { slices: SpinSlice[]; 
                 {[
                     { label: 'Slices', value: `${slices.length}`, icon: Target, gradient: 'from-pink-500/20 to-rose-500/5', border: 'border-pink-500/20', iconColor: 'text-pink-400' },
                     { label: 'Max Prize', value: formatReward(Math.max(...slices.map(s => s.value)), 'INR'), icon: Trophy, gradient: 'from-amber-500/20 to-yellow-500/5', border: 'border-amber-500/20', iconColor: 'text-amber-400' },
-                    { label: 'Jackpot Chance', value: `${slices.find(s => s.label === 'JACKPOT')?.probability || 0}%`, icon: Zap, gradient: 'from-violet-500/20 to-purple-500/5', border: 'border-violet-500/20', iconColor: 'text-violet-400' },
+                    { label: 'Jackpot Chance', value: `${slices.find(s => s.label === 'JACKPOT')?.probability || 0}%`, icon: Zap, gradient: 'from-orange-500/20 to-orange-500/5', border: 'border-orange-500/20', iconColor: 'text-orange-400' },
                 ].map((s, i) => (
                     <motion.div key={i} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 * i }}
                         className={`bg-gradient-to-b ${s.gradient} border ${s.border} rounded-2xl p-4 text-center`}>
@@ -571,7 +571,7 @@ function ClaimResultOverlay({ result, onClose }: { result: ClaimResult; onClose:
                     <div className="space-y-2 text-left bg-white/[0.04] rounded-xl p-4 mb-6">
                         <div className="flex justify-between text-sm"><span className="text-white/40">Base Reward</span><span className="text-white">{formatReward(result.baseReward, result.currency)}</span></div>
                         {result.vipMultiplier > 1 && <div className="flex justify-between text-sm"><span className="text-brand-gold">VIP Multiplier</span><span className="text-brand-gold/80">x{result.vipMultiplier}</span></div>}
-                        {result.milestoneMultiplier > 1 && <div className="flex justify-between text-sm"><span className="text-purple-400">Milestone Bonus</span><span className="text-purple-300">x{result.milestoneMultiplier}</span></div>}
+                        {result.milestoneMultiplier > 1 && <div className="flex justify-between text-sm"><span className="text-orange-400">Milestone Bonus</span><span className="text-orange-300">x{result.milestoneMultiplier}</span></div>}
                         {result.referralBonus > 0 && <div className="flex justify-between text-sm"><span className="text-cyan-400">Referral Bonus</span><span className="text-cyan-300">+{formatReward(result.referralBonus, result.currency)}</span></div>}
                         {result.jackpotAmount > 0 && <div className="flex justify-between text-sm"><span className="text-yellow-400">Lucky Jackpot!</span><span className="text-yellow-300 font-bold">+{formatReward(result.jackpotAmount, result.currency)}</span></div>}
                         {result.weeklyMegaClaimed && <div className="flex justify-between text-sm"><span className="text-orange-400">Weekly Mega</span><span className="text-orange-300 font-bold">+{formatReward(result.weeklyMegaAmount, result.currency)}</span></div>}
@@ -689,7 +689,7 @@ function DailyRewardsContent() {
                         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_rgba(255, 122, 26,0.15),_transparent_60%)]" />
                         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,_rgba(239,68,68,0.08),_transparent_60%)]" />
                         <div className="absolute -right-20 top-10 w-80 h-80 rounded-full bg-amber-500/5 blur-3xl pointer-events-none" />
-                        <div className="absolute left-10 bottom-0 w-60 h-60 rounded-full bg-purple-500/5 blur-3xl pointer-events-none" />
+                        <div className="absolute left-10 bottom-0 w-60 h-60 rounded-full bg-orange-500/5 blur-3xl pointer-events-none" />
 
                         {[...Array(8)].map((_, i) => (
                             <motion.div key={i} animate={{ y: [0, -20, 0], x: [0, 10, 0], opacity: [0.2, 0.7, 0.2] }}
@@ -833,14 +833,14 @@ function DailyRewardsContent() {
                                         </Card3D>
 
                                         {status.config.monthlyGrandPrizeEnabled && (
-                                            <Card3D className="rounded-xl md:rounded-2xl p-3 md:p-4 bg-gradient-to-r from-purple-500/10 to-transparent border border-purple-500/20" glowColor="rgba(255, 122, 26,0.1)">
+                                            <Card3D className="rounded-xl md:rounded-2xl p-3 md:p-4 bg-gradient-to-r from-orange-500/10 to-transparent border border-orange-500/20" glowColor="rgba(255, 122, 26,0.1)">
                                                 <div className="flex items-center gap-3 mb-2">
-                                                    <div className="w-9 h-9 md:w-11 md:h-11 rounded-lg md:rounded-xl bg-gradient-to-br from-purple-500 to-violet-700 flex items-center justify-center flex-shrink-0" style={{ boxShadow: '0 4px 14px rgba(255, 122, 26,0.3)' }}><Crown size={18} className="text-white" /></div>
+                                                    <div className="w-9 h-9 md:w-11 md:h-11 rounded-lg md:rounded-xl bg-gradient-to-br from-orange-500 to-orange-700 flex items-center justify-center flex-shrink-0" style={{ boxShadow: '0 4px 14px rgba(255, 122, 26,0.3)' }}><Crown size={18} className="text-white" /></div>
                                                     <div className="min-w-0"><p className="text-white font-bold text-sm">Monthly Grand Prize</p><p className="text-white/30 text-[11px]">{status.config.monthlyGrandPrizeStreakRequired}-day streak required</p></div>
                                                 </div>
                                                 <div className="h-2 md:h-2.5 rounded-full bg-white/[0.06] overflow-hidden">
                                                     <motion.div initial={{ width: 0 }} animate={{ width: `${Math.min(100, (streak / status.config.monthlyGrandPrizeStreakRequired) * 100)}%` }}
-                                                        transition={{ duration: 1, ease: 'easeOut' }} className="h-full rounded-full bg-gradient-to-r from-purple-500 to-pink-400" />
+                                                        transition={{ duration: 1, ease: 'easeOut' }} className="h-full rounded-full bg-gradient-to-r from-orange-500 to-pink-400" />
                                                 </div>
                                                 <p className="text-[11px] text-white/40 mt-1.5 font-medium">{streak}/{status.config.monthlyGrandPrizeStreakRequired} days</p>
                                             </Card3D>
@@ -901,7 +901,7 @@ function DailyRewardsContent() {
                                             { icon: Target, gradient: 'from-pink-500 to-rose-600', shadow: 'rgba(236,72,153,0.3)', title: 'Spin Wheel', desc: 'Spin the wheel for randomized rewards. Land on the jackpot slice for massive prizes!', enabled: status.config.spinWheelEnabled },
                                             { icon: Crown, gradient: 'from-yellow-400 to-amber-600', shadow: 'rgba(255, 122, 26,0.3)', title: 'VIP Multiplier', desc: 'VIP members earn up to 5x multiplier on every daily reward claim.', enabled: status.config.vipMultiplierEnabled },
                                             { icon: Zap, gradient: 'from-amber-400 to-orange-500', shadow: 'rgba(255, 154, 61,0.3)', title: 'Lucky Jackpot', desc: 'Every claim has a chance to trigger the lucky jackpot for a mega bonus reward!', enabled: status.config.luckyJackpotEnabled },
-                                            { icon: Users, gradient: 'from-blue-500 to-indigo-600', shadow: 'rgba(59,130,246,0.3)', title: 'Referral Bonus', desc: 'Earn extra rewards when your referred friends also claim their daily rewards.', enabled: status.config.referralBonusEnabled },
+                                            { icon: Users, gradient: 'from-blue-500 to-orange-600', shadow: 'rgba(59,130,246,0.3)', title: 'Referral Bonus', desc: 'Earn extra rewards when your referred friends also claim their daily rewards.', enabled: status.config.referralBonusEnabled },
                                         ].map((f, i) => (
                                             <motion.div key={i} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.08 * i }}
                                                 whileHover={{ scale: 1.02, y: -4 }}
@@ -948,7 +948,7 @@ function DailyRewardsContent() {
                                             { label: 'Current Streak', value: `${streak} days`, icon: Flame, color: 'text-orange-400' },
                                             { label: 'Total Earned', value: formatReward(status.totalEarned, status.config.currency), icon: CircleDollarSign, color: 'text-emerald-400' },
                                             { label: 'Achievements', value: `${status.unlockedAchievements.length}/${status.config.achievements.length}`, icon: Award, color: 'text-amber-400' },
-                                            { label: 'Next Milestone', value: streak < 7 ? '7-day' : streak < 30 ? '30-day' : streak < 100 ? '100-day' : 'MAX', icon: ArrowUpRight, color: 'text-purple-400' },
+                                            { label: 'Next Milestone', value: streak < 7 ? '7-day' : streak < 30 ? '30-day' : streak < 100 ? '100-day' : 'MAX', icon: ArrowUpRight, color: 'text-orange-400' },
                                         ].map((s, i) => (
                                             <motion.div key={i} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 * i }}
                                                 className="rounded-lg md:rounded-xl p-3 md:p-4 bg-white/[0.03] border border-white/[0.06]">

@@ -119,7 +119,7 @@ function TxnRow({ txn }: { txn: Txn }) {
   const isNeg = isEntry || isWithdraw;
 
   const icon = isDeposit ? <ArrowDownLeft size={15} strokeWidth={2.5} /> : isWithdraw ? <ArrowUpRight size={15} strokeWidth={2.5} /> : isWin ? <CheckCircle2 size={15} strokeWidth={2.5} /> : isEntry ? <ArrowUpRight size={15} strokeWidth={2.5} /> : <Gift size={15} strokeWidth={2.5} />;
-  const iconBg = isDeposit ? "bg-green-50 text-green-600 border-green-200" : isWithdraw ? "bg-red-50 text-[#d13239] border-red-200" : isWin ? "bg-amber-50 text-amber-600 border-amber-200" : isEntry ? "bg-gray-50 text-gray-500 border-gray-200" : "bg-purple-50 text-purple-500 border-purple-200";
+  const iconBg = isDeposit ? "bg-green-50 text-green-600 border-green-200" : isWithdraw ? "bg-red-50 text-[#d13239] border-red-200" : isWin ? "bg-amber-50 text-amber-600 border-amber-200" : isEntry ? "bg-gray-50 text-gray-500 border-gray-200" : "bg-orange-50 text-orange-500 border-orange-200";
   const dateStr = txn.createdAt ? new Date(txn.createdAt).toLocaleDateString("en-US", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }) : "";
   const isPending = txn.status === 'PENDING';
   const amount = parseFloat(String(txn.amount)) || 0;

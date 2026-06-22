@@ -122,8 +122,8 @@ const BindMobileModal: React.FC<BindMobileModalProps> = ({ onClose, onSuccess })
                     <div className="p-6 sm:p-8">
                         {step === 'verify_otp' ? (
                             <div className="text-center animate-in fade-in duration-300">
-                                <div className="w-16 h-16 rounded-full bg-indigo-500/15 border border-indigo-500/30 flex items-center justify-center mx-auto mb-4">
-                                    <ShieldCheck size={30} className="text-indigo-400" />
+                                <div className="w-16 h-16 rounded-full bg-orange-500/15 border border-orange-500/30 flex items-center justify-center mx-auto mb-4">
+                                    <ShieldCheck size={30} className="text-orange-400" />
                                 </div>
                                 <h4 className="text-text-primary font-bold text-xl mb-2">Verify Your Number</h4>
                                 <p className="text-text-muted text-sm mb-6">
@@ -139,7 +139,7 @@ const BindMobileModal: React.FC<BindMobileModalProps> = ({ onClose, onSuccess })
                                         placeholder="— — — — — —"
                                         value={otpCode}
                                         onChange={(e) => { setOtpCode(e.target.value.replace(/\D/g, '').slice(0, 6)); setError(''); }}
-                                        className={`w-full h-[60px] bg-bg-elevated border-2 rounded-xl px-4 text-text-primary text-[28px] font-bold tracking-[0.5em] text-center outline-none transition-all focus:ring-[1.5px] placeholder:text-text-muted placeholder:text-2xl placeholder:tracking-[0.3em] ${error ? 'border-red-500' : 'border-divider focus:border-indigo-500 focus:ring-indigo-500/40'}`}
+                                        className={`w-full h-[60px] bg-bg-elevated border-2 rounded-xl px-4 text-text-primary text-[28px] font-bold tracking-[0.5em] text-center outline-none transition-all focus:ring-[1.5px] placeholder:text-text-muted placeholder:text-2xl placeholder:tracking-[0.3em] ${error ? 'border-red-500' : 'border-divider focus:border-orange-500 focus:ring-orange-500/40'}`}
                                     />
                                     {error && <p className="text-danger text-xs mt-2 flex items-center justify-center gap-1"><AlertCircle size={12} />{error}</p>}
                                 </div>
@@ -162,7 +162,7 @@ const BindMobileModal: React.FC<BindMobileModalProps> = ({ onClose, onSuccess })
                                     </p>
                                 )}
                                 <p className="text-xs text-text-muted mt-2">
-                                    Didn't receive it? <button className="text-indigo-400 font-bold hover:underline" onClick={() => { setStep('form'); setOtpExpiresIn(0); }}>Change number</button>
+                                    Didn't receive it? <button className="text-orange-400 font-bold hover:underline" onClick={() => { setStep('form'); setOtpExpiresIn(0); }}>Change number</button>
                                 </p>
                             </div>
                         ) : (

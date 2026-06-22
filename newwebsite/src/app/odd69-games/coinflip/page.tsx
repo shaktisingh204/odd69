@@ -20,7 +20,7 @@ interface CoinResult {
 export default function CoinflipPage() {
   const { refreshWallet } = useWallet();
   const [betInput, setBetInput] = useState("10");
-  const [walletType, setWalletType] = useState<"fiat" | "crypto">("fiat");
+  const [walletType, setWalletType] = useState<"fiat" | "crypto">("crypto");
   const [useBonus, setUseBonus] = useState(false);
   const [pick, setPick] = useState<"heads" | "tails">("heads");
   const [busy, setBusy] = useState(false);

@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { X } from 'lucide-react';
 import api from '@/services/api';
 import { useAuth } from '@/context/AuthContext';
+import { useWallet } from '@/context/WalletContext';
 
 interface Props {
     isOpen: boolean;
@@ -15,12 +16,20 @@ interface Props {
 
 export default function DepositChooserSheet({ isOpen, onClose, onChooseDeposit, onChooseCrypto, onChooseManual }: Props) {
     const { user } = useAuth();
+    const { cryptoOnly } = useWallet();
     const [checking, setChecking] = useState(true);
     const [manualOnlyMode, setManualOnlyMode] = useState(false);
     const [allDisabled, setAllDisabled] = useState(false);
 
+    // Crypto-only mode: there is only one funding path, so skip the chooser
+    // entirely and route straight to the crypto deposit screen.
     useEffect(() => {
-        if (!isOpen) return;
+        if (!isOpen || !cryptoOnly) return;
+        onChooseCrypto();
+    }, [isOpen, cryptoOnly, onChooseCrypto]);
+
+    useEffect(() => {
+        if (!isOpen || cryptoOnly) return;
 
         // Fetch admin config to decide routing
         api.get('/settings/public')
@@ -59,9 +68,10 @@ export default function DepositChooserSheet({ isOpen, onClose, onChooseDeposit, 
                 setChecking(false);
                 onChooseDeposit();
             });
-    }, [isOpen, onChooseDeposit]);
+    }, [isOpen, cryptoOnly, onChooseDeposit]);
 
-    if (!isOpen || checking) return null;
+    // In crypto-only mode the chooser never renders — we route to crypto above.
+    if (!isOpen || cryptoOnly || checking) return null;
 
     return (
         <>

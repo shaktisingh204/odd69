@@ -43,7 +43,7 @@ const ORIGINALS_GAMES = [
     icon: <Star size={48} />,
     href: "/odd69-games/dice",
     badge: "LIVE",
-    badgeColor: "bg-purple-500",
+    badgeColor: "bg-orange-500",
     gradient: "from-[#1a0a2e] via-[#100a22] to-[#0a0614]",
     accentColor: "#ff9a3d",
     glowColor: "rgba(255, 154, 61,0.3)",
@@ -56,7 +56,7 @@ const ORIGINALS_GAMES = [
     icon: <Plane size={48} />,
     href: "/odd69-games/limbo",
     badge: "LIVE",
-    badgeColor: "bg-indigo-500",
+    badgeColor: "bg-orange-500",
     gradient: "from-[#0d0e2a] via-[#0a0c22] to-[#050714]",
     accentColor: "#818cf8",
     glowColor: "rgba(129,140,248,0.3)",
@@ -265,7 +265,7 @@ export default function ODD69GamesPage() {
                     <span className="text-text-secondary text-xs font-bold">Fiat & Crypto</span>
                   </div>
                   <div className="flex items-center gap-2 bg-white/[0.04] border border-white/[0.06] rounded-lg px-3 py-2">
-                    <div className="w-4 h-4 rounded-full bg-purple-500 flex items-center justify-center">
+                    <div className="w-4 h-4 rounded-full bg-orange-500 flex items-center justify-center">
                       <span className="text-[8px] font-black text-white">%</span>
                     </div>
                     <span className="text-text-secondary text-xs font-bold">Bonus Compatible</span>

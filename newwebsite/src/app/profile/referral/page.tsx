@@ -58,7 +58,7 @@ function getEventColor(type: string) {
     const map: Record<string, string> = {
         SIGNUP: 'text-brand-gold bg-brand-gold/10 border-brand-gold/20',
         DEPOSIT_FIRST: 'text-green-400 bg-green-500/10 border-green-500/20',
-        DEPOSIT_RECURRING: 'text-accent-purple bg-purple-500/10 border-purple-500/20',
+        DEPOSIT_RECURRING: 'text-accent-purple bg-orange-500/10 border-orange-500/20',
         BET_VOLUME: 'text-warning bg-warning-alpha-08 border-orange-500/20',
     };
     return map[type] || 'text-text-muted bg-text-faint/10 border-gray-500/20';
@@ -359,7 +359,7 @@ export default function ReferralPage() {
                     {/* Background */}
                     <div className="absolute inset-0 bg-gradient-to-br from-[#141018] via-[#0F1016] to-[#0C0D12]" />
                     <div className="absolute top-0 right-0 w-96 h-96 bg-brand-gold/8 rounded-full blur-3xl pointer-events-none -translate-y-1/2 translate-x-1/2" />
-                    <div className="absolute bottom-0 left-0 w-64 h-64 bg-purple-600/5 rounded-full blur-3xl pointer-events-none" />
+                    <div className="absolute bottom-0 left-0 w-64 h-64 bg-orange-600/5 rounded-full blur-3xl pointer-events-none" />
                     <Gift className="absolute right-6 bottom-4 opacity-[0.04] text-white" size={200} />
 
                     <div className="relative z-10 p-6 md:p-8">

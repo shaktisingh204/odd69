@@ -512,7 +512,7 @@ export default function CrashPage() {
                     <span className="text-[11px] text-zinc-400 font-bold">Amount</span>
                     <div className="flex items-center gap-2">
                       <div className="flex items-center gap-1 rounded-full border border-white/[0.06] bg-white/[0.04] p-0.5">
-                        {(["fiat", "crypto"] as const).map((type) => (
+                        {(["crypto"] as const).map((type) => (
                           <button
                             key={type}
                             onClick={() => handleWalletTypeChange(type)}
@@ -523,7 +523,7 @@ export default function CrashPage() {
                               background: walletType === type ? "rgba(46,204,113,0.18)" : "transparent",
                             }}
                           >
-                            {type === "fiat" ? "$" : "$"}
+                            {"$"}
                           </button>
                         ))}
                       </div>

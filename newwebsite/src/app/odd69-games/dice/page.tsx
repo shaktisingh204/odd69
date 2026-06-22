@@ -446,7 +446,7 @@ export default function DicePage() {
                   <span className="text-[11px] text-zinc-400 font-bold">Amount</span>
                   <div className="flex items-center gap-2">
                     <div className="flex items-center gap-1 rounded-full border border-white/[0.06] bg-white/[0.04] p-0.5">
-                      {(["fiat", "crypto"] as const).map((type) => (
+                      {(["crypto"] as const).map((type) => (
                         <button
                           key={type}
                           onClick={() => handleWalletTypeChange(type)}
@@ -457,7 +457,7 @@ export default function DicePage() {
                             background: walletType === type ? "rgba(34,197,94,0.16)" : "transparent",
                           }}
                         >
-                          {type === "fiat" ? "$" : "$"}
+                          {"$"}
                         </button>
                       ))}
                     </div>

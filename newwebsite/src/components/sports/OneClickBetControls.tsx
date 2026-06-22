@@ -100,7 +100,7 @@ export default function OneClickBetControls({ className = '' }: OneClickBetContr
                 {/* Wallet badge */}
                 <span className={`flex-shrink-0 rounded-full px-2 py-0.5 text-[9px] font-black uppercase tracking-[0.2em] ${
                     selectedWallet === 'crypto'
-                        ? 'bg-accent-purple-alpha text-purple-300'
+                        ? 'bg-accent-purple-alpha text-orange-300'
                         : 'bg-brand-gold/10 text-brand-gold'
                 }`}>
                     {selectedWallet}

@@ -76,6 +76,8 @@ interface WalletData {
 }
 
 interface WalletContextType {
+    // Crypto-only mode: when true, hide all fiat (INR) UI + flows.
+    cryptoOnly: boolean;
     // Selection
     selectedWallet: WalletType;
     setSelectedWallet: (w: WalletType) => void;
@@ -126,17 +128,27 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
     const { isAuthenticated, token, user } = useAuth();
     const { socket } = useSocket();
 
-    const [selectedWallet, _setSelectedWallet] = useState<WalletType>('fiat');
+    // CRYPTO-ONLY MODE: the fiat (INR) wallet and its deposit/withdraw flows are
+    // hidden platform-wide for now. Set this to false to restore the dual wallet.
+    const CRYPTO_ONLY = true;
+
+    const [selectedWallet, _setSelectedWallet] = useState<WalletType>(CRYPTO_ONLY ? 'crypto' : 'fiat');
 
     const validSubWallets: SubWalletType[] = [
         'fiat-main', 'fiat-casino', 'fiat-sports',
         'crypto-main', 'crypto-casino', 'crypto-sports',
     ];
 
-    const [selectedSubWallet, _setSelectedSubWallet] = useState<SubWalletType>('fiat-main');
+    const [selectedSubWallet, _setSelectedSubWallet] = useState<SubWalletType>(CRYPTO_ONLY ? 'crypto-main' : 'fiat-main');
 
     // Handle hydration from localStorage to prevent mismatch
     useEffect(() => {
+        if (CRYPTO_ONLY) {
+            _setSelectedWallet('crypto');
+            _setSelectedSubWallet('crypto-main');
+            document.documentElement.setAttribute('data-wallet', 'crypto');
+            return;
+        }
         let savedWallet: WalletType = 'fiat';
         let savedSubWallet: SubWalletType = 'fiat-main';
         
@@ -195,6 +207,7 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
     }, [isAuthenticated, token]);
 
     const setSelectedWallet = async (w: WalletType) => {
+        if (CRYPTO_ONLY) w = 'crypto';
         const nextSubWallet = getWalletTypeFromSubWallet(selectedSubWallet) === w
             ? selectedSubWallet
             : getMainSubWalletForWallet(w);
@@ -210,6 +223,7 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
     };
 
     const setSelectedSubWallet = (sw: SubWalletType) => {
+        if (CRYPTO_ONLY && sw.startsWith('fiat')) sw = ('crypto' + sw.slice(4)) as SubWalletType;
         _setSelectedSubWallet(sw);
         const parentWallet: WalletType = getWalletTypeFromSubWallet(sw);
         _setSelectedWallet(parentWallet);
@@ -263,9 +277,20 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
                 sportsBonusWageringDone: d.sportsBonusWageringDone ?? 0,
                 activeCasinoBonus: casinoBonus,
                 activeSportsBonus: sportsBonus,
-                activeWallet: d.activeWallet === 'crypto' ? 'crypto' : 'fiat',
+                activeWallet: CRYPTO_ONLY ? 'crypto' : (d.activeWallet === 'crypto' ? 'crypto' : 'fiat'),
             });
-            if (d.activeWallet === 'crypto' || d.activeWallet === 'fiat') {
+            if (CRYPTO_ONLY) {
+                _setSelectedWallet('crypto');
+                const nextSubWallet: SubWalletType = getWalletTypeFromSubWallet(selectedSubWallet) === 'crypto'
+                    ? selectedSubWallet
+                    : 'crypto-main';
+                _setSelectedSubWallet(nextSubWallet);
+                if (typeof window !== 'undefined') {
+                    localStorage.setItem(LS_KEY, 'crypto');
+                    localStorage.setItem(LS_SUB_KEY, nextSubWallet);
+                    document.documentElement.setAttribute('data-wallet', 'crypto');
+                }
+            } else if (d.activeWallet === 'crypto' || d.activeWallet === 'fiat') {
                 _setSelectedWallet(d.activeWallet);
                 const nextSubWallet = getWalletTypeFromSubWallet(selectedSubWallet) === d.activeWallet
                     ? selectedSubWallet
@@ -319,7 +344,7 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
             case 'crypto-main':  return walletData.cryptoBalance;
             case 'crypto-casino':return walletData.cryptoBonus;  // reuse cryptoBonus as crypto-casino bonus
             case 'crypto-sports':return walletData.cryptoBonus;  // placeholder until backend splits
-            default:             return walletData.fiatBalance;
+            default:             return CRYPTO_ONLY ? walletData.cryptoBalance : walletData.fiatBalance;
         }
     })();
     // Platform is USD-only — currency and symbol are fixed regardless of wallet.
@@ -329,6 +354,7 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
     return (
         <WalletContext.Provider
             value={{
+                cryptoOnly: CRYPTO_ONLY,
                 selectedWallet,
                 setSelectedWallet,
                 selectedSubWallet,

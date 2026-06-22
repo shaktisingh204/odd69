@@ -202,9 +202,9 @@ const GAME_EMOJI: Record<string, string> = {
 
 const GAME_COLOR: Record<string, string> = {
   mines: "from-green-900/80 to-[#0d1a0d]",
-  crash: "from-purple-900/80 to-[#0d0d1a]",
+  crash: "from-orange-900/80 to-[#0d0d1a]",
   dice: "from-blue-900/80 to-[#0d0d1a]",
-  limbo: "from-indigo-900/80 to-[#0d1022]",
+  limbo: "from-orange-900/80 to-[#0d1022]",
   plinko: "from-amber-900/80 to-[#1a1206]",
   keno: "from-rose-900/80 to-[#1a0c12]",
   hilo: "from-cyan-900/80 to-[#07161a]",
@@ -221,7 +221,7 @@ const GAME_ACCENT: Record<string, string> = {
   mines: "text-green-400",
   crash: "text-accent-purple",
   dice: "text-brand-gold",
-  limbo: "text-indigo-300",
+  limbo: "text-orange-300",
   plinko: "text-amber-300",
   keno: "text-rose-300",
   hilo: "text-cyan-300",
@@ -236,9 +236,9 @@ const GAME_ACCENT: Record<string, string> = {
 
 const GAME_BORDER: Record<string, string> = {
   mines: "border-green-500/20 hover:border-green-500/40",
-  crash: "border-accent-purple/20 hover:border-purple-500/40",
+  crash: "border-accent-purple/20 hover:border-orange-500/40",
   dice: "border-brand-gold/20 hover:border-brand-gold/40",
-  limbo: "border-indigo-400/20 hover:border-indigo-300/40",
+  limbo: "border-orange-400/20 hover:border-orange-300/40",
   plinko: "border-amber-400/20 hover:border-amber-300/40",
   keno: "border-rose-400/20 hover:border-rose-300/40",
   hilo: "border-cyan-400/20 hover:border-cyan-300/40",

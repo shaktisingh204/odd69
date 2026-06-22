@@ -74,7 +74,7 @@ function CasinoContent() {
         { title: 'Hot Games', category: 'popular', icon: <Flame size={15} className="text-rose-400" /> },
         { title: 'Slots', category: 'slots', icon: <Dice5 size={15} className="text-brand-gold" /> },
         { title: 'Live Casino', category: 'live', icon: <CircleDot size={15} className="text-red-400" /> },
-        { title: 'Table Games', category: 'table', icon: <Layers size={15} className="text-violet-400" /> },
+        { title: 'Table Games', category: 'table', icon: <Layers size={15} className="text-orange-400" /> },
         { title: 'Crash', category: 'crash', icon: <Rocket size={15} className="text-orange-400" /> },
         { title: 'New Games', category: 'new', icon: <Sparkles size={15} className="text-teal-400" /> },
         { title: 'Top Slots', category: 'top-slots', icon: <Star size={15} className="text-amber-400" /> },

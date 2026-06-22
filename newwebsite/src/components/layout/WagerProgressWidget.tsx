@@ -218,10 +218,10 @@ export default function WagerProgressWidget() {
                 @keyframes wagerPulse {
                     0%,
                     100% {
-                        box-shadow: 0 0 0 0 rgba(168, 85, 247, 0.6);
+                        box-shadow: 0 0 0 0 rgba(255, 122, 26, 0.6);
                     }
                     50% {
-                        box-shadow: 0 0 0 6px rgba(168, 85, 247, 0);
+                        box-shadow: 0 0 0 6px rgba(255, 122, 26, 0);
                     }
                 }
                 @keyframes wagerFloat {
@@ -237,11 +237,11 @@ export default function WagerProgressWidget() {
                     0%,
                     100% {
                         box-shadow: 0 4px 12px rgba(109, 40, 217, 0.55),
-                            0 0 0 0 rgba(168, 85, 247, 0.4);
+                            0 0 0 0 rgba(255, 122, 26, 0.4);
                     }
                     50% {
                         box-shadow: 0 4px 16px rgba(109, 40, 217, 0.75),
-                            0 0 0 5px rgba(168, 85, 247, 0);
+                            0 0 0 5px rgba(255, 122, 26, 0);
                     }
                 }
                 .wager-root {
@@ -437,7 +437,7 @@ export default function WagerProgressWidget() {
                                     style={{
                                         width: `${animatedPct}%`,
                                         background: 'linear-gradient(90deg, #a855f7, #c084fc)',
-                                        boxShadow: '0 0 10px rgba(168, 85, 247, 0.6)',
+                                        boxShadow: '0 0 10px rgba(255, 122, 26, 0.6)',
                                         transition: 'width 0.3s ease-out',
                                     }}
                                 />

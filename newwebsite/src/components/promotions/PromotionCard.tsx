@@ -10,7 +10,7 @@ interface PromotionCardProps {
 }
 
 const CATEGORY_STYLE: Record<string, { color: string; bg: string }> = {
-    CASINO: { color: 'text-purple-300', bg: 'bg-purple-500/15' },
+    CASINO: { color: 'text-orange-300', bg: 'bg-orange-500/15' },
     SPORTS: { color: 'text-emerald-300', bg: 'bg-emerald-500/15' },
     LIVE: { color: 'text-red-300', bg: 'bg-red-500/15' },
     VIP: { color: 'text-amber-300', bg: 'bg-amber-500/15' },

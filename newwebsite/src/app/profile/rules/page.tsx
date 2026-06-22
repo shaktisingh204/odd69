@@ -77,7 +77,7 @@ const sections = [
     {
         icon: Gamepad2,
         color: 'text-accent-purple',
-        bg: 'bg-purple-500/10',
+        bg: 'bg-orange-500/10',
         title: '7. Casino Game Rules',
         items: [
             'All casino game results are final once the round is concluded. Malfunction voids play and pays.',

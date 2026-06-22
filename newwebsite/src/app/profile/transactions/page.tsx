@@ -192,7 +192,7 @@ function getTypeMeta(txn: Transaction) {
         return {
             label: 'Bonus Type Switch',
             className: 'text-accent-purple',
-            iconBg: 'bg-violet-500/10',
+            iconBg: 'bg-orange-500/10',
             icon: <RefreshCw className="w-4.5 h-4.5 text-accent-purple" />,
         };
     }

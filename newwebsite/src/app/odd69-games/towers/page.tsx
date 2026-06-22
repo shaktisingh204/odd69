@@ -30,7 +30,7 @@ const DIFFS: Difficulty[] = ["easy", "medium", "hard", "expert"];
 export default function TowersPage() {
   const { refreshWallet } = useWallet();
   const [betInput, setBetInput] = useState("10");
-  const [walletType, setWalletType] = useState<"fiat" | "crypto">("fiat");
+  const [walletType, setWalletType] = useState<"fiat" | "crypto">("crypto");
   const [useBonus, setUseBonus] = useState(false);
   const [difficulty, setDifficulty] = useState<Difficulty>("medium");
   const [busy, setBusy] = useState(false);

@@ -184,7 +184,7 @@ export default function WageringCard() {
                                     style={{
                                         width: `${casinoPct}%`,
                                         background: 'linear-gradient(90deg, #a855f7, #ff7a1a)',
-                                        boxShadow: '0 0 4px rgba(168,85,247,0.08)',
+                                        boxShadow: '0 0 4px rgba(255, 122, 26,0.08)',
                                     }}
                                 />
                             </div>
