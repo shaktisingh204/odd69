@@ -14,6 +14,7 @@ import {
 } from '../schemas/roulette-game.schema';
 import { GGRService } from '../ggr.service';
 import { BonusService } from '../../bonus/bonus.service';
+import { FairnessService } from '../fairness.service';
 import {
   generateServerSeed,
   hmacHex,
@@ -135,12 +136,13 @@ export class RouletteService {
     @Inject(forwardRef(() => GGRService))
     private readonly ggrService: GGRService,
     private readonly bonusService: BonusService,
+    @Inject(forwardRef(() => FairnessService))
+    private readonly fairness: FairnessService,
   ) {}
 
   async play(userId: number, dto: PlayRouletteDto) {
     const {
       bets,
-      clientSeed = 'odd69',
       walletType = 'fiat',
       useBonus = false,
     } = dto;
@@ -205,8 +207,7 @@ export class RouletteService {
     );
 
     // 5. Provably-fair outcome: 0..36 on a single-zero wheel
-    const { serverSeed, serverSeedHash } = generateServerSeed();
-    const nonce = Date.now();
+    const { serverSeed, serverSeedHash, clientSeed, nonce } = await this.fairness.consume(userId);
     const result = rollInt(hmacHex(serverSeed, clientSeed, nonce), 37);
     const resultColor =
       result === 0 ? 'green' : RED.has(result) ? 'red' : 'black';
@@ -238,6 +239,7 @@ export class RouletteService {
       serverSeed,
       clientSeed,
       serverSeedHash,
+      nonce,
       walletType,
       usedBonus: bonusUsed > 0,
       bonusAmount: bonusUsed,
@@ -295,9 +297,9 @@ export class RouletteService {
       payout,
       status,
       betAmount,
-      serverSeed,
       serverSeedHash,
       clientSeed,
+      nonce,
     };
   }
 

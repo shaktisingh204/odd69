@@ -22,6 +22,7 @@ export class MinesGame {
   @Prop({ default: false }) usedBonus: boolean;
   @Prop({ default: 0 }) bonusAmount: number;
   @Prop({ default: 'INR' }) currency: string;
+  @Prop({ default: 0 }) nonce: number;
   @Prop({ default: 0 }) biasWeight: number;
   @Prop({ type: Object }) engagementFlags: Record<string, any>;
 }

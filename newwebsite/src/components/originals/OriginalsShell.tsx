@@ -2,10 +2,14 @@
 
 import React from "react";
 import { useRouter } from "next/navigation";
+import { ShieldCheck, History } from "lucide-react";
 import Header from "@/components/layout/Header";
 import LeftSidebar from "@/components/layout/LeftSidebar";
 import { useAuth } from "@/context/AuthContext";
 import { useOriginalsAccess } from "@/hooks/useOriginalsAccess";
+import ProvablyFairModal from "./ProvablyFairModal";
+import BetHistoryDrawer from "./BetHistoryDrawer";
+import SoundToggle from "./SoundToggle";
 
 interface OriginalsShellProps {
   /** Game key — used in the bottom-bar #tag fallback */
@@ -18,6 +22,12 @@ interface OriginalsShellProps {
   controls: React.ReactNode;
   /** Game-area content (board, wheel, etc.) — fills the rest */
   children: React.ReactNode;
+  /**
+   * When provided, shows a "My Bets" button in the bottom-bar toolbar that opens
+   * the per-game <BetHistoryDrawer/>. Omit to hide history (e.g. games without a
+   * history endpoint). The Fairness + Sound controls always show.
+   */
+  historyGameKey?: string;
 }
 
 /**
@@ -44,11 +54,16 @@ export default function OriginalsShell({
   tags,
   controls,
   children,
+  historyGameKey,
 }: OriginalsShellProps) {
   const { token, loading: authLoading } = useAuth();
   const { canAccessOriginals, loading: accessLoading } = useOriginalsAccess();
   const router = useRouter();
   const hasSession = !!token;
+
+  // Toolbar overlays (Fairness modal + My Bets drawer) — managed locally.
+  const [fairOpen, setFairOpen] = React.useState(false);
+  const [historyOpen, setHistoryOpen] = React.useState(false);
 
   React.useEffect(() => {
     if (!authLoading && !accessLoading && (!hasSession || !canAccessOriginals)) {
@@ -105,10 +120,51 @@ export default function OriginalsShell({
                   {t}
                 </span>
               ))}
+
+              {/* Toolbar: Fairness · Sound · (My Bets when historyGameKey set) */}
+              <div className="flex items-center gap-1.5 ml-1">
+                <button
+                  type="button"
+                  onClick={() => setFairOpen(true)}
+                  title="Provably Fair"
+                  className="flex items-center gap-1.5 h-8 px-2.5 rounded-lg bg-bg-deep-3 border border-white/[0.06] text-[11px] font-bold text-[#9ca3af] hover:text-white hover:border-white/[0.12] transition-all"
+                >
+                  <ShieldCheck size={14} />
+                  <span className="hidden sm:inline">Fairness</span>
+                </button>
+
+                <SoundToggle />
+
+                {historyGameKey && (
+                  <button
+                    type="button"
+                    onClick={() => setHistoryOpen(true)}
+                    title="My Bets"
+                    className="flex items-center gap-1.5 h-8 px-2.5 rounded-lg bg-bg-deep-3 border border-white/[0.06] text-[11px] font-bold text-[#9ca3af] hover:text-white hover:border-white/[0.12] transition-all"
+                  >
+                    <History size={14} />
+                    <span className="hidden sm:inline">My Bets</span>
+                  </button>
+                )}
+              </div>
             </div>
           </div>
         </main>
       </div>
+
+      {/* Overlays */}
+      <ProvablyFairModal
+        open={fairOpen}
+        onClose={() => setFairOpen(false)}
+        gameKey={gameKey}
+      />
+      {historyGameKey && (
+        <BetHistoryDrawer
+          open={historyOpen}
+          onClose={() => setHistoryOpen(false)}
+          gameKey={historyGameKey}
+        />
+      )}
     </div>
   );
 }

@@ -10,6 +10,7 @@ import { Model } from 'mongoose';
 import * as crypto from 'crypto';
 import { PrismaService } from '../prisma.service';
 import { BonusService } from '../bonus/bonus.service';
+import { FairnessService } from '../originals/fairness.service';
 import { PlinkoGame, PlinkoGameDocument } from '../originals/schemas/plinko-game.schema';
 
 export type PlinkoRisk = 'low' | 'medium' | 'high';
@@ -69,6 +70,8 @@ export class PlinkoService {
     private readonly plinkoGameModel: Model<PlinkoGameDocument>,
     @Inject(forwardRef(() => BonusService))
     private readonly bonusService: BonusService,
+    @Inject(forwardRef(() => FairnessService))
+    private readonly fairness: FairnessService,
   ) {}
 
   private roundCurrency(value: number) {
@@ -167,7 +170,6 @@ export class PlinkoService {
       betAmount,
       rows,
       risk,
-      clientSeed = 'odd69-plinko',
       walletType = 'fiat',
       useBonus = false,
     } = dto;
@@ -227,9 +229,7 @@ export class PlinkoService {
       });
     });
 
-    const serverSeed = crypto.randomBytes(32).toString('hex');
-    const serverSeedHash = crypto.createHash('sha256').update(serverSeed).digest('hex');
-    const nonce = Date.now();
+    const { serverSeed, serverSeedHash, clientSeed, nonce } = await this.fairness.consume(userId);
     const path = generatePath(serverSeed, clientSeed, nonce, rows);
     const slotIndex = path.reduce((sum, step) => sum + step, 0);
     const multiplier = table[slotIndex];
@@ -249,6 +249,7 @@ export class PlinkoService {
       serverSeed,
       clientSeed,
       serverSeedHash,
+      nonce,
       walletType,
       usedBonus: bonusUsed > 0,
       bonusAmount: bonusUsed,
@@ -372,9 +373,9 @@ export class PlinkoService {
       payout,
       status,
       betAmount,
-      serverSeed,
       serverSeedHash,
       clientSeed,
+      nonce,
     };
   }
 

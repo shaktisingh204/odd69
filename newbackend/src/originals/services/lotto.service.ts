@@ -11,6 +11,7 @@ import { PrismaService } from '../../prisma.service';
 import { LottoGame, LottoGameDocument } from '../schemas/lotto-game.schema';
 import { GGRService } from '../ggr.service';
 import { BonusService } from '../../bonus/bonus.service';
+import { FairnessService } from '../fairness.service';
 import {
   generateServerSeed,
   shuffle,
@@ -62,6 +63,8 @@ export class LottoService {
     @Inject(forwardRef(() => GGRService))
     private readonly ggrService: GGRService,
     private readonly bonusService: BonusService,
+    @Inject(forwardRef(() => FairnessService))
+    private readonly fairness: FairnessService,
   ) {}
 
   async play(userId: number, dto: PlayLottoDto) {
@@ -70,7 +73,6 @@ export class LottoService {
       selected,
       walletType = 'fiat',
       useBonus = false,
-      clientSeed = 'odd69',
     } = dto;
 
     // 1. Validate inputs
@@ -125,8 +127,7 @@ export class LottoService {
     );
 
     // 5. Provably-fair outcome
-    const { serverSeed, serverSeedHash } = generateServerSeed();
-    const nonce = Date.now();
+    const { serverSeed, serverSeedHash, clientSeed, nonce } = await this.fairness.consume(userId);
     const pool = Array.from({ length: POOL_SIZE }, (_, i) => i + 1);
     const drawn = shuffle(pool, serverSeed, clientSeed, nonce)
       .slice(0, PICK_COUNT)
@@ -157,6 +158,7 @@ export class LottoService {
       serverSeed,
       clientSeed,
       serverSeedHash,
+      nonce,
       walletType,
       usedBonus: bonusUsed > 0,
       bonusAmount: bonusUsed,
@@ -216,9 +218,9 @@ export class LottoService {
       payout,
       status,
       betAmount,
-      serverSeed,
       serverSeedHash,
       clientSeed,
+      nonce,
     };
   }
 

@@ -12,6 +12,7 @@ import { PrismaService } from '../../prisma.service';
 import { HiloGame, HiloGameDocument } from '../schemas/hilo-game.schema';
 import { GGRService } from '../ggr.service';
 import { BonusService } from '../../bonus/bonus.service';
+import { FairnessService } from '../fairness.service';
 import {
   generateServerSeed,
   hmacHex,
@@ -77,6 +78,8 @@ export class HiloService {
     @Inject(forwardRef(() => GGRService))
     private readonly ggrService: GGRService,
     private readonly bonusService: BonusService,
+    @Inject(forwardRef(() => FairnessService))
+    private readonly fairness: FairnessService,
   ) {}
 
   /**
@@ -94,10 +97,9 @@ export class HiloService {
   private drawCard(
     serverSeed: string,
     clientSeed: string,
-    serverSeedHash: string,
+    nonce: number,
     step: number,
   ): number {
-    const nonce = this.gameNonce(serverSeedHash);
     return rollInt(hmacHex(serverSeed, clientSeed, nonce, `card:${step}`), 52);
   }
 
@@ -130,14 +132,13 @@ export class HiloService {
       nextLowerMultiplier: roundTo4(multiplier * stepMultiplier(pLower)),
       serverSeedHash: game.serverSeedHash,
       clientSeed: game.clientSeed,
-      serverSeed: game.status === 'ACTIVE' ? '' : game.serverSeed,
+      nonce: game.nonce,
     };
   }
 
   async start(userId: number, dto: StartHiloDto) {
     const {
       betAmount,
-      clientSeed = 'odd69',
       walletType = 'fiat',
       useBonus = false,
     } = dto;
@@ -184,9 +185,10 @@ export class HiloService {
       useBonus,
     );
 
-    // Provably-fair seed for the whole game instance.
-    const { serverSeed, serverSeedHash } = generateServerSeed();
-    const card0 = this.drawCard(serverSeed, clientSeed, serverSeedHash, 0);
+    // Provably-fair seed pair for the whole game instance (atomic nonce).
+    const { serverSeed, serverSeedHash, clientSeed, nonce } =
+      await this.fairness.consume(userId);
+    const card0 = this.drawCard(serverSeed, clientSeed, nonce, 0);
 
     const game = await this.model.create({
       userId,
@@ -201,6 +203,7 @@ export class HiloService {
       serverSeed,
       clientSeed,
       serverSeedHash,
+      nonce,
       walletType,
       usedBonus: bonusUsed > 0,
       bonusAmount: bonusUsed,
@@ -248,7 +251,7 @@ export class HiloService {
     const nextCard = this.drawCard(
       game.serverSeed,
       game.clientSeed,
-      game.serverSeedHash,
+      game.nonce,
       nextStep,
     );
     const nextRank = rank(nextCard);
@@ -427,7 +430,7 @@ export class HiloService {
         nextLowerMultiplier: roundTo4(multiplier * stepMultiplier(pLower)),
         serverSeedHash: g.serverSeedHash,
         clientSeed: g.clientSeed,
-        serverSeed: g.serverSeed,
+        nonce: g.nonce,
         createdAt: g.createdAt,
       };
     });

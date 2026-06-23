@@ -6,6 +6,8 @@ import { OriginalsAdminController } from './originals-admin.controller';
 import { OriginalsAccessController } from './originals-access.controller';
 import { OriginalsPublicController } from './originals-public.controller';
 import { GGRService } from './ggr.service';
+import { FairnessService } from './fairness.service';
+import { FairnessController } from './fairness.controller';
 import { OriginalsGamesController } from './originals-games.controller';
 import { MinesModule } from '../mines/mines.module';
 import { DiceModule } from '../dice/dice.module';
@@ -15,7 +17,7 @@ import { BonusModule } from '../bonus/bonus.module';
 
 // Single-shot / multi-step game services
 import { CoinflipService } from './services/coinflip.service';
-import { ColorService } from './services/color.service';
+import { LimboService } from './services/limbo.service';
 import { KenoService } from './services/keno.service';
 import { WheelService } from './services/wheel.service';
 import { RouletteService } from './services/roulette.service';
@@ -39,8 +41,10 @@ import { WheelGame, WheelGameSchema } from './schemas/wheel-game.schema';
 import { CoinflipGame, CoinflipGameSchema } from './schemas/coinflip-game.schema';
 import { TowersGame, TowersGameSchema } from './schemas/towers-game.schema';
 import { ColorGame, ColorGameSchema } from './schemas/color-game.schema';
+import { LimboGame, LimboGameSchema } from './schemas/limbo-game.schema';
 import { LottoGame, LottoGameSchema } from './schemas/lotto-game.schema';
 import { JackpotGame, JackpotGameSchema } from './schemas/jackpot-game.schema';
+import { OriginalsFairSeed, OriginalsFairSeedSchema } from './schemas/originals-fair-seed.schema';
 
 const MONGOOSE_FEATURES = MongooseModule.forFeature([
   { name: MinesGame.name,                schema: MinesGameSchema },
@@ -57,8 +61,10 @@ const MONGOOSE_FEATURES = MongooseModule.forFeature([
   { name: CoinflipGame.name,             schema: CoinflipGameSchema },
   { name: TowersGame.name,               schema: TowersGameSchema },
   { name: ColorGame.name,                schema: ColorGameSchema },
+  { name: LimboGame.name,                schema: LimboGameSchema },
   { name: LottoGame.name,                schema: LottoGameSchema },
   { name: JackpotGame.name,              schema: JackpotGameSchema },
+  { name: OriginalsFairSeed.name,        schema: OriginalsFairSeedSchema },
 ]);
 
 @Module({
@@ -75,13 +81,15 @@ const MONGOOSE_FEATURES = MongooseModule.forFeature([
     OriginalsAccessController,
     OriginalsPublicController,
     OriginalsGamesController,
+    FairnessController,
   ],
   providers: [
     OriginalsGateway,
     OriginalsAdminService,
     GGRService,
+    FairnessService,
     CoinflipService,
-    ColorService,
+    LimboService,
     KenoService,
     WheelService,
     RouletteService,
@@ -90,6 +98,6 @@ const MONGOOSE_FEATURES = MongooseModule.forFeature([
     HiloService,
     TowersService,
   ],
-  exports: [GGRService, OriginalsAdminService, MONGOOSE_FEATURES],
+  exports: [GGRService, OriginalsAdminService, FairnessService, MONGOOSE_FEATURES],
 })
 export class OriginalsModule {}

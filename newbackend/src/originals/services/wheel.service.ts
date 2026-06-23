@@ -11,6 +11,7 @@ import { PrismaService } from '../../prisma.service';
 import { WheelGame, WheelGameDocument } from '../schemas/wheel-game.schema';
 import { GGRService } from '../ggr.service';
 import { BonusService } from '../../bonus/bonus.service';
+import { FairnessService } from '../fairness.service';
 import {
   generateServerSeed,
   hmacHex,
@@ -51,6 +52,8 @@ export class WheelService {
     @Inject(forwardRef(() => GGRService))
     private readonly ggrService: GGRService,
     private readonly bonusService: BonusService,
+    @Inject(forwardRef(() => FairnessService))
+    private readonly fairness: FairnessService,
   ) {}
 
   /** Memoized wheels keyed by `${risk}:${segments}`. */
@@ -119,7 +122,6 @@ export class WheelService {
   async play(userId: number, dto: PlayWheelDto) {
     const {
       betAmount,
-      clientSeed = 'odd69',
       walletType = 'fiat',
       useBonus = false,
     } = dto;
@@ -174,8 +176,7 @@ export class WheelService {
     );
 
     // 5. Provably-fair outcome
-    const { serverSeed, serverSeedHash } = generateServerSeed();
-    const nonce = Date.now();
+    const { serverSeed, serverSeedHash, clientSeed, nonce } = await this.fairness.consume(userId);
     const wheel = this.buildWheel(risk, segments);
     const digest = hmacHex(
       serverSeed,
@@ -206,6 +207,7 @@ export class WheelService {
       serverSeed,
       clientSeed,
       serverSeedHash,
+      nonce,
       walletType,
       usedBonus: bonusUsed > 0,
       bonusAmount: bonusUsed,
@@ -265,9 +267,9 @@ export class WheelService {
       status,
       betAmount,
       wheelMultipliers: wheel,
-      serverSeed,
       serverSeedHash,
       clientSeed,
+      nonce,
     };
   }
 

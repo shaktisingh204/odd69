@@ -8,17 +8,12 @@ import {
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { PrismaService } from '../../prisma.service';
-import {
-  JackpotGame,
-  JackpotGameDocument,
-} from '../schemas/jackpot-game.schema';
+import { LimboGame, LimboGameDocument } from '../schemas/limbo-game.schema';
 import { GGRService } from '../ggr.service';
 import { BonusService } from '../../bonus/bonus.service';
 import { FairnessService } from '../fairness.service';
 import {
-  generateServerSeed,
   hmacHex,
-  rollFloat,
   roundCurrency,
   deductStake,
   logStakeTransaction,
@@ -26,52 +21,45 @@ import {
   WalletType,
 } from '../originals-helpers';
 
-const GAME_KEY = 'jackpot';
-const GAME_SOURCE = 'JACKPOT';
+const GAME_KEY = 'limbo';
+const GAME_SOURCE = 'LIMBO';
 const DEFAULT_MAX_BET = 25000;
 
-type JackpotTier = 'BUST' | 'MINI' | 'SMALL' | 'BIG' | 'MEGA' | 'GRAND';
+const HOUSE_EDGE_PERCENT = 99; // 1% house edge → 99% RTP
+const MIN_TARGET = 1.01;
+const MAX_TARGET = 1_000_000;
+const MIN_RESULT = 1.0;
+const MAX_RESULT = 1_000_000;
 
 /**
- * Provably-fair tier table (RTP 97.5%).
- * Probabilities solved so Σ p·mult = 0.9752:
- *   GRAND  p=0.0005 mult=180
- *   MEGA   p=0.0040 mult=28
- *   BIG    p=0.0200 mult=8
- *   SMALL  p=0.1000 mult=2.8
- *   MINI   p=0.2380 mult=1.4
- *   BUST   p=0.6375 mult=0
+ * Provably-fair result multiplier (the "crash point") for an instant Limbo roll.
  *
- * Cumulative thresholds against r in [0,1):
- *   r < 0.0005           → GRAND
- *   r < 0.0045           → MEGA
- *   r < 0.0245           → BIG
- *   r < 0.1245           → SMALL
- *   r < 0.3625           → MINI
- *   else                 → BUST
+ * Take a 24-bit integer `n` from the first 6 hex (3 bytes) of the HMAC digest,
+ * map to r = n / 2^24 ∈ [0,1), then result = (0.99 / (1 - r)), floored to 2
+ * decimals, clamped to [1.00, 1,000,000.00]. The 0.99 factor bakes in the 1%
+ * house edge so the displayed win-chance (99/target) is exact.
  */
-function resolveTier(r: number): { tier: JackpotTier; multiplier: number } {
-  if (r < 0.0005) return { tier: 'GRAND', multiplier: 180 };
-  if (r < 0.0045) return { tier: 'MEGA', multiplier: 28 };
-  if (r < 0.0245) return { tier: 'BIG', multiplier: 8 };
-  if (r < 0.1245) return { tier: 'SMALL', multiplier: 2.8 };
-  if (r < 0.3625) return { tier: 'MINI', multiplier: 1.4 };
-  return { tier: 'BUST', multiplier: 0 };
+function resolveResult(digest: string): number {
+  const n = parseInt(digest.slice(0, 6), 16); // 24-bit int in [0, 2^24-1]
+  const r = n / 0x1000000; // [0, 1)
+  const raw = (HOUSE_EDGE_PERCENT / 100) / (1 - r);
+  const floored = Math.floor(raw * 100) / 100;
+  return Math.min(MAX_RESULT, Math.max(MIN_RESULT, floored));
 }
 
-export interface PlayJackpotDto {
+export interface PlayLimboDto {
   betAmount: number;
+  target: number;
   walletType?: WalletType;
   useBonus?: boolean;
-  clientSeed?: string;
 }
 
 @Injectable()
-export class JackpotService {
+export class LimboService {
   constructor(
     private readonly prisma: PrismaService,
-    @InjectModel(JackpotGame.name)
-    private readonly model: Model<JackpotGameDocument>,
+    @InjectModel(LimboGame.name)
+    private readonly model: Model<LimboGameDocument>,
     @Inject(forwardRef(() => GGRService))
     private readonly ggrService: GGRService,
     private readonly bonusService: BonusService,
@@ -79,20 +67,31 @@ export class JackpotService {
     private readonly fairness: FairnessService,
   ) {}
 
-  async play(userId: number, dto: PlayJackpotDto) {
-    const {
-      betAmount,
-      walletType = 'fiat',
-      useBonus = false,
-    } = dto;
+  async play(userId: number, dto: PlayLimboDto) {
+    const { betAmount, target, walletType = 'fiat', useBonus = false } = dto;
 
     // 1. Validate inputs
-    if (typeof betAmount !== 'number' || !isFinite(betAmount) || betAmount <= 0) {
+    if (
+      typeof betAmount !== 'number' ||
+      !isFinite(betAmount) ||
+      betAmount <= 0
+    ) {
       throw new BadRequestException('Bet must be positive');
+    }
+    if (typeof target !== 'number' || !isFinite(target)) {
+      throw new BadRequestException('Invalid target multiplier');
+    }
+    if (target < MIN_TARGET || target > MAX_TARGET) {
+      throw new BadRequestException(
+        `Target must be between ${MIN_TARGET} and ${MAX_TARGET}`,
+      );
     }
     if (walletType !== 'fiat' && walletType !== 'crypto') {
       throw new BadRequestException('Invalid wallet type');
     }
+
+    // Normalise target to 2 decimals (matches the UI granularity / win-chance math).
+    const normTarget = Math.floor(target * 100) / 100;
 
     // 2. Enforce GGR config gates
     const config = await this.ggrService.getConfig(GAME_KEY);
@@ -127,24 +126,27 @@ export class JackpotService {
       useBonus,
     );
 
-    // 5. Provably-fair outcome
-    const { serverSeed, serverSeedHash, clientSeed, nonce } = await this.fairness.consume(userId);
-    const r = rollFloat(hmacHex(serverSeed, clientSeed, nonce));
-    const { tier, multiplier } = resolveTier(r);
+    // 5. Provably-fair outcome (atomic nonce consume)
+    const { serverSeed, serverSeedHash, clientSeed, nonce } =
+      await this.fairness.consume(userId);
+    const result = resolveResult(hmacHex(serverSeed, clientSeed, nonce));
 
-    // 6. Payout (cap at maxWin)
-    let payout = multiplier > 0 ? roundCurrency(betAmount * multiplier) : 0;
-    if (config?.maxWin && payout > config.maxWin) {
+    // 6. Settle: WIN if result >= target → paid the TARGET (not the result).
+    const won = result >= normTarget;
+    let payout = won ? roundCurrency(betAmount * normTarget) : 0;
+    if (won && config?.maxWin && payout > config.maxWin) {
       payout = roundCurrency(config.maxWin);
     }
-    const status = payout > 0 ? 'WON' : 'LOST';
+    const status = won ? 'WON' : 'LOST';
+    const winChance = roundCurrency(HOUSE_EDGE_PERCENT / normTarget); // 99 / target
 
     // 7. Persist game doc
     const game = await this.model.create({
       userId,
       betAmount,
-      tier,
-      multiplier,
+      target: normTarget,
+      result,
+      multiplier: normTarget,
       payout,
       status,
       serverSeed,
@@ -166,7 +168,7 @@ export class JackpotService {
       bonusUsed,
       GAME_SOURCE,
       String(game._id),
-      `Jackpot bet`,
+      'Limbo bet',
     );
 
     // 9. Settle payout (credit + BET_WIN, or BET_LOSS when payout=0)
@@ -179,8 +181,8 @@ export class JackpotService {
       bonusUsed,
       GAME_SOURCE,
       String(game._id),
-      `Jackpot win: ${tier} x${multiplier}`,
-      `Jackpot loss: ${tier}`,
+      `Limbo win: ${result.toFixed(2)}x >= ${normTarget}x`,
+      `Limbo loss: ${result.toFixed(2)}x < ${normTarget}x`,
     );
 
     // 10. GGR snapshot
@@ -194,7 +196,11 @@ export class JackpotService {
         userId,
         betAmount,
         'CASINO',
-        bonusUsed > 0 ? 'fiatbonus' : 'main',
+        walletType === 'crypto'
+          ? 'crypto'
+          : bonusUsed > 0
+            ? 'fiatbonus'
+            : 'main',
         bonusUsed,
       )
       .catch(() => this.bonusService.emitWalletRefresh(userId));
@@ -202,11 +208,13 @@ export class JackpotService {
     // 12. Result (every field the frontend reads)
     return {
       gameId: String(game._id),
-      tier,
-      multiplier,
+      target: normTarget,
+      result,
+      multiplier: normTarget,
       payout,
       status,
       betAmount,
+      winChance,
       serverSeedHash,
       clientSeed,
       nonce,
@@ -222,11 +230,16 @@ export class JackpotService {
 
     return games.map((g: any) => ({
       gameId: String(g._id),
-      tier: g.tier,
+      target: g.target,
+      result: g.result,
       multiplier: g.multiplier,
       payout: g.payout,
       status: g.status,
       betAmount: g.betAmount,
+      winChance: roundCurrency(HOUSE_EDGE_PERCENT / g.target),
+      serverSeedHash: g.serverSeedHash,
+      clientSeed: g.clientSeed,
+      nonce: g.nonce,
       createdAt: g.createdAt,
     }));
   }

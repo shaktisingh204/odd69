@@ -24,6 +24,13 @@ interface OriginalsControlsProps {
   footer?: React.ReactNode;
   /** Accent color used for the active manual tab underline */
   accent?: string;
+  /**
+   * Optional auto-bet panel (the caller passes `<OriginalsAutoBet .../>`).
+   * When provided, the "Auto" tab is enabled; switching to it shows the amount
+   * block as the BASE bet, this panel, and the bonus/balance — hiding the
+   * manual `children` + `action`. When omitted, the Auto tab stays disabled.
+   */
+  autoPanel?: React.ReactNode;
 }
 
 const QUICK_BETS = [10, 100, 1000, 10000];
@@ -55,10 +62,21 @@ export default function OriginalsControls({
   action,
   footer,
   accent = "#22c55e",
+  autoPanel,
 }: OriginalsControlsProps) {
   const { fiatBalance, cryptoBalance, cryptoOnly } = useWallet();
   const balance = walletType === "crypto" ? cryptoBalance : fiatBalance;
   const sym = walletType === "crypto" ? "$" : "$";
+
+  // Manual / Auto mode. Only meaningful when an `autoPanel` is supplied; with no
+  // panel the Auto tab is disabled so this stays "manual" for the 14 existing games.
+  const hasAuto = !!autoPanel;
+  const [mode, setMode] = React.useState<"manual" | "auto">("manual");
+  // If a game ever stops passing autoPanel while in auto mode, fall back safely.
+  React.useEffect(() => {
+    if (!hasAuto && mode !== "manual") setMode("manual");
+  }, [hasAuto, mode]);
+  const isAuto = hasAuto && mode === "auto";
 
   // Crypto-only mode: force the wallet type to crypto and disable any fiat bonus path.
   React.useEffect(() => {
@@ -82,26 +100,49 @@ export default function OriginalsControls({
 
   return (
     <>
-      {/* Manual / Auto tabs (auto disabled for these games) */}
+      {/* Manual / Auto tabs (Auto enabled only when an autoPanel is supplied) */}
       <div className="flex border-b border-white/[0.06]">
         <button
           type="button"
-          className="flex-1 py-3 text-sm font-bold text-white relative"
+          onClick={() => hasAuto && setMode("manual")}
+          className={`flex-1 py-3 text-sm font-bold relative transition-colors ${
+            !isAuto ? "text-white" : "text-[#6b7280] hover:text-white"
+          }`}
         >
           Manual
-          <div
-            className="absolute bottom-0 left-0 right-0 h-0.5"
-            style={{ background: accent }}
-          />
+          {!isAuto && (
+            <div
+              className="absolute bottom-0 left-0 right-0 h-0.5"
+              style={{ background: accent }}
+            />
+          )}
         </button>
-        <button
-          type="button"
-          disabled
-          className="flex-1 py-3 text-sm font-bold text-[#3a3d45] cursor-not-allowed"
-          title="Auto mode coming soon"
-        >
-          Auto
-        </button>
+        {hasAuto ? (
+          <button
+            type="button"
+            onClick={() => setMode("auto")}
+            className={`flex-1 py-3 text-sm font-bold relative transition-colors ${
+              isAuto ? "text-white" : "text-[#6b7280] hover:text-white"
+            }`}
+          >
+            Auto
+            {isAuto && (
+              <div
+                className="absolute bottom-0 left-0 right-0 h-0.5"
+                style={{ background: accent }}
+              />
+            )}
+          </button>
+        ) : (
+          <button
+            type="button"
+            disabled
+            className="flex-1 py-3 text-sm font-bold text-[#3a3d45] cursor-not-allowed"
+            title="Auto mode coming soon"
+          >
+            Auto
+          </button>
+        )}
       </div>
 
       <div className="flex-1 p-4 space-y-4">
@@ -214,8 +255,8 @@ export default function OriginalsControls({
           </div>
         </div>
 
-        {/* Game-specific controls slot */}
-        {children}
+        {/* Game-specific controls slot (manual mode) / auto-bet panel (auto mode) */}
+        {isAuto ? autoPanel : children}
 
         {/* Bonus toggle */}
         <div className="flex items-center justify-between py-2 border-t border-white/[0.04]">
@@ -251,10 +292,10 @@ export default function OriginalsControls({
           </span>
         </div>
 
-        {footer}
+        {!isAuto && footer}
 
-        {/* Action button(s) */}
-        {action}
+        {/* Action button(s) — manual mode only; auto mode has its own Start/Stop */}
+        {!isAuto && action}
       </div>
     </>
   );

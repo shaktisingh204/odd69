@@ -9,6 +9,7 @@ import { DiceGame, DiceGameDocument } from '../originals/schemas/dice-game.schem
 import { GGRService } from '../originals/ggr.service';
 import * as crypto from 'crypto';
 import { BonusService } from '../bonus/bonus.service';
+import { FairnessService } from '../originals/fairness.service';
 
 const DEFAULT_HOUSE_EDGE = 1; // 1% house edge
 
@@ -60,6 +61,8 @@ export class DiceService {
     @Inject(forwardRef(() => GGRService))
     private readonly ggrService: GGRService,
     private readonly bonusService: BonusService,
+    @Inject(forwardRef(() => FairnessService))
+    private readonly fairness: FairnessService,
   ) {}
 
   private roundCurrency(value: number) {
@@ -151,7 +154,6 @@ export class DiceService {
       betAmount,
       target,
       direction,
-      clientSeed = 'odd69',
       walletType = 'fiat',
       useBonus = false,
     } = dto;
@@ -193,10 +195,9 @@ export class DiceService {
       }
     });
 
-    // Generate provably fair roll
-    const serverSeed = crypto.randomBytes(32).toString('hex');
-    const serverSeedHash = crypto.createHash('sha256').update(serverSeed).digest('hex');
-    const nonce = Date.now();
+    // Provably-fair roll from the user's persistent seed pair (atomic nonce)
+    const { serverSeed, serverSeedHash, clientSeed, nonce } =
+      await this.fairness.consume(userId);
     const roll = generateRoll(serverSeed, clientSeed, nonce);
 
     // Determine win/loss
@@ -208,7 +209,7 @@ export class DiceService {
     const game = await this.diceGameModel.create({
       userId, betAmount, target, direction, roll, multiplier: mult,
       payout, status, winChance,
-      serverSeed, clientSeed, serverSeedHash,
+      serverSeed, clientSeed, serverSeedHash, nonce,
       walletType, usedBonus: bonusUsed > 0, bonusAmount: bonusUsed,
       currency: walletType === 'crypto' ? 'USD' : user.currency || 'INR',
     });
@@ -332,7 +333,7 @@ export class DiceService {
       gameId: String(game._id),
       roll, target, direction, multiplier: mult, winChance,
       payout, status, betAmount,
-      serverSeed, serverSeedHash, clientSeed,
+      serverSeedHash, clientSeed, nonce,
     };
   }
 

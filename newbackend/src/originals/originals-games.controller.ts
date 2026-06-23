@@ -12,7 +12,7 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { Public } from '../auth/public.decorator';
 import { OriginalsAdminService } from './originals-admin.service';
 import { CoinflipService } from './services/coinflip.service';
-import { ColorService } from './services/color.service';
+import { LimboService } from './services/limbo.service';
 import { KenoService } from './services/keno.service';
 import { WheelService } from './services/wheel.service';
 import { RouletteService } from './services/roulette.service';
@@ -38,7 +38,7 @@ export class OriginalsGamesController {
   constructor(
     private readonly adminService: OriginalsAdminService,
     private readonly coinflipService: CoinflipService,
-    private readonly colorService: ColorService,
+    private readonly limboService: LimboService,
     private readonly kenoService: KenoService,
     private readonly wheelService: WheelService,
     private readonly rouletteService: RouletteService,
@@ -60,13 +60,32 @@ export class OriginalsGamesController {
     }
   }
 
-  // ── Coinflip ───────────────────────────────────────────────────────────────
+  // ── Coinflip (multi-step) ───────────────────────────────────────────────────
 
-  @Post('coinflip/play')
-  async coinflipPlay(@Req() req: any, @Body() body: any) {
+  @Post('coinflip/start')
+  async coinflipStart(@Req() req: any, @Body() body: any) {
     const userId = this.uid(req);
     await this.assertAccess(userId);
-    return this.coinflipService.play(userId, body);
+    return this.coinflipService.start(userId, body);
+  }
+
+  @Post('coinflip/flip')
+  async coinflipFlip(@Req() req: any, @Body() body: any) {
+    const userId = this.uid(req);
+    await this.assertAccess(userId);
+    return this.coinflipService.flip(userId, body);
+  }
+
+  @Post('coinflip/cashout')
+  async coinflipCashout(@Req() req: any, @Body() body: any) {
+    const userId = this.uid(req);
+    await this.assertAccess(userId);
+    return this.coinflipService.cashout(userId, body);
+  }
+
+  @Get('coinflip/active')
+  coinflipActive(@Req() req: any) {
+    return this.coinflipService.getActive(this.uid(req));
   }
 
   @Get('coinflip/history')
@@ -74,18 +93,18 @@ export class OriginalsGamesController {
     return this.coinflipService.getHistory(this.uid(req), Number(query.limit) || 20);
   }
 
-  // ── Color ────────────────────────────────────────────────────────────────
+  // ── Limbo (instant single-shot) ──────────────────────────────────────────
 
-  @Post('color/play')
-  async colorPlay(@Req() req: any, @Body() body: any) {
+  @Post('limbo/play')
+  async limboPlay(@Req() req: any, @Body() body: any) {
     const userId = this.uid(req);
     await this.assertAccess(userId);
-    return this.colorService.play(userId, body);
+    return this.limboService.play(userId, body);
   }
 
-  @Get('color/history')
-  colorHistory(@Req() req: any, @Query() query: any) {
-    return this.colorService.getHistory(this.uid(req), Number(query.limit) || 20);
+  @Get('limbo/history')
+  limboHistory(@Req() req: any, @Query() query: any) {
+    return this.limboService.getHistory(this.uid(req), Number(query.limit) || 20);
   }
 
   // ── Keno ─────────────────────────────────────────────────────────────────

@@ -8,6 +8,7 @@ import { PrismaService } from '../../prisma.service';
 import { TowersGame, TowersGameDocument } from '../schemas/towers-game.schema';
 import { GGRService } from '../ggr.service';
 import { BonusService } from '../../bonus/bonus.service';
+import { FairnessService } from '../fairness.service';
 import {
   generateServerSeed,
   shuffle,
@@ -76,6 +77,8 @@ export class TowersService {
     @Inject(forwardRef(() => GGRService))
     private readonly ggrService: GGRService,
     private readonly bonusService: BonusService,
+    @Inject(forwardRef(() => FairnessService))
+    private readonly fairness: FairnessService,
   ) {}
 
   async start(userId: number, dto: StartTowersDto) {
@@ -84,7 +87,6 @@ export class TowersService {
       difficulty = 'medium',
       walletType = 'fiat',
       useBonus = false,
-      clientSeed = 'odd69',
     } = dto;
 
     // 1. Validate inputs
@@ -128,8 +130,8 @@ export class TowersService {
     );
 
     // 5. Pre-generate the full provably-fair layout (server seed per game-instance)
-    const { serverSeed, serverSeedHash } = generateServerSeed();
-    const nonce = Date.now();
+    const { serverSeed, serverSeedHash, clientSeed, nonce } =
+      await this.fairness.consume(userId);
     const trapsPerFloor = tilesPerFloor - safePerFloor;
     const floorTraps: number[][] = [];
     for (let fl = 0; fl < TOTAL_FLOORS; fl++) {
@@ -156,6 +158,7 @@ export class TowersService {
       serverSeed,
       clientSeed,
       serverSeedHash,
+      nonce,
       walletType,
       usedBonus: bonusUsed > 0,
       bonusAmount: bonusUsed,
@@ -393,6 +396,7 @@ export class TowersService {
       nextMultiplier: opts.nextMultiplier,
       serverSeedHash: game.serverSeedHash,
       clientSeed: game.clientSeed,
+      nonce: game.nonce,
     };
 
     if (opts.pickedTile !== undefined) {
@@ -401,8 +405,9 @@ export class TowersService {
     }
 
     if (opts.revealLayout) {
+      // Reveal the trap layout (the outcome) but NOT the raw serverSeed — that
+      // stays committed until the player rotates their seed pair (verify later).
       base.floorTraps = game.floorTraps;
-      base.serverSeed = game.serverSeed;
     }
 
     return base;

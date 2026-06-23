@@ -55,9 +55,15 @@ function useCrashCanvas(
   // instead of snapping. This is purely cosmetic: the *target* is always the
   // server-reported multiplier, we only interpolate the in-between frames.
   const smoothMultiRef = useRef(1.0);
+  // Eased axis extents so the graph rescales smoothly instead of jumping when
+  // the server multiplier ticks (cosmetic only).
+  const axisYRef = useRef(2);
+  const axisXRef = useRef(5);
   // Particle puffs trailing behind the rocket while flying.
   const trailRef = useRef<{ x: number; y: number; life: number; r: number }[]>([]);
   const lastTrailRef = useRef(0);
+  // Stars drifting in the background while flying (parallax depth).
+  const starsRef = useRef<{ x: number; y: number; r: number; tw: number }[]>([]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -108,15 +114,39 @@ function useCrashCanvas(
         smoothMultiRef.current += (multiplier - smoothMultiRef.current) * k;
       } else {
         smoothMultiRef.current = 1.0;
+        axisYRef.current = 2;   // reset eased axes between rounds
+        axisXRef.current = 5;
       }
       const dispMulti = phase === "CRASHED" ? multiplier : Math.max(1, smoothMultiRef.current);
+
+      /* ── Heat colour: green climbing → gold past ~10x (cosmetic) ── */
+      const flying0 = phase === "FLYING";
+      const crashed0 = phase === "CRASHED";
+      // 0 at 1x, ramps to 1 around 10x for a smooth green→gold shift.
+      const heat = Math.min(1, Math.max(0, (dispMulti - 2) / 8));
+      const lerpC = (a: number[], b: number[], t: number) =>
+        `rgb(${Math.round(a[0] + (b[0] - a[0]) * t)},${Math.round(a[1] + (b[1] - a[1]) * t)},${Math.round(a[2] + (b[2] - a[2]) * t)})`;
+      const GREEN = [46, 204, 113];
+      const GOLD = [255, 196, 74];
+      const RED = [231, 76, 60];
+      const accent = crashed0 ? `rgb(${RED[0]},${RED[1]},${RED[2]})` : lerpC(GREEN, GOLD, heat);
+      const accentRGB = crashed0 ? RED : [
+        Math.round(GREEN[0] + (GOLD[0] - GREEN[0]) * heat),
+        Math.round(GREEN[1] + (GOLD[1] - GREEN[1]) * heat),
+        Math.round(GREEN[2] + (GOLD[2] - GREEN[2]) * heat),
+      ];
 
       /* ── Grid lines ─────────────────────────────────────── */
       ctx.strokeStyle = "#1a1f2e";
       ctx.lineWidth = 1;
 
-      // Horizontal grid + Y labels
-      const maxMulti = Math.max(2, dispMulti * 1.3);
+      // Horizontal grid + Y labels — eased toward target so it never jumps.
+      const targetY = Math.max(2, dispMulti * 1.3);
+      {
+        const k = reduceMotion || crashed0 ? 1 : 1 - Math.pow(0.002, dt);
+        axisYRef.current += (targetY - axisYRef.current) * k;
+      }
+      const maxMulti = axisYRef.current;
       const ySteps = Math.max(2, Math.min(10, Math.ceil(maxMulti)));
       for (let i = 0; i <= ySteps; i++) {
         const val = 1 + (maxMulti - 1) * (i / ySteps);
@@ -132,9 +162,14 @@ function useCrashCanvas(
         ctx.fillText(val.toFixed(1) + "x", padL - 6, y + 4);
       }
 
-      // Vertical grid + X labels (time in seconds)
+      // Vertical grid + X labels (time in seconds) — eased rescale.
       const elapsed = (phase === "FLYING" || phase === "CRASHED") ? (Date.now() - startTime) / 1000 : 0;
-      const maxTime = Math.max(5, elapsed * 1.2);
+      const targetX = Math.max(5, elapsed * 1.2);
+      {
+        const k = reduceMotion || crashed0 ? 1 : 1 - Math.pow(0.002, dt);
+        axisXRef.current += (targetX - axisXRef.current) * k;
+      }
+      const maxTime = axisXRef.current;
       const xSteps = Math.min(8, Math.max(3, Math.ceil(maxTime)));
       for (let i = 0; i <= xSteps; i++) {
         const x = padL + gW * (i / xSteps);
@@ -151,9 +186,29 @@ function useCrashCanvas(
         ctx.fillText(tVal + "s", x, padT + gH + 18);
       }
 
-      const flying = phase === "FLYING";
-      const crashed = phase === "CRASHED";
-      const accent = crashed ? "#e74c3c" : "#2ecc71";
+      const flying = flying0;
+      const crashed = crashed0;
+      const [ar, ag, ab] = accentRGB;
+
+      /* ── Parallax starfield (flying only, cosmetic) ── */
+      if (flying && !reduceMotion) {
+        if (starsRef.current.length === 0) {
+          for (let i = 0; i < 36; i++) {
+            starsRef.current.push({ x: Math.random() * W, y: Math.random() * H, r: Math.random() * 1.4 + 0.3, tw: Math.random() * Math.PI * 2 });
+          }
+        }
+        for (const st of starsRef.current) {
+          st.x -= dt * (12 + st.r * 18); // faster = closer (parallax)
+          if (st.x < 0) { st.x = W; st.y = Math.random() * H; }
+          const a = 0.25 + 0.25 * Math.sin(now / 600 + st.tw);
+          ctx.beginPath();
+          ctx.arc(st.x, st.y, st.r, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(255,255,255,${a})`;
+          ctx.fill();
+        }
+      } else {
+        starsRef.current = [];
+      }
 
       /* ── Curve ──────────────────────────────────────────── */
       if ((flying || crashed) && dispMulti > 1) {
@@ -183,13 +238,8 @@ function useCrashCanvas(
         ctx.closePath();
 
         const grad = ctx.createLinearGradient(0, padT, 0, padT + gH);
-        if (crashed) {
-          grad.addColorStop(0, "rgba(231,76,60,0.28)");
-          grad.addColorStop(1, "rgba(231,76,60,0.02)");
-        } else {
-          grad.addColorStop(0, "rgba(46,204,113,0.28)");
-          grad.addColorStop(1, "rgba(46,204,113,0.02)");
-        }
+        grad.addColorStop(0, `rgba(${ar},${ag},${ab},0.28)`);
+        grad.addColorStop(1, `rgba(${ar},${ag},${ab},0.02)`);
         ctx.fillStyle = grad;
         ctx.fill();
 
@@ -207,7 +257,7 @@ function useCrashCanvas(
         ctx.lineJoin = "round";
         ctx.lineCap = "round";
         ctx.shadowColor = accent;
-        ctx.shadowBlur = flying ? 12 : 6;
+        ctx.shadowBlur = flying ? 12 + heat * 10 : 6; // glow intensifies as it climbs
         ctx.stroke();
         ctx.shadowBlur = 0;
 
@@ -242,19 +292,19 @@ function useCrashCanvas(
 
         /* ── Rocket head ── */
         if (flying) {
-          // Pulsing halo.
+          // Pulsing halo (heat-tinted).
           const pulse = 7 + Math.sin(now / 120) * 2;
           ctx.beginPath();
           ctx.arc(lastPt[0], lastPt[1], pulse + 6, 0, Math.PI * 2);
-          ctx.fillStyle = "rgba(46,204,113,0.12)";
+          ctx.fillStyle = `rgba(${ar},${ag},${ab},0.12)`;
           ctx.fill();
-          // Rocket emoji rotated along the curve direction.
+          // Rocket emoji rotated along the curve direction, scaled up a touch with heat.
           const prev = points[points.length - 2] ?? points[0];
           const ang = Math.atan2(lastPt[1] - prev[1], lastPt[0] - prev[0]);
           ctx.save();
           ctx.translate(lastPt[0], lastPt[1]);
           ctx.rotate(ang + Math.PI / 4); // emoji points up-right by default
-          ctx.font = "20px sans-serif";
+          ctx.font = `${Math.round(20 + heat * 4)}px sans-serif`;
           ctx.textAlign = "center";
           ctx.textBaseline = "middle";
           ctx.fillText("🚀", 0, 0);
@@ -340,19 +390,34 @@ export default function CrashPage() {
   const [autoRunning, setAutoRunning] = useState(false);
   const [autoRoundsLeft, setAutoRoundsLeft] = useState(0);
   const [autoProfit, setAutoProfit] = useState(0);
+  // On-win / On-loss progression (Stake-style): reset to base OR increase by N%.
+  const [onWinMode, setOnWinMode] = useState<"reset" | "increase">("reset");
+  const [onLossMode, setOnLossMode] = useState<"reset" | "increase">("reset");
+  const [onWinPct, setOnWinPct] = useState("0");
+  const [onLossPct, setOnLossPct] = useState("0");
   const autoRunningRef = useRef(false);
   const autoProfitRef = useRef(0);
   const lastBetAmountRef = useRef(0);
+  const baseBetRef = useRef(0);          // the base stake autobet returns to on reset
+  const nextBetRef = useRef(0);          // the stake to use for the next auto round
   const betInputRef = useRef(betInput);
   const autoCashOutAtRef = useRef(autoCashOutAt);
   const autoStopWinRef = useRef(autoStopWin);
   const autoStopLossRef = useRef(autoStopLoss);
+  const onWinModeRef = useRef(onWinMode);
+  const onLossModeRef = useRef(onLossMode);
+  const onWinPctRef = useRef(onWinPct);
+  const onLossPctRef = useRef(onLossPct);
   const walletTypeRef = useRef<WalletType>(walletType);
 
   useEffect(() => { betInputRef.current = betInput; }, [betInput]);
   useEffect(() => { autoCashOutAtRef.current = autoCashOutAt; }, [autoCashOutAt]);
   useEffect(() => { autoStopWinRef.current = autoStopWin; }, [autoStopWin]);
   useEffect(() => { autoStopLossRef.current = autoStopLoss; }, [autoStopLoss]);
+  useEffect(() => { onWinModeRef.current = onWinMode; }, [onWinMode]);
+  useEffect(() => { onLossModeRef.current = onLossMode; }, [onLossMode]);
+  useEffect(() => { onWinPctRef.current = onWinPct; }, [onWinPct]);
+  useEffect(() => { onLossPctRef.current = onLossPct; }, [onLossPct]);
   useEffect(() => { walletTypeRef.current = walletType; }, [walletType]);
   useEffect(() => { setWalletType(selectedWallet); }, [selectedWallet]);
 
@@ -389,10 +454,12 @@ export default function CrashPage() {
           const sl = parseFloat(autoStopLossRef.current) || 0;
           if (sw > 0 && autoProfitRef.current >= sw) { autoRunningRef.current = false; setAutoRunning(false); toast.success("Auto stopped: profit target reached"); return 0; }
           if (sl > 0 && autoProfitRef.current <= -sl) { autoRunningRef.current = false; setAutoRunning(false); toast.error("Auto stopped: loss limit reached"); return 0; }
-          // Fire bet
-          const ba = parseFloat(betInputRef.current) || 100;
+          // Fire bet — uses the progression-adjusted stake (falls back to base/input).
+          const ba = nextBetRef.current > 0 ? nextBetRef.current : (parseFloat(betInputRef.current) || 100);
           const acAt = parseFloat(autoCashOutAtRef.current) || 0;
           lastBetAmountRef.current = ba;
+          // Reflect the live auto stake in the amount field so the player sees it.
+          setBetInput(ba.toFixed(2));
           setTimeout(() => {
             if (autoRunningRef.current && s.connected) {
               s.emit("aviator:bet", { roundId: d.roundId, betAmount: ba, autoCashoutAt: acAt, walletType: walletTypeRef.current });
@@ -431,8 +498,16 @@ export default function CrashPage() {
       setHistory(prev => [{ roundId: d.roundId, crashPoint: d.crashPoint }, ...prev.slice(0, 29)]);
       // Auto-bet: track loss if we had a bet and didn't cash out
       if (autoRunningRef.current && lastBetAmountRef.current > 0) {
-        autoProfitRef.current -= lastBetAmountRef.current;
+        const lost = lastBetAmountRef.current;
+        autoProfitRef.current -= lost;
         setAutoProfit(autoProfitRef.current);
+        // On-loss progression: reset to base OR increase by N%.
+        if (onLossModeRef.current === "increase") {
+          const pct = parseFloat(onLossPctRef.current) || 0;
+          nextBetRef.current = +(lost * (1 + pct / 100)).toFixed(2);
+        } else {
+          nextBetRef.current = baseBetRef.current;
+        }
         lastBetAmountRef.current = 0;
       }
     });
@@ -454,9 +529,17 @@ export default function CrashPage() {
       toast.success(`Won ${getWalletSymbol(walletTypeRef.current)}${d.payout.toFixed(2)} at ${winMulti.toFixed(2)}×`);
       // Auto: track profit (cashout-success fires before crash, so reset lastBetAmount to prevent double counting)
       if (autoRunningRef.current) {
-        const net = d.payout - lastBetAmountRef.current;
+        const staked = lastBetAmountRef.current;
+        const net = d.payout - staked;
         autoProfitRef.current += net;
         setAutoProfit(autoProfitRef.current);
+        // On-win progression: reset to base OR increase by N%.
+        if (onWinModeRef.current === "increase") {
+          const pct = parseFloat(onWinPctRef.current) || 0;
+          nextBetRef.current = +(staked * (1 + pct / 100)).toFixed(2);
+        } else {
+          nextBetRef.current = baseBetRef.current;
+        }
         lastBetAmountRef.current = 0;
       }
     });
@@ -513,6 +596,22 @@ export default function CrashPage() {
     socketRef.current?.emit("aviator:cashout", { roundId: roundIdRef.current });
   }, []);
 
+  // Hotkeys: Space / Enter → bet (during betting) or cash out (during flight).
+  // Skipped while typing in an input and while autobet is running.
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.code !== "Space" && e.code !== "Enter") return;
+      const el = document.activeElement as HTMLElement | null;
+      if (el && (el.tagName === "INPUT" || el.tagName === "TEXTAREA" || el.isContentEditable)) return;
+      if (autoRunningRef.current || betTab === "auto") return;
+      e.preventDefault();
+      if (hasBet && !cashedOut && phase === "FLYING") handleCashout();
+      else if (!hasBet && (phase === "BETTING" || phase === "IDLE")) handleBet();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [betTab, hasBet, cashedOut, phase, handleBet, handleCashout]);
+
   const handleStartAuto = useCallback(() => {
     if (!hasSession) { openLogin(); return; }
     if (betAmount <= 0) { toast.error("Enter a bet amount"); return; }
@@ -524,6 +623,9 @@ export default function CrashPage() {
     autoRunningRef.current = true;
     setAutoRunning(true);
     lastBetAmountRef.current = 0;
+    // Seed the progression with the current amount as the base stake.
+    baseBetRef.current = betAmount;
+    nextBetRef.current = betAmount;
     // If currently in BETTING phase, place bet immediately
     if (phase === "BETTING") {
       const acAt = parseFloat(autoCashOutAtRef.current) || 0;
@@ -567,8 +669,13 @@ export default function CrashPage() {
                 </div>
                 <div style={{ position: "absolute", right: 0, top: 0, width: 30, height: "100%", background: "linear-gradient(to left, #111216, transparent)", pointerEvents: "none" }} />
               </div>
+              {/* Real-money credibility tags */}
+              <div className="hidden sm:flex items-center gap-1.5 mr-2 flex-shrink-0">
+                <span className="px-1.5 py-0.5 rounded text-[9px] font-bold tracking-wide" style={{ background: "rgba(46,204,113,0.12)", color: "#2ecc71", border: "1px solid rgba(46,204,113,0.25)" }}>99% RTP</span>
+                <span className="px-1.5 py-0.5 rounded text-[9px] font-bold tracking-wide" style={{ background: "rgba(255,196,74,0.10)", color: "#ffc44a", border: "1px solid rgba(255,196,74,0.22)" }}>MAX 1,000,000×</span>
+              </div>
               <button onClick={toggleMute} title={muted ? "Unmute" : "Mute"}
-                className="ml-2 flex-shrink-0 w-7 h-7 flex items-center justify-center rounded-lg hover:bg-white/[0.05] text-zinc-500 hover:text-white transition-colors">
+                className="ml-1 flex-shrink-0 w-7 h-7 flex items-center justify-center rounded-lg hover:bg-white/[0.05] text-zinc-500 hover:text-white transition-colors">
                 {muted ? <VolumeX size={14} /> : <Volume2 size={14} />}
               </button>
             </div>
@@ -593,7 +700,16 @@ export default function CrashPage() {
 
               {/* Multiplier overlay */}
               <div className="absolute inset-0 flex flex-col items-center justify-center" style={{ zIndex: 2, pointerEvents: "none" }}>
-                {phase === "FLYING" && (
+                {phase === "FLYING" && (() => {
+                  // Heat-shift the glow + × accent green→gold as the multiplier climbs,
+                  // matching the canvas curve (cosmetic only).
+                  const heat = Math.min(1, Math.max(0, (multiplier - 2) / 8));
+                  const gr = Math.round(46 + (255 - 46) * heat);
+                  const gg = Math.round(204 + (196 - 204) * heat);
+                  const gb = Math.round(113 + (74 - 113) * heat);
+                  const glowC = `rgba(${gr},${gg},${gb},${0.45 + heat * 0.2})`;
+                  const xC = `rgb(${gr},${gg},${gb})`;
+                  return (
                   <motion.div
                     className="font-black tabular-nums"
                     initial={false}
@@ -601,12 +717,13 @@ export default function CrashPage() {
                     transition={reduceMotion ? undefined : { duration: 0.45, repeat: Infinity, ease: "easeInOut" }}
                     style={{
                       color: "#fff", fontSize: "clamp(48px, 12vw, 100px)", lineHeight: 1,
-                      textShadow: "0 2px 24px rgba(46,204,113,0.45)",
+                      textShadow: `0 2px ${24 + heat * 16}px ${glowC}`,
                     }}
                   >
-                    {multiplier.toFixed(2)}<span style={{ fontSize: "0.65em", color: "#2ecc71" }}>×</span>
+                    {multiplier.toFixed(2)}<span style={{ fontSize: "0.65em", color: xC }}>×</span>
                   </motion.div>
-                )}
+                  );
+                })()}
                 {phase === "CRASHED" && (
                   <motion.div
                     className="text-center"
@@ -625,9 +742,26 @@ export default function CrashPage() {
                 )}
                 {phase === "BETTING" && (
                   <div className="text-center">
-                    <div className="text-zinc-500 font-bold text-sm uppercase tracking-[0.15em] mb-1">Starting in…</div>
+                    <motion.div
+                      className="text-zinc-500 font-bold text-sm uppercase tracking-[0.15em] mb-1"
+                      animate={reduceMotion ? {} : { opacity: [0.5, 1, 0.5] }}
+                      transition={reduceMotion ? undefined : { duration: 1, repeat: Infinity, ease: "easeInOut" }}
+                    >
+                      Starting in…
+                    </motion.div>
                     <div className="text-zinc-400 font-black tabular-nums" style={{ fontSize: "clamp(30px, 8vw, 60px)", lineHeight: 1 }}>
                       1.00<span style={{ fontSize: "0.65em" }}>×</span>
+                    </div>
+                    {/* Draining countdown bar (~5s betting window, cosmetic). */}
+                    <div className="mx-auto mt-3 h-1 w-[160px] rounded-full overflow-hidden" style={{ background: "#1a1f2e" }}>
+                      <motion.div
+                        key={roundIdRef.current}
+                        className="h-full rounded-full"
+                        style={{ background: "linear-gradient(90deg,#2ecc71,#ffc44a)" }}
+                        initial={{ width: "100%" }}
+                        animate={{ width: "0%" }}
+                        transition={{ duration: reduceMotion ? 0 : 5, ease: "linear" }}
+                      />
                     </div>
                   </div>
                 )}
@@ -719,6 +853,10 @@ export default function CrashPage() {
                         {v >= 1000 ? (v / 1000).toFixed(1) + "k" : v}
                       </button>
                     ))}
+                    <button onClick={() => setBetInput(Math.max(0, activeBalance || 0).toFixed(2))} disabled={autoRunning}
+                      className="flex-1 h-[26px] rounded text-[11px] font-bold bg-[#12141C] border border-[#1C1E28] text-[#2ecc71] hover:brightness-125 cursor-pointer transition-all disabled:opacity-30">
+                      MAX
+                    </button>
                   </div>
                 </div>
 
@@ -792,6 +930,39 @@ export default function CrashPage() {
                           className="w-full bg-[#12141C] border border-[#1C1E28] text-white font-bold text-xs outline-none h-[26px] rounded px-1.5 disabled:opacity-40 placeholder:text-zinc-700" />
                       </div>
                     </div>
+
+                    {/* On Win / On Loss progression */}
+                    <div className="grid grid-cols-2 gap-2 pt-1 border-t border-white/[0.06]">
+                      {([
+                        { label: "On Win", mode: onWinMode, setMode: setOnWinMode, pct: onWinPct, setPct: setOnWinPct },
+                        { label: "On Loss", mode: onLossMode, setMode: setOnLossMode, pct: onLossPct, setPct: setOnLossPct },
+                      ] as const).map((row) => (
+                        <div key={row.label}>
+                          <div className="text-[9px] text-zinc-600 font-bold uppercase mb-1">{row.label}</div>
+                          <div className="flex gap-0.5 mb-1">
+                            {(["reset", "increase"] as const).map((m) => (
+                              <button key={m} disabled={autoRunning}
+                                onClick={() => { if (!autoRunning) row.setMode(m); }}
+                                className="flex-1 text-[9px] py-[3px] rounded font-bold capitalize transition-colors disabled:cursor-not-allowed"
+                                style={{
+                                  background: row.mode === m ? "rgba(46,204,113,0.18)" : "#12141C",
+                                  border: row.mode === m ? "1px solid #2ecc71" : "1px solid #1C1E28",
+                                  color: row.mode === m ? "#2ecc71" : "#888",
+                                }}>
+                                {m === "reset" ? "Reset" : "Increase"}
+                              </button>
+                            ))}
+                          </div>
+                          <div className={`flex items-center bg-[#12141C] border border-[#1C1E28] rounded h-[26px] px-1.5 transition-opacity ${row.mode === "increase" ? "" : "opacity-40 pointer-events-none"}`}>
+                            <input type="text" value={row.pct} disabled={autoRunning || row.mode !== "increase"}
+                              onChange={e => row.setPct(e.target.value.replace(/[^0-9.]/g, ""))}
+                              className="flex-1 bg-transparent text-white font-bold text-xs outline-none min-w-0 disabled:opacity-60" />
+                            <span className="text-zinc-500 text-[11px] font-bold">%</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
                     {autoRunning && (
                       <div className="flex items-center justify-between text-[11px] pt-1 border-t border-white/[0.06]">
                         <span className="text-zinc-600">Profit</span>
@@ -855,11 +1026,17 @@ export default function CrashPage() {
                   </button>
                 )}
 
-                {/* Balance */}
+                {/* Balance + hotkey hint */}
                 <div className="flex items-center justify-between px-1 pt-1">
                   <span className="text-[10px] text-zinc-600">Balance</span>
                   <span className="text-[11px] text-white font-bold">{activeSymbol}{activeBalance?.toFixed(2) ?? "—"}</span>
                 </div>
+                {betTab === "manual" && (
+                  <div className="flex items-center justify-center gap-1 pt-0.5">
+                    <kbd className="px-1.5 py-px rounded text-[9px] font-bold text-zinc-500 bg-[#12141C] border border-[#1C1E28]">Space</kbd>
+                    <span className="text-[9px] text-zinc-600">to bet / cash out</span>
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -885,22 +1062,30 @@ export default function CrashPage() {
             <div className="flex-1 overflow-y-auto" style={{ scrollbarWidth: "thin", scrollbarColor: "#222 transparent" }}>
               {liveBets.length === 0 ? (
                 <div className="text-center text-zinc-700 text-xs py-10">Waiting for bets…</div>
-              ) : liveBets.map((b, i) => (
-                <div key={i} className="flex items-center px-3 py-[6px] hover:bg-bg-modal transition-colors" style={{ borderBottom: "1px solid #111318" }}>
-                  <div className="flex-1 text-[12px] text-zinc-300 font-medium truncate">{b.username}</div>
+              ) : liveBets.map((b, i) => {
+                const m = b.multiplier || 0;
+                // Payout tier color: red <2x, green 2-10x, gold ≥10x.
+                const tier = m < 2 ? "#e74c3c" : m < 10 ? "#2ecc71" : "#ffc44a";
+                return (
+                <div key={i} className="flex items-center px-3 py-[6px] transition-colors" style={{
+                  borderBottom: "1px solid #111318",
+                  background: b.cashedOut ? "rgba(46,204,113,0.07)" : undefined,
+                }}>
+                  <div className="flex-1 text-[12px] font-medium truncate" style={{ color: b.cashedOut ? "#cbf3d8" : "#d4d4d8" }}>{b.username}</div>
                   <div style={{ width: 60, textAlign: "center" }}>
                     {b.cashedOut
-                      ? <span className="text-[12px] font-bold text-green-400">{(b.multiplier || 0).toFixed(2)}x</span>
+                      ? <span className="text-[12px] font-bold tabular-nums" style={{ color: tier }}>{m.toFixed(2)}x</span>
                       : <span className="text-zinc-700 text-[12px]">—</span>}
                   </div>
-                  <div style={{ width: 90, textAlign: "right" }} className="flex items-center justify-end gap-1">
-                    <div className="w-3 h-3 rounded-full" style={{
-                      background: ["#e74c3c", "#3498db", "#f39c12", "#2ecc71", "#9b59b6", "#e67e22"][i % 6],
-                    }} />
-                    <span className="text-[12px] text-white font-bold tabular-nums">{activeSymbol}{(b.cashedOut ? (b.payout || 0) : b.betAmount).toFixed(2)}</span>
+                  <div style={{ width: 90, textAlign: "right" }} className="flex items-center justify-end gap-1.5">
+                    <div className="w-2 h-2 rounded-full" style={{ background: b.cashedOut ? tier : "#3a3d4a" }} />
+                    <span className="text-[12px] font-bold tabular-nums" style={{ color: b.cashedOut ? tier : "#fff" }}>
+                      {activeSymbol}{(b.cashedOut ? (b.payout || 0) : b.betAmount).toFixed(2)}
+                    </span>
                   </div>
                 </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         </main>

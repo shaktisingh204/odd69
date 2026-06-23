@@ -53,16 +53,11 @@ import { WageringBackfillModule } from './wagering-backfill/wagering-backfill.mo
 import { MinesModule } from './mines/mines.module';
 import { OriginalsModule } from './originals/originals.module';
 import { AviatorModule } from './aviator/aviator.module';
-import { LimboModule } from './limbo/limbo.module';
-import { KenoModule } from './keno/keno.module';
-import { HiloModule } from './hilo/hilo.module';
-import { RouletteModule } from './roulette/roulette.module';
-import { WheelModule } from './wheel/wheel.module';
-import { CoinflipModule } from './coinflip/coinflip.module';
-import { TowersModule } from './towers/towers.module';
-import { ColorModule } from './color/color.module';
-import { LottoModule } from './lotto/lotto.module';
-import { JackpotModule } from './jackpot/jackpot.module';
+import { ColorRoundModule } from './color-rounds/color-round.module';
+// keno/hilo/roulette/wheel/coinflip/towers/color/lotto/jackpot are served by
+// OriginalsGamesController inside OriginalsModule (the standalone per-game
+// modules were redundant duplicates registering the same /originals/<game>
+// routes and were removed).
 import { NotificationsModule } from './notifications/notifications.module';
 import { PushNotificationsModule } from './push-notifications/push-notifications.module';
 import { LivePulseModule } from './live-pulse/live-pulse.module';
@@ -145,16 +140,7 @@ import { ScheduleModule } from '@nestjs/schedule';
     MinesModule,
     OriginalsModule,
     AviatorModule,
-    LimboModule,
-    KenoModule,
-    HiloModule,
-    RouletteModule,
-    WheelModule,
-    CoinflipModule,
-    TowersModule,
-    ColorModule,
-    LottoModule,
-    JackpotModule,
+    ColorRoundModule,
     NotificationsModule,
     PushNotificationsModule,
     LivePulseModule,

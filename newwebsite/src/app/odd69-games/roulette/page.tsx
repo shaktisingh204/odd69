@@ -14,7 +14,10 @@ import api from "@/services/api";
 import OriginalsShell from "@/components/originals/OriginalsShell";
 import { useWallet } from "@/context/WalletContext";
 import { fireWin, fireBigWin, playSound } from "@/utils/originalsFx";
-import { Undo2, RotateCcw } from "lucide-react";
+import OriginalsAutoBet from "@/components/originals/OriginalsAutoBet";
+import { Undo2, RotateCcw, Repeat } from "lucide-react";
+
+const ACCENT = "#ff9a3d";
 
 const RED = new Set([
   1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36,
@@ -73,15 +76,75 @@ const TABLE_ROWS: number[][] = [
   Array.from({ length: 12 }, (_, i) => 1 + i * 3),
 ];
 
+// Total-return multiplier (stake included) for each supported bet kind — mirrors
+// the backend `payoutMultiplier()` exactly so the felt potential-win readout
+// matches what the server credits.
+const KIND_MULT: Record<BetKind, number> = {
+  number: 36,
+  red: 2,
+  black: 2,
+  odd: 2,
+  even: 2,
+  high: 2,
+  low: 2,
+  dozen1: 3,
+  dozen2: 3,
+  dozen3: 3,
+  col1: 3,
+  col2: 3,
+  col3: 3,
+};
+
+// Does a given bet kind cover the result number? (client-side preview only —
+// the outcome itself always comes from the server response).
+const RED_SET = RED;
+function coversNumber(kind: BetKind, value: number | undefined, n: number): boolean {
+  switch (kind) {
+    case "number":
+      return value === n;
+    case "red":
+      return RED_SET.has(n);
+    case "black":
+      return n !== 0 && !RED_SET.has(n);
+    case "odd":
+      return n !== 0 && n % 2 === 1;
+    case "even":
+      return n !== 0 && n % 2 === 0;
+    case "high":
+      return n >= 19 && n <= 36;
+    case "low":
+      return n >= 1 && n <= 18;
+    case "dozen1":
+      return n >= 1 && n <= 12;
+    case "dozen2":
+      return n >= 13 && n <= 24;
+    case "dozen3":
+      return n >= 25 && n <= 36;
+    case "col1":
+      return n !== 0 && n % 3 === 1;
+    case "col2":
+      return n !== 0 && n % 3 === 2;
+    case "col3":
+      return n !== 0 && n % 3 === 0;
+    default:
+      return false;
+  }
+}
+
 export default function RoulettePage() {
   const { fiatBalance, cryptoBalance, refreshWallet } = useWallet();
   const reduceMotion = useReducedMotion();
+  const [mode, setMode] = useState<"manual" | "auto">("manual");
   const [chipValue, setChipValue] = useState<number>(10);
   const [walletType, setWalletType] = useState<"fiat" | "crypto">("crypto");
   const [useBonus, setUseBonus] = useState(false);
   const [bets, setBets] = useState<ChipBet[]>([]);
   const [history, setHistory] = useState<ChipBet[][]>([]);
+  // Snapshot of the last spin's chip layout for Rebet (and the auto-bet engine).
+  const [lastBets, setLastBets] = useState<ChipBet[]>([]);
   const [busy, setBusy] = useState(false);
+  // True while the auto-bet engine is running (locks manual interaction).
+  const [autoBusy, setAutoBusy] = useState(false);
   const [result, setResult] = useState<RouletteResult | null>(null);
   const [recentResults, setRecentResults] = useState<RouletteResult[]>([]);
   // Retained from the original flow (still set on every spin); the actual wheel
@@ -120,11 +183,33 @@ export default function RoulettePage() {
     () => bets.reduce((s, b) => s + b.amount, 0),
     [bets],
   );
+
+  // Best-case potential win: the highest total return across all 37 pockets,
+  // given the current chip layout. Pure display (server decides the real result).
+  const maxWin = useMemo(() => {
+    if (bets.length === 0) return 0;
+    let best = 0;
+    for (let n = 0; n <= 36; n++) {
+      let ret = 0;
+      for (const b of bets) {
+        if (coversNumber(b.kind, b.value, n)) ret += b.amount * KIND_MULT[b.kind];
+      }
+      if (ret > best) best = ret;
+    }
+    return best;
+  }, [bets]);
+
+  // Keep the latest chip layout readable inside the async auto-bet runBet
+  // without re-creating the callback (which would restart the loop).
+  const betsRef = useRef<ChipBet[]>(bets);
+  betsRef.current = bets;
+
   const sym = walletType === "crypto" ? "$" : "$";
   const balance = walletType === "crypto" ? cryptoBalance : fiatBalance;
+  const locked = busy || autoBusy;
 
   const placeBet = (kind: BetKind, value?: number) => {
-    if (busy) return;
+    if (locked) return;
     setResult(null);
     playSound("bet");
     setHistory((h) => [...h, bets]);
@@ -139,17 +224,17 @@ export default function RoulettePage() {
     });
   };
   const undo = () => {
-    if (busy || history.length === 0) return;
+    if (locked || history.length === 0) return;
     setBets(history[history.length - 1]);
     setHistory((h) => h.slice(0, -1));
   };
   const clearBets = () => {
-    if (busy) return;
+    if (locked) return;
     setHistory((h) => (bets.length ? [...h, bets] : h));
     setBets([]);
   };
   const halfBets = () => {
-    if (busy) return;
+    if (locked) return;
     setHistory((h) => [...h, bets]);
     setBets((prev) =>
       prev
@@ -158,17 +243,27 @@ export default function RoulettePage() {
     );
   };
   const doubleBets = () => {
-    if (busy) return;
+    if (locked) return;
     setHistory((h) => [...h, bets]);
     setBets((prev) => prev.map((b) => ({ ...b, amount: b.amount * 2 })));
+  };
+  // Rebet: re-apply the exact chip layout from the previous spin.
+  const rebet = () => {
+    if (locked || lastBets.length === 0) return;
+    playSound("bet");
+    setHistory((h) => [...h, bets]);
+    setBets(lastBets.map((b) => ({ ...b })));
   };
 
   const getBetTotal = (kind: BetKind, value?: number) =>
     bets.find((b) => b.kind === kind && b.value === value)?.amount || 0;
 
   // Drive the wheel + ball to the server result. Pure visual; outcome is fixed.
+  // Resolves once the ball settles (or immediately under reduced motion) so the
+  // auto-bet engine can pace the next round on the real animation length.
   const animateToResult = useCallback(
-    (res: RouletteResult, straightHit: boolean) => {
+    (res: RouletteResult, straightHit: boolean): Promise<void> =>
+      new Promise<void>((resolve) => {
     const N = SEQUENCE.length;
     const seg = 360 / N;
     const idx = Math.max(0, SEQUENCE.indexOf(res.result));
@@ -205,6 +300,7 @@ export default function RoulettePage() {
         gsap.set(ballRingRef.current, { rotation: nextBall });
       setSpinning(false);
       finishCelebration(res, straightHit);
+      resolve();
       return;
     }
 
@@ -251,14 +347,16 @@ export default function RoulettePage() {
           ballAngleRef.current = nextBall;
           setSpinning(false);
           finishCelebration(res, straightHit);
+          resolve();
         },
       });
     } else {
       ballAngleRef.current = nextBall;
       setSpinning(false);
       finishCelebration(res, straightHit);
+      resolve();
     }
-    },
+    }),
     [],
   );
 
@@ -280,46 +378,76 @@ export default function RoulettePage() {
     }
   };
 
+  // Core spin: posts ONE bet layout to the server, animates the wheel/ball to
+  // the server-decided pocket, updates the recent-results strip + wallet, and
+  // resolves with the round outcome. Outcome is ALWAYS the server's — the
+  // animation merely visualizes `res.result` via SEQUENCE.indexOf.
+  const spinWith = useCallback(
+    async (
+      layout: ChipBet[],
+    ): Promise<{ won: boolean; payout: number } | null> => {
+      if (layout.length === 0) return null;
+      setResult(null);
+      try {
+        const res = await api.post<RouletteResult>(
+          "/originals/roulette/play",
+          { bets: layout, walletType, useBonus },
+        );
+        const data = res.data;
+        // Did the player have a straight-up bet on the winning number?
+        const straightHit = layout.some(
+          (b) => b.kind === "number" && b.value === data.result,
+        );
+        setWheelRotation(360 * 6 + (37 - data.result) * (360 / 37));
+        setResult(data);
+        setRecentResults((prev) => [data, ...prev].slice(0, 18));
+        // Visual only: spin wheel + ball to the server-decided slot, awaited so
+        // the auto loop paces the next round after the ball actually settles.
+        await animateToResult({ ...data }, straightHit);
+        await refreshWallet();
+        return { won: data.status === "WON", payout: data.payout };
+      } catch (e: unknown) {
+        const msg =
+          (e as { response?: { data?: { message?: string } } })?.response?.data
+            ?.message || "Spin failed";
+        toast.error(msg);
+        return null;
+      }
+    },
+    [walletType, useBonus, refreshWallet, animateToResult],
+  );
+
+  // Manual Spin button.
   const play = useCallback(async () => {
     if (bets.length === 0) return toast.error("Place at least one chip");
+    const layout = bets.map((b) => ({ ...b }));
     setBusy(true);
-    setResult(null);
-    try {
-      const res = await api.post<RouletteResult>("/originals/roulette/play", {
-        bets,
-        walletType,
-        useBonus,
-      });
-      // Did the player have a straight-up bet on the winning number?
-      const straightHit = bets.some(
-        (b) => b.kind === "number" && b.value === res.data.result,
-      );
-      setWheelRotation(360 * 6 + (37 - res.data.result) * (360 / 37));
-      setResult(res.data);
-      setRecentResults((prev) => [res.data, ...prev].slice(0, 12));
-      // Visual only: spin wheel + ball to the server-decided slot. A straight-up
-      // number hit (35:1, ×36) escalates the celebration inside finishCelebration.
-      animateToResult({ ...res.data }, straightHit);
-      if (res.data.status === "WON") {
-        toast.success(`+${sym}${res.data.payout.toLocaleString("en-US")}`);
+    setLastBets(layout);
+    const outcome = await spinWith(layout);
+    if (outcome) {
+      if (outcome.won) {
+        toast.success(`+${sym}${outcome.payout.toLocaleString("en-US")}`);
       } else {
-        toast.error(`Landed on ${res.data.result}`);
+        toast.error("No payout");
       }
       setHistory([]);
-      await refreshWallet();
-    } catch (e: any) {
-      toast.error(e?.response?.data?.message || "Spin failed");
-    } finally {
-      setBusy(false);
     }
-  }, [
-    bets,
-    walletType,
-    useBonus,
-    refreshWallet,
-    sym,
-    animateToResult,
-  ]);
+    setBusy(false);
+  }, [bets, spinWith, sym]);
+
+  // Auto-bet hook: places one spin using whatever chip layout is on the felt at
+  // the moment the round fires (read live via betsRef), returns the outcome.
+  const runAutoBet = useCallback(async (): Promise<{
+    won: boolean;
+    payout: number;
+  } | null> => {
+    const layout = betsRef.current.map((b) => ({ ...b }));
+    if (layout.length === 0) {
+      toast.error("Place at least one chip before auto-betting");
+      return null;
+    }
+    return spinWith(layout);
+  }, [spinWith]);
 
   const numColor = (n: number) =>
     n === 0 ? "bg-emerald-600" : RED.has(n) ? "bg-red-600" : "bg-slate-800";
@@ -336,23 +464,46 @@ export default function RoulettePage() {
       gameKey="roulette"
       title="Roulette"
       tags={["# Roulette", "# ODD69 Originals", "# Provably Fair"]}
+      historyGameKey="roulette"
       controls={
         <>
-          {/* Manual / Auto tabs (Auto disabled) */}
+          {/* Manual / Auto tabs */}
           <div className="flex border-b border-white/[0.06]">
             <button
               type="button"
-              className="flex-1 py-3 text-sm font-bold text-white relative"
+              onClick={() => !autoBusy && setMode("manual")}
+              disabled={autoBusy}
+              className={`flex-1 py-3 text-sm font-bold relative transition-colors ${
+                mode === "manual"
+                  ? "text-white"
+                  : "text-[#6b7280] hover:text-white disabled:opacity-40"
+              }`}
             >
               Manual
-              <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-red-400" />
+              {mode === "manual" && (
+                <div
+                  className="absolute bottom-0 left-0 right-0 h-0.5"
+                  style={{ background: ACCENT }}
+                />
+              )}
             </button>
             <button
               type="button"
-              disabled
-              className="flex-1 py-3 text-sm font-bold text-[#3a3d45] cursor-not-allowed"
+              onClick={() => !busy && setMode("auto")}
+              disabled={busy /* auto tab: blocked only during a manual spin */}
+              className={`flex-1 py-3 text-sm font-bold relative transition-colors ${
+                mode === "auto"
+                  ? "text-white"
+                  : "text-[#6b7280] hover:text-white disabled:opacity-40"
+              }`}
             >
               Auto
+              {mode === "auto" && (
+                <div
+                  className="absolute bottom-0 left-0 right-0 h-0.5"
+                  style={{ background: ACCENT }}
+                />
+              )}
             </button>
           </div>
 
@@ -364,10 +515,10 @@ export default function RoulettePage() {
                   <button
                     key={w}
                     type="button"
-                    onClick={() => !busy && setWalletType(w)}
+                    onClick={() => !locked && setWalletType(w)}
                     className={`px-3 py-1.5 font-bold uppercase transition-colors ${
                       walletType === w
-                        ? "bg-rose-500/20 text-rose-300"
+                        ? "bg-orange-500/20 text-orange-300"
                         : "text-[#6b7280] hover:text-white"
                     }`}
                   >
@@ -387,7 +538,7 @@ export default function RoulettePage() {
                 <label className="text-[11px] text-[#6b7280] font-bold uppercase tracking-wider">
                   Chip Value
                 </label>
-                <span className="text-[11px] font-mono text-rose-300">
+                <span className="text-[11px] font-mono text-orange-300">
                   {sym}
                   {chipValue}
                 </span>
@@ -411,26 +562,39 @@ export default function RoulettePage() {
               </div>
             </div>
 
-            {/* Total bet */}
+            {/* Total bet + potential win */}
             <div className="bg-bg-deep-3 border border-white/[0.06] rounded-xl p-3 space-y-1">
-              <div className="text-[10px] uppercase text-[#6b7280] font-bold tracking-wider">
-                Total Bet
-              </div>
-              <div className="text-xl font-mono font-black text-white">
-                {sym}
-                {totalStake.toLocaleString("en-US")}
+              <div className="flex items-start justify-between">
+                <div>
+                  <div className="text-[10px] uppercase text-[#6b7280] font-bold tracking-wider">
+                    Total Bet
+                  </div>
+                  <div className="text-xl font-mono font-black text-white">
+                    {sym}
+                    {totalStake.toLocaleString("en-US")}
+                  </div>
+                </div>
+                <div className="text-right">
+                  <div className="text-[10px] uppercase text-[#6b7280] font-bold tracking-wider">
+                    Max Win
+                  </div>
+                  <div className="text-base font-mono font-black text-orange-300">
+                    {sym}
+                    {maxWin.toLocaleString("en-US")}
+                  </div>
+                </div>
               </div>
               <div className="text-[10px] text-[#6b7280]">
                 {bets.length} chip{bets.length === 1 ? "" : "s"} placed
               </div>
             </div>
 
-            {/* Stake controls */}
-            <div className="grid grid-cols-4 gap-1">
+            {/* Stake controls (Undo · ½ · 2× · Rebet · Clear) */}
+            <div className="grid grid-cols-5 gap-1">
               <button
                 type="button"
                 onClick={undo}
-                disabled={busy || history.length === 0}
+                disabled={locked || history.length === 0}
                 className="flex items-center justify-center py-2 bg-bg-deep-3 border border-white/[0.06] rounded text-[#9ca3af] hover:text-white disabled:opacity-30"
                 title="Undo"
               >
@@ -439,7 +603,7 @@ export default function RoulettePage() {
               <button
                 type="button"
                 onClick={halfBets}
-                disabled={busy || bets.length === 0}
+                disabled={locked || bets.length === 0}
                 className="py-2 bg-bg-deep-3 border border-white/[0.06] rounded text-[#9ca3af] text-[11px] font-bold hover:text-white disabled:opacity-30"
               >
                 ½
@@ -447,15 +611,24 @@ export default function RoulettePage() {
               <button
                 type="button"
                 onClick={doubleBets}
-                disabled={busy || bets.length === 0}
+                disabled={locked || bets.length === 0}
                 className="py-2 bg-bg-deep-3 border border-white/[0.06] rounded text-[#9ca3af] text-[11px] font-bold hover:text-white disabled:opacity-30"
               >
                 2×
               </button>
               <button
                 type="button"
+                onClick={rebet}
+                disabled={locked || lastBets.length === 0}
+                className="flex items-center justify-center py-2 bg-bg-deep-3 border border-white/[0.06] rounded text-[#9ca3af] hover:text-white disabled:opacity-30"
+                title="Rebet last layout"
+              >
+                <Repeat size={13} />
+              </button>
+              <button
+                type="button"
                 onClick={clearBets}
-                disabled={busy || bets.length === 0}
+                disabled={locked || bets.length === 0}
                 className="flex items-center justify-center py-2 bg-bg-deep-3 border border-white/[0.06] rounded text-[#9ca3af] hover:text-white disabled:opacity-30"
                 title="Clear"
               >
@@ -471,8 +644,9 @@ export default function RoulettePage() {
                 </span>
                 <button
                   type="button"
-                  onClick={() => setUseBonus(!useBonus)}
-                  className={`relative w-10 h-5 rounded-full transition-all border ${
+                  onClick={() => !locked && setUseBonus(!useBonus)}
+                  disabled={locked}
+                  className={`relative w-10 h-5 rounded-full transition-all border disabled:opacity-40 ${
                     useBonus
                       ? "bg-green-500 border-green-500"
                       : "bg-bg-deep-3 border-white/[0.06]"
@@ -487,16 +661,28 @@ export default function RoulettePage() {
               </div>
             )}
 
-            {/* Spin */}
-            <motion.button
-              type="button"
-              onClick={play}
-              disabled={busy || bets.length === 0}
-              whileTap={{ scale: 0.97 }}
-              className="w-full py-4 bg-red-500 hover:bg-red-400 disabled:opacity-40 text-white font-black text-base rounded-xl transition-all hover:scale-[1.02]"
-            >
-              {busy || spinning ? "Spinning…" : "Spin"}
-            </motion.button>
+            {mode === "manual" ? (
+              /* Spin */
+              <motion.button
+                type="button"
+                onClick={play}
+                disabled={busy || bets.length === 0}
+                whileTap={{ scale: 0.97 }}
+                className="w-full py-4 bg-orange-500 hover:bg-orange-400 disabled:opacity-40 text-black font-black text-base rounded-xl transition-all hover:scale-[1.02]"
+              >
+                {busy || spinning ? "Spinning…" : "Spin"}
+              </motion.button>
+            ) : (
+              /* Auto-bet engine — uses the SAME chip layout on the felt each
+                 round; base bet = current total stake. */
+              <OriginalsAutoBet
+                baseBet={totalStake}
+                accent={ACCENT}
+                disabled={bets.length === 0}
+                runBet={runAutoBet}
+                onBusyChange={setAutoBusy}
+              />
+            )}
           </div>
         </>
       }
@@ -592,7 +778,7 @@ export default function RoulettePage() {
             <button
               type="button"
               onClick={() => placeBet("number", 0)}
-              disabled={busy}
+              disabled={locked}
               className="relative w-10 self-stretch bg-emerald-600 hover:brightness-110 rounded-l-md flex items-center justify-center text-white font-black text-sm flex-shrink-0"
             >
               0
@@ -608,7 +794,7 @@ export default function RoulettePage() {
                     key={n}
                     type="button"
                     onClick={() => placeBet("number", n)}
-                    disabled={busy}
+                    disabled={locked}
                     className={`relative ${numColor(n)} hover:brightness-110 rounded text-white text-xs font-black h-9 flex items-center justify-center transition-all ${
                       result && !spinning && result.result === n
                         ? "ring-2 ring-yellow-300 scale-105 z-10"
@@ -630,7 +816,7 @@ export default function RoulettePage() {
                   key={c}
                   type="button"
                   onClick={() => placeBet(c)}
-                  disabled={busy}
+                  disabled={locked}
                   className="relative bg-white/[0.06] hover:bg-white/[0.12] rounded text-[10px] text-white/80 font-bold h-9"
                 >
                   2:1
@@ -649,7 +835,7 @@ export default function RoulettePage() {
                   key={d}
                   type="button"
                   onClick={() => placeBet(d)}
-                  disabled={busy}
+                  disabled={locked}
                   className="relative py-2 bg-white/[0.06] hover:bg-white/[0.12] rounded text-[11px] text-white/80 font-bold"
                 >
                   {`${i + 1}ST 12`}
@@ -667,39 +853,39 @@ export default function RoulettePage() {
               <OutsideBtn
                 badge={getBetTotal("low")}
                 onClick={() => placeBet("low")}
-                disabled={busy}
+                disabled={locked}
                 label="1 to 18"
               />
               <OutsideBtn
                 badge={getBetTotal("even")}
                 onClick={() => placeBet("even")}
-                disabled={busy}
+                disabled={locked}
                 label="EVEN"
               />
               <OutsideBtn
                 badge={getBetTotal("red")}
                 onClick={() => placeBet("red")}
-                disabled={busy}
+                disabled={locked}
                 label=""
                 className="bg-red-600 hover:brightness-110"
               />
               <OutsideBtn
                 badge={getBetTotal("black")}
                 onClick={() => placeBet("black")}
-                disabled={busy}
+                disabled={locked}
                 label=""
                 className="bg-slate-800 hover:brightness-110"
               />
               <OutsideBtn
                 badge={getBetTotal("odd")}
                 onClick={() => placeBet("odd")}
-                disabled={busy}
+                disabled={locked}
                 label="ODD"
               />
               <OutsideBtn
                 badge={getBetTotal("high")}
                 onClick={() => placeBet("high")}
-                disabled={busy}
+                disabled={locked}
                 label="19 to 36"
               />
             </div>

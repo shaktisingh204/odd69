@@ -10,6 +10,7 @@ import {
 import api from "@/services/api";
 import OriginalsShell from "@/components/originals/OriginalsShell";
 import OriginalsControls from "@/components/originals/OriginalsControls";
+import OriginalsAutoBet from "@/components/originals/OriginalsAutoBet";
 import { useWallet } from "@/context/WalletContext";
 import { Sparkles, RotateCcw } from "lucide-react";
 import { fireWin, fireBigWin, playSound } from "@/utils/originalsFx";
@@ -24,14 +25,34 @@ interface LottoResult {
   status: "WON" | "LOST";
 }
 
+const ACCENT = "#ff9a3d";
 const POOL = Array.from({ length: 49 }, (_, i) => i + 1);
-const PAYTABLE = [
-  { hits: 2, mult: 1 },
-  { hits: 3, mult: 2 },
-  { hits: 4, mult: 10 },
-  { hits: 5, mult: 100 },
-  { hits: 6, mult: 1000 },
+
+/**
+ * Displayed paytable — these MUST mirror the server's authoritative
+ * `PAYTABLE` in newbackend/src/originals/services/lotto.service.ts
+ * (1→0.6, 2→1.5, 3→20, 4→100, 5→1000, 6→75000). The previous build showed a
+ * different, fictional table (2→1, 3→2, 4→10, 5→100, 6→1000) which lied about
+ * real payouts — that's corrected here.
+ */
+const PAYTABLE: { hits: number; mult: number }[] = [
+  { hits: 1, mult: 0.6 },
+  { hits: 2, mult: 1.5 },
+  { hits: 3, mult: 20 },
+  { hits: 4, mult: 100 },
+  { hits: 5, mult: 1000 },
+  { hits: 6, mult: 75000 },
 ];
+
+/** Compact multiplier label: 0.6× · 20× · 1k× · 75k×. */
+function fmtMult(m: number): string {
+  if (m >= 1000) {
+    const k = m / 1000;
+    return (Number.isInteger(k) ? k : k.toFixed(1)) + "k×";
+  }
+  if (m < 1) return m + "×";
+  return m + "×";
+}
 
 export default function LottoPage() {
   const { refreshWallet } = useWallet();
@@ -41,6 +62,7 @@ export default function LottoPage() {
   const [useBonus, setUseBonus] = useState(false);
   const [picks, setPicks] = useState<Set<number>>(new Set());
   const [busy, setBusy] = useState(false);
+  const [autoBusy, setAutoBusy] = useState(false);
   const [result, setResult] = useState<LottoResult | null>(null);
 
   // ── Draw-reveal orchestration (visual only; driven by the server result) ──
@@ -50,6 +72,9 @@ export default function LottoPage() {
   const [revealCount, setRevealCount] = useState(0);
   const timersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
   const celebratedRef = useRef(false);
+  // When true the next result snaps straight to its final state (no slow draw)
+  // — used by autobet so the loop isn't blocked by ~5s of animation per round.
+  const instantRef = useRef(false);
 
   const clearTimers = useCallback(() => {
     timersRef.current.forEach((t) => clearTimeout(t));
@@ -83,8 +108,8 @@ export default function LottoPage() {
       }
     };
 
-    if (reduceMotion) {
-      // Snap straight to the final, correct state.
+    if (reduceMotion || instantRef.current) {
+      // Snap straight to the final, correct state (reduced-motion or autobet).
       setRevealCount(total);
       celebrate();
       return;
@@ -112,8 +137,10 @@ export default function LottoPage() {
   // Cleanup any pending timers on unmount.
   useEffect(() => clearTimers, [clearTimers]);
 
+  const locked = busy || autoBusy;
+
   const togglePick = (n: number) => {
-    if (busy) return;
+    if (locked) return;
     setResult(null);
     setPicks((prev) => {
       const next = new Set(prev);
@@ -130,25 +157,28 @@ export default function LottoPage() {
     });
   };
   const clear = () => {
-    if (busy) return;
+    if (locked) return;
     setPicks(new Set());
     setResult(null);
   };
   const autoPick = () => {
-    if (busy) return;
+    if (locked) return;
     setResult(null);
     const next = new Set<number>();
     while (next.size < 6) next.add(1 + Math.floor(Math.random() * 49));
     setPicks(next);
   };
 
-  const play = useCallback(async () => {
-    const bet = parseFloat(betInput);
-    if (!bet || bet <= 0) return toast.error("Invalid bet");
-    if (picks.size !== 6) return toast.error("Pick exactly 6 numbers");
-    setBusy(true);
-    setResult(null);
-    try {
+  /**
+   * Place ONE lotto ticket against the server and return the parsed result.
+   * Shared by manual play and the autobet loop. `instant` snaps the reveal to
+   * the final state (autobet) instead of running the slow ball-by-ball draw.
+   * Throws on failure so callers can branch.
+   */
+  const playOnce = useCallback(
+    async (bet: number, instant: boolean): Promise<LottoResult> => {
+      instantRef.current = instant;
+      setResult(null);
       const res = await api.post<LottoResult>("/originals/lotto/play", {
         betAmount: bet,
         selected: Array.from(picks),
@@ -156,18 +186,53 @@ export default function LottoPage() {
         useBonus,
       });
       setResult(res.data);
-      if (res.data.status === "WON") {
+      await refreshWallet();
+      return res.data;
+    },
+    [picks, walletType, useBonus, refreshWallet],
+  );
+
+  const play = useCallback(async () => {
+    const bet = parseFloat(betInput);
+    if (!bet || bet <= 0) return toast.error("Invalid bet");
+    if (picks.size !== 6) return toast.error("Pick exactly 6 numbers");
+    setBusy(true);
+    try {
+      const data = await playOnce(bet, false);
+      if (data.status === "WON") {
         toast.success(
-          `+$${res.data.payout.toLocaleString("en-US")} (${res.data.hits}/6)`,
+          `+$${data.payout.toLocaleString("en-US")} (${data.hits}/6)`,
         );
       }
-      await refreshWallet();
     } catch (e: any) {
       toast.error(e?.response?.data?.message || "Play failed");
     } finally {
       setBusy(false);
     }
-  }, [betInput, picks, walletType, useBonus, refreshWallet]);
+  }, [betInput, picks, playOnce]);
+
+  /**
+   * Autobet driver. Places one round per call (instant reveal) and reports the
+   * outcome to <OriginalsAutoBet>. Returning `null` aborts the session — we do
+   * that on any error (incl. insufficient funds) and when fewer than 6 numbers
+   * are selected, since the server requires exactly 6.
+   */
+  const runAutoBet = useCallback(
+    async (bet: number): Promise<{ won: boolean; payout: number } | null> => {
+      if (picks.size !== 6) {
+        toast.error("Pick exactly 6 numbers before auto-betting");
+        return null;
+      }
+      try {
+        const data = await playOnce(bet, true);
+        return { won: data.status === "WON", payout: data.payout };
+      } catch (e: any) {
+        toast.error(e?.response?.data?.message || "Auto-bet stopped");
+        return null;
+      }
+    },
+    [picks, playOnce],
+  );
 
   // Only reveal balls that have already "landed" so the board lights up in
   // lock-step with the draw animation. Data is untouched — these are purely
@@ -177,10 +242,13 @@ export default function LottoPage() {
   const hitSet = new Set(revealedDrawn.filter((n) => picks.has(n)));
   const allRevealed = !!result && revealCount >= (result.drawn?.length || 0);
 
+  const baseBet = parseFloat(betInput) || 0;
+
   return (
     <OriginalsShell
       gameKey="lotto"
       title="Lotto"
+      historyGameKey="lotto"
       tags={["# Lotto", "# ODD69 Originals", "# Provably Fair"]}
       controls={
         <OriginalsControls
@@ -190,14 +258,34 @@ export default function LottoPage() {
           setWalletType={setWalletType}
           useBonus={useBonus}
           setUseBonus={setUseBonus}
-          locked={busy}
-          accent="#2dd4bf"
+          locked={locked}
+          accent={ACCENT}
+          autoPanel={
+            <div className="space-y-4">
+              {/* Quick-pick / clear are needed in auto mode too, since the
+                  board's 6 numbers are reused for every auto round. */}
+              <QuickPickRow
+                count={picks.size}
+                onAuto={autoPick}
+                onClear={clear}
+                disabled={locked}
+              />
+              <OriginalsAutoBet
+                baseBet={baseBet}
+                accent={ACCENT}
+                disabled={picks.size !== 6 || baseBet <= 0}
+                runBet={runAutoBet}
+                onBusyChange={setAutoBusy}
+              />
+            </div>
+          }
           action={
             <button
               type="button"
               onClick={play}
-              disabled={busy || picks.size !== 6}
-              className="w-full py-4 bg-teal-500 hover:bg-teal-400 disabled:opacity-40 text-white font-black text-base rounded-xl transition-all hover:scale-[1.02] active:scale-[0.98]"
+              disabled={locked || picks.size !== 6}
+              className="w-full py-4 disabled:opacity-40 text-[#0b0d10] font-black text-base rounded-xl transition-all hover:scale-[1.02] active:scale-[0.98]"
+              style={{ background: ACCENT }}
             >
               {busy ? "Drawing…" : "Buy Ticket"}
             </button>
@@ -208,29 +296,12 @@ export default function LottoPage() {
             </div>
           }
         >
-          <div>
-            <label className="text-[11px] text-[#6b7280] font-bold uppercase tracking-wider mb-2 block">
-              Quick Pick
-            </label>
-            <div className="grid grid-cols-2 gap-1">
-              <button
-                type="button"
-                onClick={autoPick}
-                disabled={busy}
-                className="flex items-center justify-center gap-1 py-1.5 bg-bg-deep-3 border border-white/[0.06] rounded text-[11px] text-[#9ca3af] hover:text-white hover:border-white/[0.12]"
-              >
-                <Sparkles size={11} /> Auto
-              </button>
-              <button
-                type="button"
-                onClick={clear}
-                disabled={busy}
-                className="flex items-center justify-center gap-1 py-1.5 bg-bg-deep-3 border border-white/[0.06] rounded text-[11px] text-[#9ca3af] hover:text-white hover:border-white/[0.12]"
-              >
-                <RotateCcw size={11} /> Clear
-              </button>
-            </div>
-          </div>
+          <QuickPickRow
+            count={picks.size}
+            onAuto={autoPick}
+            onClear={clear}
+            disabled={locked}
+          />
         </OriginalsControls>
       }
     >
@@ -238,7 +309,7 @@ export default function LottoPage() {
         className="relative w-full h-full flex flex-col items-center p-4 md:p-6 gap-3"
         style={{
           background:
-            "radial-gradient(ellipse at 50% 30%, #08201c 0%, #071713 40%, #04100d 100%)",
+            "radial-gradient(ellipse at 50% 30%, #2a1505 0%, #1a0e04 42%, #0d0702 100%)",
           minHeight: 360,
         }}
       >
@@ -386,7 +457,7 @@ export default function LottoPage() {
                       : isDrawn && !isPicked
                         ? "bg-white/[0.1] border border-white/30 text-white/60"
                         : isPicked
-                          ? "bg-teal-500/30 border border-teal-400 text-white"
+                          ? "border text-white"
                           : "bg-bg-elevated border border-[#3a3d45] text-[#9ca3af] hover:bg-bg-hover hover:border-[#4a4d55]"
                   }`}
                   style={
@@ -399,7 +470,12 @@ export default function LottoPage() {
                             "0 0 14px rgba(255,154,61,0.7), inset 0 1px 3px rgba(255,255,255,0.6)",
                           zIndex: 1,
                         }
-                      : undefined
+                      : isPicked && !isDrawn
+                        ? {
+                            background: "rgba(255,154,61,0.18)",
+                            borderColor: "rgba(255,154,61,0.7)",
+                          }
+                        : undefined
                   }
                 >
                   {n}
@@ -408,33 +484,82 @@ export default function LottoPage() {
             })}
           </div>
 
-          {/* Pay table */}
-          <div className="mt-4 grid grid-cols-5 gap-2 text-[11px] text-[#9ca3af]">
-            {PAYTABLE.map((p) => {
-              const active = allRevealed && result?.hits === p.hits;
-              return (
-                <motion.div
-                  key={p.hits}
-                  animate={
-                    active && !reduceMotion
-                      ? { scale: [1, 1.08, 1] }
-                      : { scale: 1 }
-                  }
-                  transition={{ duration: 0.4, ease: "easeOut" }}
-                  className={`rounded-lg p-2 text-center font-bold border ${
-                    active
-                      ? "bg-[#ff9a3d]/20 text-[#ffd24a] border-[#ff9a3d]/50 shadow-[0_0_14px_rgba(255,154,61,0.35)]"
-                      : "bg-bg-deep-3 border-white/[0.06]"
-                  }`}
-                >
-                  {p.hits} hits
-                  <div className="text-teal-300 font-black">×{p.mult}</div>
-                </motion.div>
-              );
-            })}
+          {/* Pay table — matches the server-authoritative multipliers. */}
+          <div className="mt-4">
+            <div className="text-[10px] text-[#6b7280] font-bold uppercase tracking-wider mb-1.5 text-center">
+              Paytable · matches per 6 picks
+            </div>
+            <div className="grid grid-cols-6 gap-2 text-[11px] text-[#9ca3af]">
+              {PAYTABLE.map((p) => {
+                const active = allRevealed && result?.hits === p.hits;
+                return (
+                  <motion.div
+                    key={p.hits}
+                    animate={
+                      active && !reduceMotion
+                        ? { scale: [1, 1.08, 1] }
+                        : { scale: 1 }
+                    }
+                    transition={{ duration: 0.4, ease: "easeOut" }}
+                    className={`rounded-lg p-2 text-center font-bold border ${
+                      active
+                        ? "bg-[#ff9a3d]/20 text-[#ffd24a] border-[#ff9a3d]/50 shadow-[0_0_14px_rgba(255,154,61,0.35)]"
+                        : "bg-bg-deep-3 border-white/[0.06]"
+                    }`}
+                  >
+                    {p.hits} hit{p.hits === 1 ? "" : "s"}
+                    <div
+                      className="font-black"
+                      style={{ color: active ? "#ffd24a" : ACCENT }}
+                    >
+                      {fmtMult(p.mult)}
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </div>
           </div>
         </div>
       </div>
     </OriginalsShell>
+  );
+}
+
+/** Auto Pick / Clear pair, reused in both Manual and Auto control panels. */
+function QuickPickRow({
+  count,
+  onAuto,
+  onClear,
+  disabled,
+}: {
+  count: number;
+  onAuto: () => void;
+  onClear: () => void;
+  disabled?: boolean;
+}) {
+  return (
+    <div>
+      <label className="text-[11px] text-[#6b7280] font-bold uppercase tracking-wider mb-2 block">
+        Quick Pick · {count}/6
+      </label>
+      <div className="grid grid-cols-2 gap-1">
+        <button
+          type="button"
+          onClick={onAuto}
+          disabled={disabled}
+          className="flex items-center justify-center gap-1 py-1.5 bg-bg-deep-3 border border-white/[0.06] rounded text-[11px] text-[#9ca3af] hover:text-white hover:border-white/[0.12] disabled:opacity-40"
+        >
+          <Sparkles size={11} /> Auto
+        </button>
+        <button
+          type="button"
+          onClick={onClear}
+          disabled={disabled}
+          className="flex items-center justify-center gap-1 py-1.5 bg-bg-deep-3 border border-white/[0.06] rounded text-[11px] text-[#9ca3af] hover:text-white hover:border-white/[0.12] disabled:opacity-40"
+        >
+          <RotateCcw size={11} /> Clear
+        </button>
+      </div>
+    </div>
   );
 }

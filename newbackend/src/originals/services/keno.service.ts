@@ -11,6 +11,7 @@ import { PrismaService } from '../../prisma.service';
 import { KenoGame, KenoGameDocument } from '../schemas/keno-game.schema';
 import { GGRService } from '../ggr.service';
 import { BonusService } from '../../bonus/bonus.service';
+import { FairnessService } from '../fairness.service';
 import {
   generateServerSeed,
   shuffle,
@@ -105,6 +106,8 @@ export class KenoService {
     @Inject(forwardRef(() => GGRService))
     private readonly ggrService: GGRService,
     private readonly bonusService: BonusService,
+    @Inject(forwardRef(() => FairnessService))
+    private readonly fairness: FairnessService,
   ) {}
 
   async play(userId: number, dto: PlayKenoDto) {
@@ -114,7 +117,6 @@ export class KenoService {
       risk = 'classic',
       walletType = 'fiat',
       useBonus = false,
-      clientSeed = 'odd69',
     } = dto;
 
     // 1. Validate inputs
@@ -167,8 +169,7 @@ export class KenoService {
     );
 
     // 5. Provably-fair outcome — fresh server seed per round
-    const { serverSeed, serverSeedHash } = generateServerSeed();
-    const nonce = Date.now();
+    const { serverSeed, serverSeedHash, clientSeed, nonce } = await this.fairness.consume(userId);
     const pool = Array.from({ length: POOL_SIZE }, (_, i) => i + 1);
     const drawn = shuffle(pool, serverSeed, clientSeed, nonce)
       .slice(0, DRAW_COUNT)
@@ -201,6 +202,7 @@ export class KenoService {
       serverSeed,
       clientSeed,
       serverSeedHash,
+      nonce,
       walletType,
       usedBonus: bonusUsed > 0,
       bonusAmount: bonusUsed,
@@ -261,9 +263,9 @@ export class KenoService {
       status,
       betAmount,
       risk,
-      serverSeed,
       serverSeedHash,
       clientSeed,
+      nonce,
     };
   }
 

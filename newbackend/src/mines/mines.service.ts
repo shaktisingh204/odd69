@@ -12,6 +12,7 @@ import { CashoutDto } from './dto/cashout.dto';
 import * as crypto from 'crypto';
 import { GGRService } from '../originals/ggr.service';
 import { BonusService } from '../bonus/bonus.service';
+import { FairnessService } from '../originals/fairness.service';
 
 const TOTAL_TILES = 25;
 const DEFAULT_HOUSE_EDGE = 0.01;
@@ -52,6 +53,8 @@ export class MinesService {
     @Inject(forwardRef(() => GGRService))
     private readonly ggrService: GGRService,
     private readonly bonusService: BonusService,
+    @Inject(forwardRef(() => FairnessService))
+    private readonly fairness: FairnessService,
   ) {}
 
   private roundCurrency(value: number) {
@@ -139,7 +142,7 @@ export class MinesService {
   }
 
   async startGame(userId: number, dto: StartMinesDto) {
-    const { betAmount, mineCount, clientSeed = 'odd69', walletType = 'fiat', useBonus = false } = dto;
+    const { betAmount, mineCount, walletType = 'fiat', useBonus = false } = dto;
 
     if (mineCount < 1 || mineCount > 24) throw new BadRequestException('Mine count must be 1–24');
     if (betAmount <= 0) throw new BadRequestException('Bet amount must be positive');
@@ -181,15 +184,16 @@ export class MinesService {
       }
     });
 
-    // Generate provably fair seeds
-    const serverSeed = crypto.randomBytes(32).toString('hex');
-    const serverSeedHash = crypto.createHash('sha256').update(serverSeed).digest('hex');
-    let mines = generateMinePositions(serverSeed, clientSeed, 0, mineCount);
-    mines = this.ggrService.applyBiasToMines(mines, ggrResult.biasWeight, mineCount);
+    // Provably-fair seeds from the user's persistent seed pair (atomic nonce).
+    // Mine positions are PURE HMAC output — no GGR/outcome bias — so the grid is
+    // fully reproducible from (serverSeed, clientSeed, nonce).
+    const { serverSeed, serverSeedHash, clientSeed, nonce } =
+      await this.fairness.consume(userId);
+    const mines = generateMinePositions(serverSeed, clientSeed, nonce, mineCount);
 
     // Create game doc in MongoDB
     const game = await this.minesGameModel.create({
-      userId, betAmount, mineCount, serverSeed, serverSeedHash, clientSeed,
+      userId, betAmount, mineCount, serverSeed, serverSeedHash, clientSeed, nonce,
       minePositions: mines, revealedTiles: [], multiplier: 1.0,
       walletType, usedBonus: bonusUsed > 0, bonusAmount: bonusUsed,
       currency: walletType === 'crypto' ? 'USD' : user.currency || 'INR',
@@ -292,7 +296,7 @@ export class MinesService {
       return {
         hit: true, gameId: String(game._id), status: 'LOST',
         minePositions: game.minePositions,
-        serverSeed: game.serverSeed,
+        serverSeedHash: game.serverSeedHash, nonce: game.nonce,
         revealedTiles: game.revealedTiles,
         payout: 0,
       };
@@ -388,7 +392,7 @@ export class MinesService {
       potentialPayout: payout,
       betAmount: game.betAmount,
       minePositions: game.minePositions,
-      serverSeed: game.serverSeed,
+      serverSeedHash: game.serverSeedHash, nonce: game.nonce,
       clientSeed: game.clientSeed,
       revealedTiles: game.revealedTiles,
     };

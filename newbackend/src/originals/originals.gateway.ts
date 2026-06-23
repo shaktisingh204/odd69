@@ -170,7 +170,7 @@ export class OriginalsGateway implements OnGatewayConnection, OnGatewayDisconnec
       if (result.hit) {
         client.emit('mines:game-over', {
           hit: true, tileIndex: data.tileIndex,
-          minePositions: result.minePositions, serverSeed: result.serverSeed, revealedTiles: result.revealedTiles,
+          minePositions: result.minePositions, serverSeedHash: result.serverSeedHash, nonce: result.nonce, revealedTiles: result.revealedTiles,
         });
         await this.ggrService.updateSnapshot('mines', 0, 0, false);
         await this.broadcastGGRToAdmin();

@@ -5,20 +5,19 @@ import { io, Socket } from "socket.io-client";
 import { toast } from "react-hot-toast";
 import { useReducedMotion } from "framer-motion";
 import Matter from "matter-js";
-import { ChevronUp, ChevronDown, Info, Zap, Volume2, VolumeX, BarChart3, Clock } from "lucide-react";
-import Header from "@/components/layout/Header";
-import LeftSidebar from "@/components/layout/LeftSidebar";
-import { useAuth } from "@/context/AuthContext";
+import { Zap, Clock, X } from "lucide-react";
 import { useWallet } from "@/context/WalletContext";
-import { useModal } from "@/context/ModalContext";
-import { useOriginalsAccess } from "@/hooks/useOriginalsAccess";
-import { useGameSounds } from "@/hooks/useGameSounds";
 import { getConfiguredSocketNamespace } from "@/utils/socketUrl";
 import { fireWin, fireBigWin, playSound } from "@/utils/originalsFx";
+import OriginalsShell from "@/components/originals/OriginalsShell";
+import OriginalsControls from "@/components/originals/OriginalsControls";
+import OriginalsAutoBet from "@/components/originals/OriginalsAutoBet";
 
 type WalletType = "fiat" | "crypto";
 type PlinkoRisk = "low" | "medium" | "high";
 type PlinkoRows = 8 | 12 | 16;
+
+const ACCENT = "#ff9a3d";
 
 interface PlinkoResult {
   gameId: string;
@@ -30,9 +29,9 @@ interface PlinkoResult {
   payout: number;
   status: "WON" | "LOST";
   betAmount: number;
-  serverSeed: string;
   serverSeedHash: string;
   clientSeed: string;
+  nonce: number;
 }
 
 interface PlinkoHistoryItem {
@@ -48,13 +47,17 @@ interface PlinkoHistoryItem {
   createdAt: string;
 }
 
+// Backend hard-validates rows ∈ {8,12,16} and risk ∈ {low,medium,high}
+// (newbackend/src/plinko/plinko.service.ts isValidRows/isValidRisk).
 const ROW_OPTIONS: readonly PlinkoRows[] = [8, 12, 16] as const;
-const RISK_OPTIONS: ReadonlyArray<{ key: PlinkoRisk; label: string; color: string }> = [
-  { key: "low", label: "Low", color: "text-emerald-400" },
-  { key: "medium", label: "Medium", color: "text-amber-400" },
-  { key: "high", label: "High", color: "text-red-400" },
+const RISK_OPTIONS: ReadonlyArray<{ key: PlinkoRisk; label: string }> = [
+  { key: "low", label: "Low" },
+  { key: "medium", label: "Medium" },
+  { key: "high", label: "High" },
 ];
 
+// Mirrors PLINKO_MULTIPLIERS in newbackend/src/plinko/plinko.service.ts exactly
+// so the rendered bucket strip matches the server-resolved multiplier.
 const PLINKO_TABLES: Record<PlinkoRows, Record<PlinkoRisk, number[]>> = {
   8: {
     low: [5.6, 2.0, 1.1, 1.0, 0.4, 1.0, 1.1, 2.0, 5.6],
@@ -73,17 +76,18 @@ const PLINKO_TABLES: Record<PlinkoRows, Record<PlinkoRisk, number[]>> = {
   },
 };
 
-/** Returns a CSS background color based on position and multiplier value */
-function getSlotGradient(_index: number, _totalCols: number, multiplier: number): string {
+/** Color-graded bucket fill keyed to the multiplier tier. */
+function getSlotGradient(multiplier: number): string {
   if (multiplier >= 100) return "linear-gradient(180deg, #ff2d6b 0%, #d91044 100%)";
   if (multiplier >= 20) return "linear-gradient(180deg, #fa4950 0%, #c8353c 100%)";
   if (multiplier >= 5) return "linear-gradient(180deg, #f97316 0%, #c2570d 100%)";
   if (multiplier >= 2) return "linear-gradient(180deg, #ff7a1a 0%, #e85f00 100%)";
   if (multiplier >= 1) return "linear-gradient(180deg, #ff9a3d 0%, #e85f00 100%)";
-  return "linear-gradient(180deg, #ff9a3d 0%, #e85f00 100%)";
+  return "linear-gradient(180deg, #2f2418 0%, #241a10 100%)"; // cool sub-1× valley
 }
 
 function getSlotTextColor(multiplier: number): string {
+  if (multiplier < 1) return "#ffb877";
   if (multiplier >= 2) return "#fff";
   return "#1a0a00";
 }
@@ -93,10 +97,6 @@ function formatMultiplier(m: number): string {
   if (m >= 100) return m.toFixed(0);
   if (m >= 10) return m.toFixed(1);
   return m.toFixed(2);
-}
-
-function getWalletSymbol(walletType: WalletType) {
-  return walletType === "crypto" ? "$" : "$";
 }
 
 // Same percent-coordinate layout the DOM pegs / slots use, kept in one place so
@@ -117,57 +117,79 @@ function targetXForSlot(slotIndex: number, rowCount: number, w: number) {
 }
 
 export default function PlinkoPage() {
-  const { token, loading: authLoading } = useAuth();
-  const { canAccessOriginals, loading: accessLoading } = useOriginalsAccess();
-  const { fiatBalance, cryptoBalance, refreshWallet, selectedWallet, setSelectedWallet } = useWallet();
-  const { openLogin } = useModal();
-  const { playBet, playCrash, playWin, muted, toggleMute } = useGameSounds();
+  const {
+    fiatBalance,
+    cryptoBalance,
+    refreshWallet,
+    selectedWallet,
+    setSelectedWallet,
+  } = useWallet();
   const prefersReducedMotion = useReducedMotion();
 
   const socketRef = useRef<Socket | null>(null);
-  const hasSession = !!token;
 
   // ── Physics / canvas refs ───────────────────────────────────────────
   const boardRef = useRef<HTMLDivElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const engineRef = useRef<Matter.Engine | null>(null);
   const runnerRef = useRef<Matter.Runner | null>(null);
-  const ballBodyRef = useRef<Matter.Body | null>(null);
   const rafRef = useRef<number | null>(null);
   const boardSizeRef = useRef({ w: 0, h: 0 });
   const lastPegSoundRef = useRef(0);
   const pegFlashRef = useRef<Map<number, number>>(new Map());
-  // Per-row steering plan derived from the SERVER path so the ball settles in
-  // exactly result.slotIndex. { y(px), targetX(px), dir }
-  const steerRef = useRef<{ y: number; targetX: number }[]>([]);
-  const steerIdxRef = useRef(0);
-  const finishedRef = useRef(true);
+
+  // One in-flight ball per gameId; each carries its own server-derived steering
+  // plan so multiple balls (rapid manual + autobet) bounce independently and
+  // each settles in its own server slotIndex.
+  interface BallState {
+    body: Matter.Body;
+    plan: { y: number; targetX: number }[];
+    steerIdx: number;
+    result: PlinkoResult;
+    startedAt: number;
+    settled: boolean;
+    isDemo: boolean;
+  }
+  const ballsRef = useRef<Map<string, BallState>>(new Map());
   const settleTimerRef = useRef<number | null>(null);
 
+  // hyperMode is read inside callbacks via a ref to avoid rebuilding them.
+  const hyperRef = useRef(false);
+  const instantRef = useRef(false);
+
+  // ── React state (UI-only) ──────────────────────────────────────────
   const [walletType, setWalletType] = useState<WalletType>(selectedWallet);
+  const [useBonus, setUseBonus] = useState(false);
   const [betInput, setBetInput] = useState("10");
   const [rows, setRows] = useState<PlinkoRows>(16);
   const [risk, setRisk] = useState<PlinkoRisk>("high");
   const [history, setHistory] = useState<PlinkoHistoryItem[]>([]);
   const [isDropping, setIsDropping] = useState(false);
+  const [autoBusy, setAutoBusy] = useState(false);
   const [lastResult, setLastResult] = useState<PlinkoResult | null>(null);
   const [hyperMode, setHyperMode] = useState(false);
-  const [tab, setTab] = useState<"Manual" | "Auto">("Manual");
+  const [instantBet, setInstantBet] = useState(false);
   const [resultBannerKey, setResultBannerKey] = useState(0);
   const [showHistory, setShowHistory] = useState(false);
+  const [recentMultipliers, setRecentMultipliers] = useState<number[]>([]);
 
   const betAmount = parseFloat(betInput) || 0;
   const activeBalance = walletType === "crypto" ? cryptoBalance : fiatBalance;
-  const activeSymbol = getWalletSymbol(walletType);
+  const sym = "$";
   const multiplierTable = useMemo(() => PLINKO_TABLES[rows][risk], [risk, rows]);
+  const maxWin = useMemo(() => Math.max(...multiplierTable), [multiplierTable]);
 
   useEffect(() => { setWalletType(selectedWallet); }, [selectedWallet]);
+  useEffect(() => { hyperRef.current = hyperMode; }, [hyperMode]);
+  useEffect(() => { instantRef.current = instantBet; }, [instantBet]);
 
-  useEffect(() => {
-    if (!authLoading && !accessLoading && (!hasSession || !canAccessOriginals)) {
-      window.location.href = "/";
-    }
-  }, [authLoading, accessLoading, canAccessOriginals, hasSession]);
+  // FIFO queue of resolvers for in-flight bets. Each plinko:play emit pushes a
+  // resolver; the matching plinko:result / plinko:error shifts and fulfils it.
+  // (One emit ⇒ one result, so FIFO ordering is correct for rapid/auto play.)
+  const awaitingResolversRef = useRef<((r: { won: boolean; payout: number } | null) => void)[]>([]);
+  // animateDrop changes identity when `rows` changes; read it through a ref so
+  // the socket only connects once (never tears down mid-bet on a rows toggle).
+  const animateDropRef = useRef<((r: PlinkoResult, demo?: boolean) => Promise<void>) | null>(null);
 
   // ── matter-js engine setup (persists across drops; rebuilds on rows/size) ──
   const buildWorld = useCallback(() => {
@@ -189,18 +211,18 @@ export default function PlinkoPage() {
     const ctx = canvas.getContext("2d");
     if (ctx) ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-    // Tear down any prior engine.
+    // Tear down any prior engine + balls.
     if (runnerRef.current) Matter.Runner.stop(runnerRef.current);
     if (engineRef.current) {
       Matter.World.clear(engineRef.current.world, false);
       Matter.Engine.clear(engineRef.current);
     }
+    ballsRef.current.clear();
 
     const engine = Matter.Engine.create();
     engine.gravity.y = 1;
     engine.world.gravity.scale = 0.0014;
     engineRef.current = engine;
-    ballBodyRef.current = null;
 
     const pegR = Math.max(3, w * (Math.max(5, 9 - rows * 0.15) / 2) / 680);
     const bodies: Matter.Body[] = [];
@@ -222,8 +244,7 @@ export default function PlinkoPage() {
 
     // Bin dividers + floor under the last peg row, aligned to the slot strip.
     const slotCount = rows + 1;
-    const binTopPct = 8 + (rows / rows) * 73; // y of last peg row in %
-    const binTop = (binTopPct / 100) * h + pegR * 2;
+    const binTop = ((8 + 73) / 100) * h + pegR * 2;
     const binStartX = ((50 - PEG_X_SPREAD / 2) / 100) * w;
     const binW = ((PEG_X_SPREAD / 100) * w) / rows; // lane width == peg spacing
     const floorY = h - 2;
@@ -239,7 +260,6 @@ export default function PlinkoPage() {
       );
       bodies.push(divider);
     }
-    // Floor.
     bodies.push(
       Matter.Bodies.rectangle(w / 2, floorY + 6, w, 12, {
         isStatic: true,
@@ -248,7 +268,6 @@ export default function PlinkoPage() {
         label: "floor",
       }),
     );
-    // Outer side walls so a ball can never escape the board.
     bodies.push(Matter.Bodies.rectangle(-6, h / 2, 12, h, { isStatic: true, label: "wall" }));
     bodies.push(Matter.Bodies.rectangle(w + 6, h / 2, 12, h, { isStatic: true, label: "wall" }));
 
@@ -277,7 +296,7 @@ export default function PlinkoPage() {
     Matter.Runner.run(runner, engine);
   }, [rows]);
 
-  // ── Render loop: draws ball + steers it row-by-row toward the server slot ──
+  // ── Render loop: draws every in-flight ball + steers each toward its slot ──
   const startRenderLoop = useCallback(() => {
     if (rafRef.current != null) return;
     const draw = () => {
@@ -295,14 +314,14 @@ export default function PlinkoPage() {
       }
       ctx.clearRect(0, 0, w, h);
 
-      // Peg flashes (fade over ~180ms).
       const now = performance.now();
       const pegR = Math.max(3, w * (Math.max(5, 9 - rows * 0.15) / 2) / 680);
+
+      // Peg flashes (fade over ~200ms; expired entries are pruned in place).
       pegFlashRef.current.forEach((t, id) => {
         const age = now - t;
         if (age > 200) { pegFlashRef.current.delete(id); return; }
         const a = 1 - age / 200;
-        // resolve peg id -> position
         let counter = 0, found: { x: number; y: number } | null = null;
         for (let r = 0; r < rows && !found; r++) {
           for (let c = 0; c <= r; c++) {
@@ -319,23 +338,19 @@ export default function PlinkoPage() {
         ctx.fill();
       });
 
-      const ball = ballBodyRef.current;
-      if (ball) {
-        // Steer the ball as it descends past each row so the realistic bounce
-        // resolves into the server's slotIndex. We nudge horizontal velocity
-        // toward the lane target for the row the ball is currently entering.
-        const plan = steerRef.current;
+      // Steer + draw each in-flight ball.
+      ballsRef.current.forEach((state) => {
+        const ball = state.body;
+        const plan = state.plan;
         while (
-          steerIdxRef.current < plan.length &&
-          ball.position.y >= plan[steerIdxRef.current].y
+          state.steerIdx < plan.length &&
+          ball.position.y >= plan[state.steerIdx].y
         ) {
-          steerIdxRef.current++;
+          state.steerIdx++;
         }
-        const next = plan[steerIdxRef.current];
+        const next = plan[state.steerIdx];
         if (next) {
           const dx = next.targetX - ball.position.x;
-          // Gentle proportional nudge — strong enough to guarantee the lane,
-          // soft enough to keep visible, peg-deflected bouncing.
           const nudge = Math.max(-1.4, Math.min(1.4, dx * 0.018));
           Matter.Body.setVelocity(ball, {
             x: ball.velocity.x * 0.86 + nudge,
@@ -343,13 +358,7 @@ export default function PlinkoPage() {
           });
         } else {
           // Past the last peg row: hard-funnel into the exact target lane.
-          const targetX = steerRef.current.length
-            ? steerRef.current[steerRef.current.length - 1].targetX
-            : ball.position.x;
-          const finalX =
-            (lastResult && engineRef.current)
-              ? targetXForSlot(lastResult.slotIndex, rows, w)
-              : targetX;
+          const finalX = targetXForSlot(state.result.slotIndex, state.result.rows, w);
           const dx = finalX - ball.position.x;
           Matter.Body.setVelocity(ball, {
             x: ball.velocity.x * 0.7 + Math.max(-1.0, Math.min(1.0, dx * 0.05)),
@@ -373,97 +382,67 @@ export default function PlinkoPage() {
         ctx.fillStyle = grd;
         ctx.fill();
         ctx.restore();
-      }
+      });
 
       rafRef.current = requestAnimationFrame(draw);
     };
     rafRef.current = requestAnimationFrame(draw);
-  }, [lastResult, rows]);
+  }, [rows]);
 
-  const clearSettleTimer = useCallback(() => {
-    if (settleTimerRef.current != null) {
-      window.clearTimeout(settleTimerRef.current);
-      settleTimerRef.current = null;
+  // ── Apply celebration / sound / UI strictly from the SERVER result ────
+  const resolveResultUI = useCallback((result: PlinkoResult, isDemo: boolean) => {
+    setLastResult(result);
+    setResultBannerKey((k) => k + 1);
+    setRecentMultipliers((prev) => [result.multiplier, ...prev].slice(0, 9));
+    if (isDemo) return;
+    if (result.status === "WON" && result.multiplier >= 1) {
+      playSound("win");
+      if (result.multiplier >= 10) fireBigWin();
+      else fireWin();
+    } else {
+      playSound("lose");
     }
   }, []);
 
-  const resolveResult = useCallback((result: PlinkoResult, isDemo = false) => {
-    setLastResult(result);
-    setResultBannerKey((k) => k + 1);
-    setIsDropping(false);
-    finishedRef.current = true;
-    if (isDemo) return;
-    // Celebrations + sound driven STRICTLY by the server result.
-    if (result.status === "WON" && result.multiplier >= 1) {
-      playWin();
-      playSound("win");
-      if (result.multiplier >= 10) {
-        fireBigWin();
-      } else {
-        fireWin();
-      }
-    } else {
-      playCrash();
-      playSound("lose");
-    }
-  }, [playCrash, playWin]);
-
-  // ── Drop the physics ball; it MUST land in result.slotIndex ──────────
-  const animateDrop = useCallback((result: PlinkoResult, isDemo = false) => {
-    clearSettleTimer();
-    finishedRef.current = false;
-
-    const engine = engineRef.current;
-    const { w, h } = boardSizeRef.current;
-
-    // Reduced motion (or no engine yet): snap straight to the resolved result.
-    if (prefersReducedMotion || !engine || w === 0) {
-      if (ballBodyRef.current && engine) {
-        Matter.World.remove(engine.world, ballBodyRef.current);
-        ballBodyRef.current = null;
-      }
-      resolveResult(result, isDemo);
-      return;
-    }
-
-    // Remove any existing ball.
-    if (ballBodyRef.current) {
-      Matter.World.remove(engine.world, ballBodyRef.current);
-      ballBodyRef.current = null;
-    }
-
-    const pegR = Math.max(3, w * (Math.max(5, 9 - rows * 0.15) / 2) / 680);
-    const ballR = pegR * 1.55;
-
-    // Build the steering plan from the SERVER path. result.path is a list of
-    // 0/1 right-deflections; the cumulative count == lane index after each row.
-    // We compute the target lane center at every peg row and steer toward it.
+  // ── Build the per-ball steering plan from the SERVER path ─────────────
+  const buildPlan = useCallback((result: PlinkoResult, w: number, h: number, pegR: number) => {
     const plan: { y: number; targetX: number }[] = [];
     let cum = 0;
     const path = Array.isArray(result.path) && result.path.length === result.rows
       ? result.path
-      : // Fallback: derive a balanced L/R path that sums to slotIndex.
-        Array.from({ length: result.rows }, (_, i) => (i < result.slotIndex ? 1 : 0));
+      : Array.from({ length: result.rows }, (_, i) => (i < result.slotIndex ? 1 : 0));
     const binStartX = ((50 - PEG_X_SPREAD / 2) / 100) * w;
     const binW = ((PEG_X_SPREAD / 100) * w) / result.rows;
     const finalX = binStartX + (result.slotIndex + 0.5) * binW;
     const startXpx = w / 2;
     for (let r = 0; r < result.rows; r++) {
       cum += path[r] ? 1 : 0;
-      // Interpolate toward the server's final bucket, weighted by descent
-      // progress. The cumulative right-count keeps the curve faithful to the
-      // server path while guaranteeing arrival at result.slotIndex.
       const t = (r + 1) / result.rows;
-      const pathBias = (cum / Math.max(1, result.rows)) - 0.5; // -0.5..+0.5 from path so far
-      const targetX =
-        startXpx + (finalX - startXpx) * t + pathBias * binW * 0.6 * (1 - t);
-      const py = (pegPercent(r, 0, result.rows).y / 100) * h - pegR; // trigger slightly above the row
+      const pathBias = (cum / Math.max(1, result.rows)) - 0.5;
+      const targetX = startXpx + (finalX - startXpx) * t + pathBias * binW * 0.6 * (1 - t);
+      const py = (pegPercent(r, 0, result.rows).y / 100) * h - pegR;
       plan.push({ y: py, targetX });
     }
-    steerRef.current = plan;
-    steerIdxRef.current = 0;
+    return plan;
+  }, []);
 
-    // Drop position: a touch of randomness for organic feel; steering corrects it.
+  // ── Drop a physics ball that MUST land in result.slotIndex ───────────
+  // Returns a promise that resolves when the ball settles (or instantly in
+  // reduced-motion / instant-bet) so callers can sequence (autobet).
+  const animateDrop = useCallback((result: PlinkoResult, isDemo = false): Promise<void> => {
+    const engine = engineRef.current;
+    const { w, h } = boardSizeRef.current;
+
+    // Reduced motion / instant-bet / no engine: resolve immediately.
+    if (prefersReducedMotion || instantRef.current || !engine || w === 0) {
+      resolveResultUI(result, isDemo);
+      return Promise.resolve();
+    }
+
+    const pegR = Math.max(3, w * (Math.max(5, 9 - rows * 0.15) / 2) / 680);
+    const ballR = pegR * 1.55;
+
+    const plan = buildPlan(result, w, h, pegR);
     const dropX = w / 2 + (Math.random() - 0.5) * (pegR * 1.2);
     const ball = Matter.Bodies.circle(dropX, (5 / 100) * h, ballR, {
       restitution: 0.45,
@@ -473,50 +452,68 @@ export default function PlinkoPage() {
       label: "ball",
     });
     Matter.Body.setVelocity(ball, { x: 0, y: 0 });
-    ballBodyRef.current = ball;
     Matter.World.add(engine.world, ball);
 
-    if (hyperMode) {
-      engine.timing.timeScale = 1.9;
-    } else {
-      engine.timing.timeScale = 1.0;
+    engine.timing.timeScale = hyperRef.current ? 1.9 : 1.0;
+
+    const state: BallState = {
+      body: ball,
+      plan,
+      steerIdx: 0,
+      result,
+      startedAt: performance.now(),
+      settled: false,
+      isDemo,
+    };
+    ballsRef.current.set(result.gameId, state);
+    // Cap concurrent balls for perf — remove the oldest if we exceed the cap.
+    if (ballsRef.current.size > 14) {
+      const oldestKey = ballsRef.current.keys().next().value;
+      if (oldestKey) {
+        const old = ballsRef.current.get(oldestKey);
+        if (old && engineRef.current) Matter.World.remove(engineRef.current.world, old.body);
+        ballsRef.current.delete(oldestKey);
+      }
     }
 
     startRenderLoop();
 
-    // Detect rest in the bucket (or hard timeout) → resolve from the server.
-    const startedAt = performance.now();
-    const maxMs = hyperMode ? 2200 : 4200;
-    const watch = () => {
-      if (finishedRef.current) return;
-      const b = ballBodyRef.current;
-      const elapsed = performance.now() - startedAt;
-      const floorReached = b && b.position.y > h - ballR * 2.4;
-      const resting = b && Math.abs(b.velocity.y) < 0.25 && b.position.y > (8 + 73) / 100 * h;
-      if ((floorReached && resting) || elapsed > maxMs) {
-        // Snap the ball cleanly to the exact bucket center, then resolve.
-        if (b && engineRef.current) {
-          const finalX = targetXForSlot(result.slotIndex, result.rows, w);
-          Matter.Body.setPosition(b, { x: finalX, y: h - ballR * 2.2 });
-          Matter.Body.setVelocity(b, { x: 0, y: 0 });
-        }
-        resolveResult(result, isDemo);
-        // Let the ball linger briefly in the bucket, then remove it.
-        settleTimerRef.current = window.setTimeout(() => {
-          if (ballBodyRef.current && engineRef.current) {
-            Matter.World.remove(engineRef.current.world, ballBodyRef.current);
-            ballBodyRef.current = null;
+    return new Promise<void>((resolve) => {
+      const maxMs = hyperRef.current ? 2200 : 4200;
+      const watch = () => {
+        const s = ballsRef.current.get(result.gameId);
+        if (!s || s.settled) { resolve(); return; }
+        const b = s.body;
+        const elapsed = performance.now() - s.startedAt;
+        const floorReached = b.position.y > h - ballR * 2.4;
+        const resting = Math.abs(b.velocity.y) < 0.25 && b.position.y > ((8 + 73) / 100) * h;
+        if ((floorReached && resting) || elapsed > maxMs) {
+          s.settled = true;
+          if (engineRef.current) {
+            const finalX = targetXForSlot(result.slotIndex, result.rows, w);
+            Matter.Body.setPosition(b, { x: finalX, y: h - ballR * 2.2 });
+            Matter.Body.setVelocity(b, { x: 0, y: 0 });
           }
-        }, 650);
-        return;
-      }
-      settleTimerRef.current = window.setTimeout(watch, 60);
-    };
-    settleTimerRef.current = window.setTimeout(watch, 120);
-  }, [clearSettleTimer, hyperMode, prefersReducedMotion, resolveResult, rows, startRenderLoop]);
+          resolveResultUI(result, s.isDemo);
+          // Linger briefly in the bucket, then remove this ball.
+          window.setTimeout(() => {
+            if (engineRef.current) Matter.World.remove(engineRef.current.world, b);
+            ballsRef.current.delete(result.gameId);
+          }, 650);
+          resolve();
+          return;
+        }
+        window.setTimeout(watch, 60);
+      };
+      window.setTimeout(watch, 120);
+    });
+  }, [buildPlan, prefersReducedMotion, resolveResultUI, rows, startRenderLoop]);
 
-  // Build / rebuild the matter world whenever the board mounts or rows change,
-  // and keep it sized to the responsive board via ResizeObserver.
+  // Keep the ref pointed at the latest animateDrop so the socket can call it
+  // without listing it as a dependency (avoids reconnect churn on rows change).
+  useEffect(() => { animateDropRef.current = animateDrop; }, [animateDrop]);
+
+  // Build / rebuild the matter world on mount + rows change + resize.
   useEffect(() => {
     buildWorld();
     startRenderLoop();
@@ -524,10 +521,9 @@ export default function PlinkoPage() {
     if (!board || typeof ResizeObserver === "undefined") return;
     let raf = 0;
     const ro = new ResizeObserver(() => {
-      // Debounce to the next frame; rebuild keeps bodies aligned to the box.
       cancelAnimationFrame(raf);
       raf = requestAnimationFrame(() => {
-        if (!isDropping) buildWorld();
+        if (ballsRef.current.size === 0) buildWorld();
       });
     });
     ro.observe(board);
@@ -540,8 +536,14 @@ export default function PlinkoPage() {
 
   // Full teardown on unmount.
   useEffect(() => {
+    // Snapshot the mutable ref container so the cleanup closes over the same
+    // object (it's a ref, not a React node, but this satisfies the lint rule).
+    const balls = ballsRef.current;
     return () => {
-      clearSettleTimer();
+      if (settleTimerRef.current != null) {
+        window.clearTimeout(settleTimerRef.current);
+        settleTimerRef.current = null;
+      }
       if (rafRef.current != null) {
         cancelAnimationFrame(rafRef.current);
         rafRef.current = null;
@@ -555,10 +557,14 @@ export default function PlinkoPage() {
         Matter.Engine.clear(engineRef.current);
         engineRef.current = null;
       }
-      ballBodyRef.current = null;
+      balls.clear();
+      // Reject any in-flight awaiters so autobet loops unwind cleanly.
+      awaitingResolversRef.current.forEach((res) => res(null));
+      awaitingResolversRef.current = [];
     };
-  }, [clearSettleTimer]);
+  }, []);
 
+  // ── Socket lifecycle ─────────────────────────────────────────────────
   useEffect(() => {
     const endpoint = getConfiguredSocketNamespace("originals");
     if (!endpoint) return;
@@ -585,42 +591,88 @@ export default function PlinkoPage() {
         },
         ...prev.slice(0, 29),
       ]);
-      animateDrop(result, false);
+
+      // Hand this result to whichever caller is awaiting (FIFO — one emit, one
+      // result), then animate. The promise resolves only once the ball settles.
+      const resolver = awaitingResolversRef.current.shift();
+      const drop = animateDropRef.current?.(result, false) ?? Promise.resolve();
+      void drop.then(() => {
+        setIsDropping(false);
+        resolver?.({ won: result.status === "WON", payout: result.payout });
+      });
     });
 
-    socket.on("plinko:history", (items: PlinkoHistoryItem[]) => { setHistory(items); });
+    socket.on("plinko:history", (items: PlinkoHistoryItem[]) => {
+      setHistory(items);
+      setRecentMultipliers(items.slice(0, 9).map((i) => i.multiplier));
+    });
 
     socket.on("plinko:error", (payload: { message: string }) => {
-      clearSettleTimer();
-      finishedRef.current = true;
       setIsDropping(false);
-      if (ballBodyRef.current && engineRef.current) {
-        Matter.World.remove(engineRef.current.world, ballBodyRef.current);
-        ballBodyRef.current = null;
-      }
       void refreshWallet();
       toast.error(payload.message);
+      // Fail the oldest awaiting caller so the autobet loop stops cleanly.
+      const resolver = awaitingResolversRef.current.shift();
+      resolver?.(null);
     });
 
     return () => { socket.disconnect(); };
-  }, [animateDrop, clearSettleTimer, refreshWallet]);
+  }, [refreshWallet]);
 
   const handleWalletTypeChange = useCallback((next: WalletType) => {
     setWalletType(next);
     void setSelectedWallet(next);
   }, [setSelectedWallet]);
 
+  // ── Place ONE bet over the socket, resolving with the round outcome ───
+  const placeBet = useCallback((bet: number): Promise<{ won: boolean; payout: number } | null> => {
+    return new Promise((resolve) => {
+      if (!socketRef.current || !socketRef.current.connected) {
+        toast.error("Connecting to server…");
+        resolve(null);
+        return;
+      }
+      if (bet <= 0) { toast.error("Enter a bet amount"); resolve(null); return; }
+      if (bet > activeBalance) { toast.error("Insufficient balance"); resolve(null); return; }
+
+      setLastResult(null);
+      setIsDropping(true);
+      playSound("bet");
+      awaitingResolversRef.current.push(resolve);
+      socketRef.current.emit("plinko:play", {
+        betAmount: bet,
+        rows,
+        risk,
+        walletType,
+        useBonus: walletType === "crypto" ? false : useBonus,
+      });
+    });
+  }, [activeBalance, risk, rows, useBonus, walletType]);
+
+  // Manual drop.
   const handleDrop = useCallback(() => {
-    if (!hasSession) return openLogin();
-    if (isDropping) return;
-    if (betAmount <= 0) return toast.error("Enter a bet amount");
-    if (betAmount > activeBalance) return toast.error("Insufficient balance");
-    if (!socketRef.current) return toast.error("Connecting to server…");
-    setLastResult(null);
-    setIsDropping(true);
-    playBet();
-    socketRef.current.emit("plinko:play", { betAmount, rows, risk, walletType });
-  }, [activeBalance, betAmount, hasSession, isDropping, openLogin, playBet, risk, rows, walletType]);
+    if (autoBusy) return;
+    void placeBet(betAmount);
+  }, [autoBusy, betAmount, placeBet]);
+
+  // Auto-bet runner (used by <OriginalsAutoBet>).
+  const runAutoBet = useCallback(
+    (bet: number) => placeBet(bet),
+    [placeBet],
+  );
+
+  // Spacebar hotkey for rapid manual play.
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.code !== "Space") return;
+      const tag = (e.target as HTMLElement)?.tagName;
+      if (tag === "INPUT" || tag === "TEXTAREA" || (e.target as HTMLElement)?.isContentEditable) return;
+      e.preventDefault();
+      if (!autoBusy) void placeBet(betAmount);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [autoBusy, betAmount, placeBet]);
 
   const pegNodes = useMemo(() => {
     return Array.from({ length: rows }, (_, rowIndex) => {
@@ -632,406 +684,336 @@ export default function PlinkoPage() {
     }).flat();
   }, [rows]);
 
-  const sliderPct = ((rows - 8) / 8) * 100;
+  const controlsLocked = autoBusy;
 
-  if (authLoading || accessLoading || !hasSession || !canAccessOriginals) {
-    return (
-      <div className="h-screen flex items-center justify-center bg-[#0C0D12]">
-        <div className="flex flex-col items-center gap-4">
-          <div className="relative w-16 h-16">
-            <div className="absolute inset-0 rounded-full border-2 border-[#00e701]/20 animate-ping" />
-            <div className="absolute inset-2 rounded-full border-2 border-t-[#00e701] border-r-transparent border-b-transparent border-l-transparent animate-spin" />
-          </div>
-          <p className="text-[#8892A4] text-sm font-medium">Loading Plinko…</p>
+  // ── Manual-mode game-specific controls (risk + rows) ──────────────────
+  const gameControls = (
+    <>
+      {/* Risk */}
+      <div>
+        <label className="text-[11px] text-[#6b7280] font-bold uppercase tracking-wider">Risk</label>
+        <div className="flex gap-1.5 mt-1.5">
+          {RISK_OPTIONS.map((opt) => {
+            const active = risk === opt.key;
+            const tone =
+              opt.key === "low" ? "#22c55e" : opt.key === "medium" ? "#fbbf24" : "#ef4444";
+            return (
+              <button
+                key={opt.key}
+                type="button"
+                onClick={() => !controlsLocked && setRisk(opt.key)}
+                disabled={controlsLocked}
+                className="flex-1 py-2.5 text-xs font-bold rounded-lg border transition-all disabled:opacity-50"
+                style={
+                  active
+                    ? { background: `${tone}26`, borderColor: `${tone}66`, color: tone }
+                    : { background: "var(--bg-deep-3, #0f1016)", borderColor: "rgba(255,255,255,0.06)", color: "#9ca3af" }
+                }
+              >
+                {opt.label}
+              </button>
+            );
+          })}
         </div>
       </div>
-    );
-  }
 
-  return (
-    <div className="min-h-screen md:h-screen overflow-y-auto md:overflow-hidden bg-[#0C0D12] flex flex-col font-sans">
-      <Header />
-
-      <div className="flex flex-1 md:overflow-hidden pt-[100px] md:pt-[64px] pb-[80px] md:pb-0 max-w-[1920px] mx-auto w-full">
-        <LeftSidebar />
-
-        <main className="flex-1 min-w-0 flex flex-col md:flex-row bg-[#0C0D12] md:overflow-hidden">
-
-          {/* ══════ LEFT — Betting Controls ══════ */}
-          <aside className="w-full md:w-[330px] shrink-0 bg-[#171921] flex flex-col order-2 md:order-1 relative z-10 border-r border-white/[0.06]">
-
-            {/* Mode Tabs */}
-            <div className="flex bg-[#0F1016] mx-3 mt-4 rounded-lg overflow-hidden border border-white/[0.05] shrink-0">
-              {(["Manual", "Auto"] as const).map((t) => (
-                <button
-                  key={t}
-                  onClick={() => setTab(t)}
-                  className={`flex-1 py-2.5 text-[13px] font-bold relative transition-all ${
-                    tab === t ? "text-white bg-[#171921]" : "text-[#6B7280] hover:text-[#8892A4]"
-                  }`}
-                >
-                  {t}
-                  {tab === t && <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#00e701] rounded-t-full" />}
-                </button>
-              ))}
-            </div>
-
-            <div className="p-4 flex flex-col gap-4 flex-1 overflow-y-auto">
-
-              {/* Amount Input */}
-              <div>
-                <div className="flex items-center justify-between mb-2">
-                  <div className="flex items-center gap-1.5 text-[13px] font-semibold text-[#8892A4]">
-                    Amount <Info size={13} className="text-[#4d5563] cursor-help" />
-                  </div>
-                  <button
-                    onClick={() => handleWalletTypeChange(walletType === "crypto" ? "fiat" : "crypto")}
-                    className="text-[11px] font-semibold text-[#6B7280] hover:text-[#8892A4] transition-colors"
-                  >
-                    Bal: {activeSymbol}{activeBalance.toFixed(2)}
-                  </button>
-                </div>
-
-                {/* Main bet input */}
-                <div className={`flex bg-[#0F1016] border rounded-lg h-11 items-center overflow-hidden transition-colors ${
-                  isDropping ? "border-[#1C1E28]" : "border-[#1C1E28] hover:border-[#262936] focus-within:border-[#00e701]/50"
-                }`}>
-                  <div className="pl-3 pr-2 shrink-0">
-                    <div className="w-5 h-5 rounded-full bg-gradient-to-br from-[#f2782b] to-[#e05a1a] flex items-center justify-center text-white text-[10px] font-black">
-                      {activeSymbol}
-                    </div>
-                  </div>
-                  <input
-                    type="number"
-                    value={betInput}
-                    onChange={(e) => setBetInput(e.target.value)}
-                    disabled={isDropping}
-                    className="flex-1 bg-transparent text-[15px] font-bold text-white outline-none min-w-0 py-2 disabled:opacity-50"
-                  />
-                  <div className="flex items-center h-full pr-1 gap-1 shrink-0">
-                    <button
-                      onClick={() => setBetInput(String(Math.max(10, Math.floor((parseFloat(betInput) || 0) / 2))))}
-                      disabled={isDropping}
-                      className="px-2 h-8 bg-[#1C1E28] hover:bg-[#353a4b] text-[#8892A4] hover:text-white text-[11px] font-bold rounded-md transition-all disabled:opacity-40"
-                    >½</button>
-                    <button
-                      onClick={() => setBetInput(String((parseFloat(betInput) || 0) * 2))}
-                      disabled={isDropping}
-                      className="px-2 h-8 bg-[#1C1E28] hover:bg-[#353a4b] text-[#8892A4] hover:text-white text-[11px] font-bold rounded-md transition-all disabled:opacity-40"
-                    >2×</button>
-                    <div className="flex flex-col h-8 ml-0.5 rounded-md bg-[#1C1E28] overflow-hidden w-6">
-                      <button
-                        onClick={() => setBetInput(String((parseFloat(betInput) || 0) + 10))}
-                        disabled={isDropping}
-                        className="flex-1 flex items-center justify-center hover:bg-[#353a4b] text-[#8892A4] hover:text-white transition-colors disabled:opacity-40"
-                      ><ChevronUp size={11} strokeWidth={3} /></button>
-                      <button
-                        onClick={() => setBetInput(String(Math.max(0, (parseFloat(betInput) || 0) - 10)))}
-                        disabled={isDropping}
-                        className="flex-1 flex items-center justify-center hover:bg-[#353a4b] text-[#8892A4] hover:text-white transition-colors border-t border-[#0F1016] disabled:opacity-40"
-                      ><ChevronDown size={11} strokeWidth={3} /></button>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Quick amounts */}
-                <div className="grid grid-cols-4 gap-1.5 mt-2">
-                  {[10, 100, 1000, 10000].map((val) => (
-                    <button
-                      key={val}
-                      onClick={() => setBetInput(String(val))}
-                      disabled={isDropping}
-                      className={`h-8 rounded-md text-[11px] font-bold transition-all disabled:opacity-40 border ${
-                        parseFloat(betInput) === val
-                          ? "bg-[#00e701]/15 border-[#00e701]/40 text-[#00e701]"
-                          : "bg-[#0F1016] border-[#1C1E28] text-[#6B7280] hover:text-white hover:border-[#262936]"
-                      }`}
-                    >
-                      {val >= 1000 ? `${val / 1000}k` : val}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Risk Mode */}
-              <div>
-                <label className="text-[13px] font-semibold text-[#8892A4] block mb-2">Risk Level</label>
-                <div className="flex gap-2">
-                  {RISK_OPTIONS.map((opt) => (
-                    <button
-                      key={opt.key}
-                      onClick={() => !isDropping && setRisk(opt.key)}
-                      disabled={isDropping}
-                      className={`flex-1 py-2 text-[12px] font-bold rounded-lg border transition-all disabled:opacity-50 ${
-                        risk === opt.key
-                          ? opt.key === "low"
-                            ? "bg-emerald-500/15 border-emerald-500/40 text-emerald-400"
-                            : opt.key === "medium"
-                            ? "bg-amber-500/15 border-amber-500/40 text-amber-400"
-                            : "bg-red-500/15 border-red-500/40 text-red-400"
-                          : "bg-[#0F1016] border-[#1C1E28] text-[#6B7280] hover:text-white hover:border-[#262936]"
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Row Slider */}
-              <div>
-                <div className="flex items-center justify-between mb-3">
-                  <label className="text-[13px] font-semibold text-[#8892A4]">Rows</label>
-                  <div className="flex items-center gap-1">
-                    <span className="text-[13px] font-black text-white tabular-nums">{rows}</span>
-                    <span className="text-[11px] text-[#6B7280]">pegs</span>
-                  </div>
-                </div>
-
-                {/* Visual slider with labeled stops */}
-                <div className="relative h-1.5 mt-4 mb-3">
-                  <div className="absolute inset-0 bg-[#0F1016] rounded-full overflow-hidden">
-                    <div
-                      className="h-full bg-gradient-to-r from-[#00e701] to-[#00b300] rounded-full transition-all duration-200"
-                      style={{ width: `${sliderPct}%` }}
-                    />
-                  </div>
-                  <input
-                    type="range" min={8} max={16} step={4} value={rows}
-                    onChange={(e) => !isDropping && setRows(Number(e.target.value) as PlinkoRows)}
-                    disabled={isDropping}
-                    className="w-full absolute inset-0 z-20 opacity-0 cursor-pointer h-1.5 disabled:cursor-not-allowed"
-                  />
-                  {/* Thumb indicator */}
-                  <div
-                    className="absolute top-[-7px] h-5 w-5 bg-white rounded-md shadow-lg pointer-events-none z-10 flex items-center justify-center transition-all duration-200"
-                    style={{ left: `calc(${sliderPct}% - 10px)` }}
-                  >
-                    <div className="flex gap-[2px]">
-                      <div className="w-px h-2.5 bg-[#cbd5e1]" />
-                      <div className="w-px h-2.5 bg-[#cbd5e1]" />
-                    </div>
-                  </div>
-                </div>
-                {/* Stop labels */}
-                <div className="flex justify-between px-1 mt-1">
-                  {ROW_OPTIONS.map((r) => (
-                    <button
-                      key={r}
-                      onClick={() => !isDropping && setRows(r)}
-                      className={`text-[11px] font-bold transition-colors ${
-                        rows === r ? "text-[#00e701]" : "text-[#262936] hover:text-[#8892A4]"
-                      }`}
-                    >
-                      {r}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Bet Button */}
+      {/* Rows (8 / 12 / 16 — the values the backend accepts) */}
+      <div>
+        <div className="flex items-center justify-between mb-1.5">
+          <label className="text-[11px] text-[#6b7280] font-bold uppercase tracking-wider">Rows</label>
+          <span className="text-[13px] font-black text-white tabular-nums">{rows}</span>
+        </div>
+        <div className="flex gap-1.5">
+          {ROW_OPTIONS.map((r) => {
+            const active = rows === r;
+            return (
               <button
-                onClick={handleDrop}
-                disabled={isDropping}
-                id="plinko-bet-btn"
-                className={`w-full h-14 rounded-xl text-[17px] font-black transition-all relative overflow-hidden ${
-                  isDropping
-                    ? "bg-[#00e701]/30 cursor-not-allowed text-[#00e701]/60"
-                    : "bg-[#00e701] hover:bg-[#00d400] active:scale-[0.98] text-[#0d1117] shadow-[0_4px_20px_rgba(0,231,1,0.3)] hover:shadow-[0_6px_28px_rgba(0,231,1,0.4)]"
-                }`}
+                key={r}
+                type="button"
+                onClick={() => !controlsLocked && setRows(r)}
+                disabled={controlsLocked}
+                className="flex-1 py-2.5 text-xs font-bold rounded-lg border transition-all disabled:opacity-50"
+                style={
+                  active
+                    ? { background: `${ACCENT}26`, borderColor: `${ACCENT}66`, color: ACCENT }
+                    : { background: "var(--bg-deep-3, #0f1016)", borderColor: "rgba(255,255,255,0.06)", color: "#9ca3af" }
+                }
               >
-                {isDropping ? (
-                  <span className="flex items-center justify-center gap-2">
-                    <span className="w-4 h-4 rounded-full border-2 border-[#00e701]/60 border-t-[#00e701] animate-spin" />
-                    Dropping…
-                  </span>
-                ) : "Bet"}
+                {r}
               </button>
-            </div>
-
-            {/* Bottom Controls Bar */}
-            <div className="p-3 flex items-center justify-between border-t border-white/[0.05] bg-[#0F1016] shrink-0">
-              <div className="flex items-center gap-2.5">
-                <button
-                  onClick={toggleMute}
-                  className="w-8 h-8 flex items-center justify-center rounded-lg bg-[#171921] hover:bg-[#1C1E28] text-[#6B7280] hover:text-white transition-all"
-                  title={muted ? "Unmute" : "Mute"}
-                >
-                  {muted ? <VolumeX size={14} /> : <Volume2 size={14} />}
-                </button>
-                <button
-                  onClick={() => setShowHistory((v) => !v)}
-                  className={`w-8 h-8 flex items-center justify-center rounded-lg transition-all ${
-                    showHistory ? "bg-[#00e701]/15 text-[#00e701]" : "bg-[#171921] hover:bg-[#1C1E28] text-[#6B7280] hover:text-white"
-                  }`}
-                  title="Bet history"
-                >
-                  <BarChart3 size={14} />
-                </button>
-              </div>
-              <div className="flex items-center gap-1.5 text-[#6B7280]">
-                <Zap size={12} className="text-[#00e701]" />
-                <span className="text-[11px] font-semibold text-[#262936]">ODD69 Plinko</span>
-              </div>
-            </div>
-          </aside>
-
-          {/* ══════ RIGHT — Game Board ══════ */}
-          <section className="flex-1 flex flex-col bg-[#0C0D12] relative order-1 md:order-2 overflow-hidden min-h-[500px]">
-
-            {/* Result Banner */}
-            <div className="absolute top-4 left-1/2 -translate-x-1/2 w-[80%] max-w-[540px] h-11 z-30">
-              {lastResult ? (
-                <div
-                  key={resultBannerKey}
-                  className={`w-full h-full rounded-lg flex items-center justify-center gap-3 border transition-all animate-[fadeSlideIn_0.3s_ease] ${
-                    lastResult.multiplier >= 1
-                      ? "bg-emerald-500/15 border-emerald-500/30"
-                      : "bg-red-500/10 border-red-500/20"
-                  }`}
-                >
-                  <span className={`text-lg font-black ${lastResult.multiplier >= 1 ? "text-emerald-400" : "text-red-400"}`}>
-                    {lastResult.multiplier >= 1 ? "+" : ""}{activeSymbol}{lastResult.payout.toFixed(2)}
-                  </span>
-                  <span className="text-[#6B7280] text-[12px] font-semibold">·</span>
-                  <span className={`text-[14px] font-black ${lastResult.multiplier >= 1 ? "text-white" : "text-red-400"}`}>
-                    {lastResult.multiplier.toFixed(2)}×
-                  </span>
-                </div>
-              ) : (
-                <div className="w-full h-full rounded-lg bg-[#171921] border border-[#1C1E28] flex items-center justify-center">
-                  <span className="text-[#262936] text-[12px] font-semibold">Drop the ball to play</span>
-                </div>
-              )}
-            </div>
-
-            {/* Hyper Mode Toggle */}
-            <div className="absolute top-5 right-5 flex items-center gap-2 z-30">
-              <span className="text-[12px] text-[#6B7280] font-semibold hidden sm:block">Hyper</span>
-              <button
-                onClick={() => setHyperMode(!hyperMode)}
-                className={`w-9 h-5 rounded-full relative transition-colors border ${
-                  hyperMode ? "bg-[#00e701] border-[#00e701]" : "bg-[#1C1E28] border-[#1C1E28]"
-                }`}
-              >
-                <div className={`w-3.5 h-3.5 bg-white rounded-full absolute top-[3px] shadow transition-transform ${
-                  hyperMode ? "translate-x-[18px]" : "translate-x-[3px]"
-                }`} />
-              </button>
-              {hyperMode && <Zap size={12} className="text-[#00e701] animate-pulse" />}
-            </div>
-
-            {/* History Panel Overlay */}
-            {showHistory && (
-              <div className="absolute top-0 left-0 right-0 bottom-0 z-40 bg-[#0C0D12]/95 backdrop-blur-md flex flex-col">
-                <div className="flex items-center justify-between px-5 py-4 border-b border-white/[0.06]">
-                  <h3 className="text-sm font-black text-white flex items-center gap-2">
-                    <Clock size={14} className="text-[#00e701]" /> Bet History
-                  </h3>
-                  <button onClick={() => setShowHistory(false)} className="text-[#6B7280] hover:text-white transition-colors text-xs font-bold">Close ×</button>
-                </div>
-                <div className="flex-1 overflow-y-auto divide-y divide-white/[0.04]">
-                  {history.length === 0 ? (
-                    <div className="flex items-center justify-center h-40 text-[#262936] text-sm">No bets yet</div>
-                  ) : history.map((h, i) => (
-                    <div key={h.gameId + i} className="flex items-center justify-between px-5 py-3 hover:bg-white/[0.02] transition-colors">
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <span className={`text-[10px] font-black px-2 py-0.5 rounded-full ${
-                            h.status === "WON" ? "bg-emerald-500/15 text-emerald-400" : "bg-red-500/10 text-red-400"
-                          }`}>{h.status}</span>
-                          <span className="text-[11px] text-[#6B7280]">{h.rows}R · {h.risk}</span>
-                        </div>
-                        <p className="text-[11px] text-[#262936] mt-0.5">{activeSymbol}{h.betAmount.toFixed(2)} bet</p>
-                      </div>
-                      <div className="text-right">
-                        <p className={`text-sm font-black ${h.status === "WON" ? "text-emerald-400" : "text-red-400"}`}>
-                          {h.multiplier.toFixed(2)}×
-                        </p>
-                        <p className="text-[11px] text-[#6B7280]">{activeSymbol}{h.payout.toFixed(2)}</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Plinko Board */}
-            <div className="flex-1 flex items-center justify-center mt-16 p-3 relative z-10">
-              <div ref={boardRef} className="w-full max-w-[680px] aspect-[1/1.05] relative">
-
-                {/* Pegs */}
-                {pegNodes.map((peg) => (
-                  <div
-                    key={peg.key}
-                    className="absolute rounded-full -translate-x-1/2 -translate-y-1/2 bg-white/[0.06]0"
-                    style={{
-                      left: `${peg.x}%`,
-                      top: `${peg.y}%`,
-                      width: `${Math.max(5, 9 - rows * 0.15)}px`,
-                      height: `${Math.max(5, 9 - rows * 0.15)}px`,
-                      boxShadow: "0 0 4px rgba(255,255,255,0.3)",
-                    }}
-                  />
-                ))}
-
-                {/* Physics ball canvas (matter-js). Sits above pegs, below slots. */}
-                <canvas
-                  ref={canvasRef}
-                  className="absolute inset-0 z-20 pointer-events-none"
-                />
-
-                {/* Multiplier Slots */}
-                <div className="absolute inset-x-[1%] bottom-[1%] h-[30px] sm:h-[36px] flex items-end gap-[2px] z-[25]">
-                  {multiplierTable.map((multiplier, index) => {
-                    const isLast = lastResult?.slotIndex === index;
-                    return (
-                      <div
-                        key={`${rows}-${risk}-${index}`}
-                        className="flex-1 h-full rounded-[4px] flex items-center justify-center relative overflow-hidden transition-all duration-200"
-                        style={{
-                          background: getSlotGradient(index, multiplierTable.length, multiplier),
-                          transform: isLast ? "translateY(2px) scaleY(0.95)" : "translateY(0)",
-                          boxShadow: isLast
-                            ? "0 0 14px rgba(255,154,61,0.85), inset 0 0 0 1.5px rgba(255,255,255,0.6)"
-                            : `0 3px 0 rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.15)`,
-                        }}
-                      >
-                        {isLast && (
-                          <div className="absolute inset-0 bg-white/[0.16] animate-pulse" />
-                        )}
-                        <span
-                          className="tabular-nums leading-none font-black relative z-10"
-                          style={{
-                            color: getSlotTextColor(multiplier),
-                            fontSize: multiplierTable.length > 14
-                              ? "8px"
-                              : multiplierTable.length > 10
-                              ? "10px"
-                              : "12px",
-                          }}
-                        >
-                          {formatMultiplier(multiplier)}
-                        </span>
-                      </div>
-                    );
-                  })}
-                </div>
-
-              </div>
-            </div>
-
-          </section>
-        </main>
+            );
+          })}
+        </div>
       </div>
 
-      {/* CSS for the result banner animation */}
+      {/* RTP / max-win disclosure */}
+      <div className="flex items-center justify-between text-[11px] pt-1">
+        <span className="text-[#6b7280]">Max win</span>
+        <span className="font-black tabular-nums" style={{ color: ACCENT }}>
+          {formatMultiplier(maxWin)}×
+        </span>
+      </div>
+    </>
+  );
+
+  const actionButton = (
+    <button
+      type="button"
+      onClick={handleDrop}
+      disabled={isDropping || autoBusy}
+      id="plinko-bet-btn"
+      className="w-full h-13 py-3.5 rounded-lg text-base font-black transition-all active:scale-[0.99] disabled:cursor-not-allowed"
+      style={
+        isDropping || autoBusy
+          ? { background: `${ACCENT}4d`, color: "#0b0d10" }
+          : { background: ACCENT, color: "#0b0d10", boxShadow: `0 4px 20px ${ACCENT}4d` }
+      }
+    >
+      {isDropping ? "Dropping…" : "Bet"}
+    </button>
+  );
+
+  const controls = (
+    <OriginalsControls
+      betInput={betInput}
+      setBetInput={setBetInput}
+      walletType={walletType}
+      setWalletType={handleWalletTypeChange}
+      useBonus={useBonus}
+      setUseBonus={setUseBonus}
+      locked={controlsLocked}
+      minBet={10}
+      accent={ACCENT}
+      action={actionButton}
+      autoPanel={
+        <>
+          {gameControls}
+          <OriginalsAutoBet
+            baseBet={betAmount}
+            accent={ACCENT}
+            disabled={betAmount <= 0 || betAmount > activeBalance}
+            runBet={runAutoBet}
+            onBusyChange={setAutoBusy}
+          />
+        </>
+      }
+    >
+      {gameControls}
+    </OriginalsControls>
+  );
+
+  return (
+    <OriginalsShell gameKey="plinko" title="Plinko" controls={controls}>
+      {/* ══════ Game stage ══════ */}
+      <section className="flex-1 flex flex-col bg-bg-odd69 relative overflow-hidden min-h-[500px] h-full">
+
+        {/* Result Banner */}
+        <div className="absolute top-4 left-1/2 -translate-x-1/2 w-[80%] max-w-[540px] h-11 z-30">
+          {lastResult ? (
+            <div
+              key={resultBannerKey}
+              className="w-full h-full rounded-lg flex items-center justify-center gap-3 border transition-all animate-[plinkoFade_0.3s_ease]"
+              style={
+                lastResult.multiplier >= 1
+                  ? { background: "rgba(34,197,94,0.15)", borderColor: "rgba(34,197,94,0.3)" }
+                  : { background: "rgba(239,68,68,0.1)", borderColor: "rgba(239,68,68,0.2)" }
+              }
+            >
+              <span className="text-lg font-black" style={{ color: lastResult.multiplier >= 1 ? "#34d399" : "#f87171" }}>
+                {lastResult.multiplier >= 1 ? "+" : ""}{sym}{lastResult.payout.toFixed(2)}
+              </span>
+              <span className="text-[#6b7280] text-[12px] font-semibold">·</span>
+              <span className="text-[14px] font-black" style={{ color: lastResult.multiplier >= 1 ? "#fff" : "#f87171" }}>
+                {lastResult.multiplier.toFixed(2)}×
+              </span>
+            </div>
+          ) : (
+            <div className="w-full h-full rounded-lg bg-bg-modal-2 border border-white/[0.06] flex items-center justify-center">
+              <span className="text-[#6b7280] text-[12px] font-semibold">Drop the ball to play</span>
+            </div>
+          )}
+        </div>
+
+        {/* Hyper + Instant + History toggles */}
+        <div className="absolute top-5 right-5 flex items-center gap-3 z-30">
+          <ToggleChip label="Instant" active={instantBet} onClick={() => setInstantBet((v) => !v)} />
+          <ToggleChip label="Hyper" active={hyperMode} onClick={() => setHyperMode((v) => !v)} icon={hyperMode} />
+          <button
+            type="button"
+            onClick={() => setShowHistory((v) => !v)}
+            title="Bet history"
+            className="w-8 h-8 flex items-center justify-center rounded-lg transition-all border"
+            style={
+              showHistory
+                ? { background: `${ACCENT}26`, borderColor: `${ACCENT}66`, color: ACCENT }
+                : { background: "rgba(255,255,255,0.04)", borderColor: "rgba(255,255,255,0.06)", color: "#9ca3af" }
+            }
+          >
+            <Clock size={14} />
+          </button>
+        </div>
+
+        {/* History Panel Overlay */}
+        {showHistory && (
+          <div className="absolute inset-0 z-40 bg-bg-odd69/95 backdrop-blur-md flex flex-col">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-white/[0.06]">
+              <h3 className="text-sm font-black text-white flex items-center gap-2">
+                <Clock size={14} style={{ color: ACCENT }} /> Bet History
+              </h3>
+              <button onClick={() => setShowHistory(false)} className="text-[#6b7280] hover:text-white transition-colors">
+                <X size={18} />
+              </button>
+            </div>
+            <div className="flex-1 overflow-y-auto divide-y divide-white/[0.04]">
+              {history.length === 0 ? (
+                <div className="flex items-center justify-center h-40 text-[#6b7280] text-sm">No bets yet</div>
+              ) : history.map((h, i) => (
+                <div key={h.gameId + i} className="flex items-center justify-between px-5 py-3 hover:bg-white/[0.02] transition-colors">
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span
+                        className="text-[10px] font-black px-2 py-0.5 rounded-full"
+                        style={
+                          h.status === "WON"
+                            ? { background: "rgba(34,197,94,0.15)", color: "#34d399" }
+                            : { background: "rgba(239,68,68,0.1)", color: "#f87171" }
+                        }
+                      >{h.status}</span>
+                      <span className="text-[11px] text-[#6b7280]">{h.rows}R · {h.risk}</span>
+                    </div>
+                    <p className="text-[11px] text-[#6b7280] mt-0.5">{sym}{h.betAmount.toFixed(2)} bet</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-sm font-black" style={{ color: h.status === "WON" ? "#34d399" : "#f87171" }}>
+                      {h.multiplier.toFixed(2)}×
+                    </p>
+                    <p className="text-[11px] text-[#6b7280]">{sym}{h.payout.toFixed(2)}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Recent-results rail (Stake's signature vertical pills) */}
+        <div className="absolute top-20 right-5 z-20 hidden sm:flex flex-col gap-1.5 w-[58px]">
+          {recentMultipliers.map((m, i) => (
+            <div
+              key={i}
+              className="h-7 rounded-md flex items-center justify-center text-[11px] font-black tabular-nums transition-all"
+              style={{
+                background: getSlotGradient(m),
+                color: getSlotTextColor(m),
+                opacity: 1 - i * 0.08,
+              }}
+            >
+              {formatMultiplier(m)}×
+            </div>
+          ))}
+        </div>
+
+        {/* Plinko Board */}
+        <div className="flex-1 flex items-center justify-center mt-16 p-3 relative z-10">
+          <div
+            ref={boardRef}
+            className="w-full max-w-[680px] aspect-[1/1.05] relative"
+            style={{ background: "radial-gradient(ellipse at 50% 35%, rgba(255,154,61,0.07), transparent 65%)" }}
+          >
+            {/* Pegs */}
+            {pegNodes.map((peg) => (
+              <div
+                key={peg.key}
+                className="absolute rounded-full -translate-x-1/2 -translate-y-1/2"
+                style={{
+                  left: `${peg.x}%`,
+                  top: `${peg.y}%`,
+                  width: `${Math.max(5, 9 - rows * 0.15)}px`,
+                  height: `${Math.max(5, 9 - rows * 0.15)}px`,
+                  background: "rgba(255,255,255,0.85)",
+                  boxShadow: "0 0 4px rgba(255,255,255,0.3)",
+                }}
+              />
+            ))}
+
+            {/* Physics ball canvas (matter-js). Sits above pegs, below slots. */}
+            <canvas ref={canvasRef} className="absolute inset-0 z-20 pointer-events-none" />
+
+            {/* Multiplier Slots */}
+            <div className="absolute inset-x-[1%] bottom-[1%] h-[30px] sm:h-[36px] flex items-end gap-[2px] z-[25]">
+              {multiplierTable.map((multiplier, index) => {
+                const isLast = lastResult?.slotIndex === index && !!lastResult;
+                return (
+                  <div
+                    key={`${rows}-${risk}-${index}`}
+                    className="flex-1 h-full rounded-[4px] flex items-center justify-center relative overflow-hidden transition-all duration-200"
+                    style={{
+                      background: getSlotGradient(multiplier),
+                      transform: isLast ? "translateY(2px) scaleY(0.92)" : "translateY(0)",
+                      boxShadow: isLast
+                        ? `0 0 14px ${ACCENT}d9, inset 0 0 0 1.5px rgba(255,255,255,0.6)`
+                        : "0 3px 0 rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.15)",
+                    }}
+                  >
+                    {isLast && <div className="absolute inset-0 bg-white/[0.16] animate-pulse" />}
+                    <span
+                      className="tabular-nums leading-none font-black relative z-10"
+                      style={{
+                        color: getSlotTextColor(multiplier),
+                        fontSize: multiplierTable.length > 14 ? "8px" : multiplierTable.length > 10 ? "10px" : "12px",
+                      }}
+                    >
+                      {formatMultiplier(multiplier)}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      </section>
+
       <style>{`
-        @keyframes fadeSlideIn {
+        @keyframes plinkoFade {
           from { opacity: 0; transform: translateY(-6px) translateX(-50%); }
           to { opacity: 1; transform: translateY(0) translateX(-50%); }
         }
       `}</style>
+    </OriginalsShell>
+  );
+}
+
+// ── Small local toggle chip for Hyper / Instant ─────────────────────────
+function ToggleChip({
+  label,
+  active,
+  onClick,
+  icon,
+}: {
+  label: string;
+  active: boolean;
+  onClick: () => void;
+  icon?: boolean;
+}) {
+  return (
+    <div className="flex items-center gap-1.5">
+      <span className="text-[12px] text-[#6b7280] font-semibold hidden sm:block">{label}</span>
+      <button
+        type="button"
+        onClick={onClick}
+        aria-pressed={active}
+        className="w-9 h-5 rounded-full relative transition-colors border"
+        style={
+          active
+            ? { background: ACCENT, borderColor: ACCENT }
+            : { background: "rgba(255,255,255,0.06)", borderColor: "rgba(255,255,255,0.08)" }
+        }
+      >
+        <div
+          className="w-3.5 h-3.5 bg-white rounded-full absolute top-[3px] shadow transition-transform"
+          style={{ transform: active ? "translateX(18px)" : "translateX(3px)" }}
+        />
+      </button>
+      {icon && <Zap size={12} style={{ color: ACCENT }} className="animate-pulse" />}
     </div>
   );
 }

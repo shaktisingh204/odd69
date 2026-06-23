@@ -29,6 +29,7 @@ export class HiloGame {
   @Prop({ default: false }) usedBonus: boolean;
   @Prop({ default: 0 }) bonusAmount: number;
   @Prop({ default: 'INR' }) currency: string;
+  @Prop({ default: 0 }) nonce: number;
 }
 
 export const HiloGameSchema = SchemaFactory.createForClass(HiloGame);
