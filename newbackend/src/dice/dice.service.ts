@@ -12,6 +12,9 @@ import { BonusService } from '../bonus/bonus.service';
 import { FairnessService } from '../originals/fairness.service';
 
 const DEFAULT_HOUSE_EDGE = 1; // 1% house edge
+const GAME_KEY = 'dice';
+const DEFAULT_MIN_BET = 10;
+const DEFAULT_MAX_BET = 25000;
 
 /**
  * Provably-fair roll:  HMAC-SHA256(serverSeed:clientSeed:nonce)
@@ -167,6 +170,21 @@ export class DiceService {
     if (winChance <= 0 || winChance >= 100) throw new BadRequestException('Invalid win chance');
     const mult = calcMultiplier(winChance);
 
+    // GGR config gating (active / maintenance / min-max bet)
+    const config = await this.ggrService.getConfig(GAME_KEY).catch(() => null);
+    if (config && !config.isActive) {
+      throw new BadRequestException('Dice is currently unavailable');
+    }
+    if (config?.maintenanceMode) {
+      throw new BadRequestException(config.maintenanceMessage || 'Under maintenance');
+    }
+    if (betAmount < (config?.minBet ?? DEFAULT_MIN_BET)) {
+      throw new BadRequestException(`Minimum bet is ${config?.minBet ?? DEFAULT_MIN_BET}`);
+    }
+    if (betAmount > (config?.maxBet ?? DEFAULT_MAX_BET)) {
+      throw new BadRequestException(`Maximum bet is ${config?.maxBet ?? DEFAULT_MAX_BET}`);
+    }
+
     // Get user
     const user = await this.prisma.user.findUnique({ where: { id: userId } });
     if (!user) throw new NotFoundException('User not found');
@@ -177,21 +195,32 @@ export class DiceService {
 
     await this.prisma.$transaction(async (tx) => {
       if (walletType === 'crypto') {
-        if (user.cryptoBalance < betAmount) throw new BadRequestException('Insufficient crypto balance');
-        await tx.user.update({ where: { id: userId }, data: { cryptoBalance: { decrement: betAmount } } });
+        const r = await tx.user.updateMany({
+          where: { id: userId, cryptoBalance: { gte: betAmount } },
+          data: { cryptoBalance: { decrement: betAmount } },
+        });
+        if (!r.count) throw new BadRequestException('Insufficient crypto balance');
+      } else if (useBonus && user.casinoBonus > 0) {
+        bonusUsed = Math.min(user.casinoBonus, betAmount);
+        actualBet = Math.max(0, betAmount - bonusUsed);
+        const r = await tx.user.updateMany({
+          where: {
+            id: userId,
+            casinoBonus: { gte: bonusUsed },
+            balance: { gte: actualBet },
+          },
+          data: {
+            balance: { decrement: actualBet },
+            casinoBonus: { decrement: bonusUsed },
+          },
+        });
+        if (!r.count) throw new BadRequestException('Insufficient balance');
       } else {
-        if (useBonus && user.casinoBonus > 0) {
-          bonusUsed = Math.min(user.casinoBonus, betAmount);
-          actualBet = Math.max(0, betAmount - bonusUsed);
-          if (user.balance < actualBet) throw new BadRequestException('Insufficient balance');
-          await tx.user.update({
-            where: { id: userId },
-            data: { balance: { decrement: actualBet }, casinoBonus: { decrement: bonusUsed } },
-          });
-        } else {
-          if (user.balance < betAmount) throw new BadRequestException('Insufficient balance');
-          await tx.user.update({ where: { id: userId }, data: { balance: { decrement: betAmount } } });
-        }
+        const r = await tx.user.updateMany({
+          where: { id: userId, balance: { gte: betAmount } },
+          data: { balance: { decrement: betAmount } },
+        });
+        if (!r.count) throw new BadRequestException('Insufficient balance');
       }
     });
 
@@ -202,7 +231,8 @@ export class DiceService {
 
     // Determine win/loss
     const won = direction === 'over' ? roll > target : roll < target;
-    const payout = won ? parseFloat((betAmount * mult).toFixed(2)) : 0;
+    let payout = won ? parseFloat((betAmount * mult).toFixed(2)) : 0;
+    if (config?.maxWin && payout > config.maxWin) payout = this.roundCurrency(config.maxWin);
     const status = won ? 'WON' : 'LOST';
 
     // Save game (MongoDB)

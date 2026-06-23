@@ -372,6 +372,9 @@ export class CoinflipService {
       if (!updated) {
         throw new BadRequestException('Game is not active');
       }
+      await this.ggrService
+        .updateSnapshot(GAME_KEY, 0, 0, true)
+        .catch(() => undefined);
       return this.buildState(updated);
     }
 

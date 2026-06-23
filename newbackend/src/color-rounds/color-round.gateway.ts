@@ -4,13 +4,14 @@ import {
   SubscribeMessage,
   OnGatewayConnection,
   OnGatewayDisconnect,
+  OnGatewayInit,
   ConnectedSocket,
   MessageBody,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import * as jwt from 'jsonwebtoken';
 import { ConfigService } from '@nestjs/config';
-import { Logger, OnModuleInit } from '@nestjs/common';
+import { Logger } from '@nestjs/common';
 import {
   ColorRoundService,
   COLOR_ROOMS,
@@ -26,7 +27,7 @@ interface AuthedSocket extends Socket {
 
 @WebSocketGateway({ namespace: '/color', cors: { origin: '*' } })
 export class ColorRoundGateway
-  implements OnGatewayConnection, OnGatewayDisconnect, OnModuleInit
+  implements OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit
 {
   @WebSocketServer() server: Server;
   private readonly logger = new Logger(ColorRoundGateway.name);
@@ -37,7 +38,9 @@ export class ColorRoundGateway
     private readonly colorService: ColorRoundService,
   ) {}
 
-  onModuleInit() {
+  // afterInit runs once Socket.IO has created `this.server`, so the broadcast
+  // callbacks and the round loops are wired only when the server is ready.
+  afterInit() {
     // Wire service callbacks → socket broadcasts before starting the loops.
     this.colorService.onBetting((p) => {
       this.server.emit('color:round-open', {

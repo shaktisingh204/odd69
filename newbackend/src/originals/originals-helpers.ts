@@ -43,9 +43,19 @@ export function hmacHex(
  */
 export function rollInt(digest: string, max: number): number {
   if (max <= 1) return 0;
-  // Take first 8 hex (4 bytes) → 0..2^32-1
-  const raw = parseInt(digest.slice(0, 8), 16);
-  return raw % max;
+  // Unbiased rejection sampling: only accept 4-byte (8-hex) windows that fall
+  // below the largest multiple of `max` representable in 32 bits, so the modulo
+  // is uniform. Walk successive 8-hex windows until one is accepted.
+  const limit = Math.floor(0x100000000 / max) * max;
+  let lastRaw = 0;
+  for (let i = 0; i + 8 <= digest.length; i += 8) {
+    const raw = parseInt(digest.slice(i, i + 8), 16);
+    lastRaw = raw;
+    if (raw < limit) return raw % max;
+  }
+  // Digest exhausted without an accepted window (astronomically unlikely):
+  // fall back to the modulo of the last window read (slightly biased).
+  return lastRaw % max;
 }
 
 /** Float in [0,1) from the first 13 hex chars (52 bits ≈ Number safe). */
@@ -207,39 +217,43 @@ export async function deductStake(
 
   await prisma.$transaction(async (tx) => {
     if (walletType === 'crypto') {
-      if (user.cryptoBalance < betAmount) {
-        throw new BadRequestException('Insufficient crypto balance');
-      }
-      await tx.user.update({
-        where: { id: userId },
+      const r = await tx.user.updateMany({
+        where: { id: userId, cryptoBalance: { gte: betAmount } },
         data: { cryptoBalance: { decrement: betAmount } },
       });
+      if (!r.count) {
+        throw new BadRequestException('Insufficient crypto balance');
+      }
       return;
     }
 
     if (useBonus && user.casinoBonus > 0) {
       bonusUsed = Math.min(user.casinoBonus, betAmount);
       actualBet = Math.max(0, betAmount - bonusUsed);
-      if (user.balance < actualBet) {
-        throw new BadRequestException('Insufficient balance');
-      }
-      await tx.user.update({
-        where: { id: userId },
+      const r = await tx.user.updateMany({
+        where: {
+          id: userId,
+          balance: { gte: actualBet },
+          casinoBonus: { gte: bonusUsed },
+        },
         data: {
           balance: { decrement: actualBet },
           casinoBonus: { decrement: bonusUsed },
         },
       });
+      if (!r.count) {
+        throw new BadRequestException('Insufficient balance');
+      }
       return;
     }
 
-    if (user.balance < betAmount) {
-      throw new BadRequestException('Insufficient balance');
-    }
-    await tx.user.update({
-      where: { id: userId },
+    const r = await tx.user.updateMany({
+      where: { id: userId, balance: { gte: betAmount } },
       data: { balance: { decrement: betAmount } },
     });
+    if (!r.count) {
+      throw new BadRequestException('Insufficient balance');
+    }
   });
 
   return { bonusUsed, actualBet };

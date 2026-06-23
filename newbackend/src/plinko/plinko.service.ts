@@ -11,7 +11,11 @@ import * as crypto from 'crypto';
 import { PrismaService } from '../prisma.service';
 import { BonusService } from '../bonus/bonus.service';
 import { FairnessService } from '../originals/fairness.service';
+import { GGRService } from '../originals/ggr.service';
 import { PlinkoGame, PlinkoGameDocument } from '../originals/schemas/plinko-game.schema';
+
+const GAME_KEY = 'plinko';
+const DEFAULT_MAX_BET = 25000;
 
 export type PlinkoRisk = 'low' | 'medium' | 'high';
 export type PlinkoRows = 8 | 12 | 16;
@@ -72,6 +76,8 @@ export class PlinkoService {
     private readonly bonusService: BonusService,
     @Inject(forwardRef(() => FairnessService))
     private readonly fairness: FairnessService,
+    @Inject(forwardRef(() => GGRService))
+    private readonly ggrService: GGRService,
   ) {}
 
   private roundCurrency(value: number) {
@@ -184,6 +190,21 @@ export class PlinkoService {
       throw new BadRequestException('Bet must be positive');
     }
 
+    // GGR config gating (mirror keno)
+    const config = await this.ggrService.getConfig(GAME_KEY);
+    if (config && !config.isActive) {
+      throw new BadRequestException('Plinko is currently unavailable');
+    }
+    if (config?.maintenanceMode) {
+      throw new BadRequestException(config.maintenanceMessage || 'Under maintenance');
+    }
+    if (betAmount < (config?.minBet ?? 10)) {
+      throw new BadRequestException(`Minimum bet is ${config?.minBet ?? 10}`);
+    }
+    if (betAmount > (config?.maxBet ?? DEFAULT_MAX_BET)) {
+      throw new BadRequestException(`Maximum bet is ${config?.maxBet ?? DEFAULT_MAX_BET}`);
+    }
+
     const table = PLINKO_MULTIPLIERS[rows][risk];
     const user = await this.prisma.user.findUnique({ where: { id: userId } });
     if (!user) {
@@ -194,46 +215,54 @@ export class PlinkoService {
 
     await this.prisma.$transaction(async (tx) => {
       if (walletType === 'crypto') {
-        if (user.cryptoBalance < betAmount) {
-          throw new BadRequestException('Insufficient crypto balance');
-        }
-        await tx.user.update({
-          where: { id: userId },
+        const r = await tx.user.updateMany({
+          where: { id: userId, cryptoBalance: { gte: betAmount } },
           data: { cryptoBalance: { decrement: betAmount } },
         });
+        if (!r.count) {
+          throw new BadRequestException('Insufficient crypto balance');
+        }
         return;
       }
 
       if (useBonus && user.casinoBonus > 0) {
         bonusUsed = Math.min(user.casinoBonus, betAmount);
         const actualBet = Math.max(0, betAmount - bonusUsed);
-        if (user.balance < actualBet) {
-          throw new BadRequestException('Insufficient balance');
-        }
-        await tx.user.update({
-          where: { id: userId },
+        // Atomic guard on both fiat balance and bonus wallet — prevents TOCTOU.
+        const r = await tx.user.updateMany({
+          where: {
+            id: userId,
+            balance: { gte: actualBet },
+            casinoBonus: { gte: bonusUsed },
+          },
           data: {
             balance: { decrement: actualBet },
             casinoBonus: { decrement: bonusUsed },
           },
         });
+        if (!r.count) {
+          throw new BadRequestException('Insufficient balance');
+        }
         return;
       }
 
-      if (user.balance < betAmount) {
-        throw new BadRequestException('Insufficient balance');
-      }
-      await tx.user.update({
-        where: { id: userId },
+      const r = await tx.user.updateMany({
+        where: { id: userId, balance: { gte: betAmount } },
         data: { balance: { decrement: betAmount } },
       });
+      if (!r.count) {
+        throw new BadRequestException('Insufficient balance');
+      }
     });
 
     const { serverSeed, serverSeedHash, clientSeed, nonce } = await this.fairness.consume(userId);
     const path = generatePath(serverSeed, clientSeed, nonce, rows);
     const slotIndex = path.reduce((sum, step) => sum + step, 0);
     const multiplier = table[slotIndex];
-    const payout = this.roundCurrency(betAmount * multiplier);
+    let payout = this.roundCurrency(betAmount * multiplier);
+    if (config?.maxWin && payout > config.maxWin) {
+      payout = this.roundCurrency(config.maxWin);
+    }
     const status = multiplier >= 1 ? 'WON' : 'LOST';
 
     const game = await this.plinkoGameModel.create({

@@ -166,21 +166,28 @@ export class MinesService {
 
     await this.prisma.$transaction(async (tx) => {
       if (walletType === 'crypto') {
-        if (user.cryptoBalance < betAmount) throw new BadRequestException('Insufficient crypto balance');
-        await tx.user.update({ where: { id: userId }, data: { cryptoBalance: { decrement: betAmount } } });
+        // Atomic guarded debit — prevents TOCTOU double-spend.
+        const r = await tx.user.updateMany({
+          where: { id: userId, cryptoBalance: { gte: betAmount } },
+          data: { cryptoBalance: { decrement: betAmount } },
+        });
+        if (!r.count) throw new BadRequestException('Insufficient crypto balance');
+      } else if (useBonus && user.casinoBonus > 0) {
+        bonusUsed = Math.min(user.casinoBonus, betAmount);
+        actualBet = Math.max(0, betAmount - bonusUsed);
+        // Atomic guarded debit across both fiat + bonus wallets.
+        const r = await tx.user.updateMany({
+          where: { id: userId, balance: { gte: actualBet }, casinoBonus: { gte: bonusUsed } },
+          data: { balance: { decrement: actualBet }, casinoBonus: { decrement: bonusUsed } },
+        });
+        if (!r.count) throw new BadRequestException('Insufficient balance');
       } else {
-        if (useBonus && user.casinoBonus > 0) {
-          bonusUsed = Math.min(user.casinoBonus, betAmount);
-          actualBet = Math.max(0, betAmount - bonusUsed);
-          if (user.balance < actualBet) throw new BadRequestException('Insufficient balance');
-          await tx.user.update({
-            where: { id: userId },
-            data: { balance: { decrement: actualBet }, casinoBonus: { decrement: bonusUsed } },
-          });
-        } else {
-          if (user.balance < betAmount) throw new BadRequestException('Insufficient balance');
-          await tx.user.update({ where: { id: userId }, data: { balance: { decrement: betAmount } } });
-        }
+        // Atomic guarded debit — prevents TOCTOU double-spend.
+        const r = await tx.user.updateMany({
+          where: { id: userId, balance: { gte: betAmount } },
+          data: { balance: { decrement: betAmount } },
+        });
+        if (!r.count) throw new BadRequestException('Insufficient balance');
       }
     });
 
@@ -273,46 +280,61 @@ export class MinesService {
     const hitMine = game.minePositions.includes(tileIndex);
 
     if (hitMine) {
-      game.status = 'LOST';
-      game.revealedTiles = [...game.revealedTiles, tileIndex];
-      game.payout = 0;
-      await game.save();
+      // Atomically claim the game ACTIVE -> LOST so concurrent reveals can't
+      // double-process the same terminal transition.
+      const claimed = await this.minesGameModel.findOneAndUpdate(
+        { _id: gameId, userId, status: 'ACTIVE' },
+        { $set: { status: 'LOST', payout: 0 }, $push: { revealedTiles: tileIndex } },
+        { new: true },
+      );
+      if (!claimed) throw new BadRequestException('Game is not active or cannot reveal');
 
       await this.prisma.transaction.create({
         data: {
           userId,
-          amount: game.betAmount,
+          amount: claimed.betAmount,
           type: 'BET_LOSS',
           status: 'COMPLETED',
           paymentDetails: {
             source: 'MINES',
-            gameId: String(game._id),
+            gameId: String(claimed._id),
           },
           remarks: `Mines loss: hit mine on tile ${tileIndex}`,
           createdAt: new Date(),
           updatedAt: new Date(),
         },
       });
+
+      await this.ggrService.updateSnapshot('mines', 0, 0, false).catch(() => undefined);
+
       return {
-        hit: true, gameId: String(game._id), status: 'LOST',
-        minePositions: game.minePositions,
-        serverSeedHash: game.serverSeedHash, nonce: game.nonce,
-        revealedTiles: game.revealedTiles,
+        hit: true, gameId: String(claimed._id), status: 'LOST',
+        minePositions: claimed.minePositions,
+        serverSeedHash: claimed.serverSeedHash, nonce: claimed.nonce,
+        revealedTiles: claimed.revealedTiles,
         payout: 0,
       };
     }
 
-    const newRevealed = [...game.revealedTiles, tileIndex];
-    const newMultiplier = calcMultiplier(game.mineCount, newRevealed.length);
-    const potentialPayout = parseFloat((game.betAmount * newMultiplier).toFixed(2));
+    // Atomically push the safe tile only if the game is still ACTIVE and the
+    // tile hasn't already been revealed (guards against concurrent reveals).
+    const claimed = await this.minesGameModel.findOneAndUpdate(
+      { _id: gameId, userId, status: 'ACTIVE', revealedTiles: { $ne: tileIndex } },
+      { $push: { revealedTiles: tileIndex } },
+      { new: true },
+    );
+    if (!claimed) throw new BadRequestException('Tile already revealed or game is not active');
 
-    game.revealedTiles = newRevealed;
-    game.multiplier = newMultiplier;
-    await game.save();
+    // Recompute multiplier from the authoritative post-update reveal count.
+    const newMultiplier = calcMultiplier(claimed.mineCount, claimed.revealedTiles.length);
+    const potentialPayout = parseFloat((claimed.betAmount * newMultiplier).toFixed(2));
+
+    claimed.multiplier = newMultiplier;
+    await claimed.save();
 
     return {
-      hit: false, gameId: String(game._id), status: 'ACTIVE',
-      tileIndex, revealedTiles: newRevealed, multiplier: newMultiplier, potentialPayout,
+      hit: false, gameId: String(claimed._id), status: 'ACTIVE',
+      tileIndex, revealedTiles: claimed.revealedTiles, multiplier: newMultiplier, potentialPayout,
     };
   }
 
@@ -328,17 +350,20 @@ export class MinesService {
     const multiplier = calcMultiplier(game.mineCount, game.revealedTiles.length);
     const payout = parseFloat((game.betAmount * multiplier).toFixed(2));
 
-    // Update game in MongoDB
-    game.status = 'CASHEDOUT';
-    game.multiplier = multiplier;
-    game.payout = payout;
-    await game.save();
+    // Atomically claim the game ACTIVE -> CASHEDOUT BEFORE crediting, so a
+    // concurrent cashout (or reveal) can't trigger a double payout.
+    const claimed = await this.minesGameModel.findOneAndUpdate(
+      { _id: gameId, userId, status: 'ACTIVE' },
+      { $set: { status: 'CASHEDOUT', multiplier, payout } },
+      { new: true },
+    );
+    if (!claimed) throw new BadRequestException('Game is not active or cannot cash out');
 
     // Credit payout (Prisma — stays in PostgreSQL)
     const payoutAllocations = this.buildAllocations(
-      game.walletType,
-      game.bonusAmount || 0,
-      game.betAmount,
+      claimed.walletType,
+      claimed.bonusAmount || 0,
+      claimed.betAmount,
       payout,
     );
     const payoutPrimaryAllocation = payoutAllocations[0];
@@ -364,7 +389,7 @@ export class MinesService {
           paymentMethod: payoutPaymentMethod,
           paymentDetails: {
             source: 'MINES',
-            gameId: String(game._id),
+            gameId: String(claimed._id),
             walletField:
               payoutAllocations.length === 1 && payoutPrimaryAllocation
                 ? payoutPrimaryAllocation.walletField
@@ -375,26 +400,28 @@ export class MinesService {
                 : payoutAllocations.map((allocation) => allocation.walletLabel).join(' + '),
             allocations: payoutAllocations,
           },
-          remarks: `Mines cashout after ${game.revealedTiles.length} safe tiles`,
+          remarks: `Mines cashout after ${claimed.revealedTiles.length} safe tiles`,
           createdAt: new Date(),
           updatedAt: new Date(),
         },
       });
     });
 
+    await this.ggrService.updateSnapshot('mines', 0, 0, true).catch(() => undefined);
+
     this.bonusService.emitWalletRefresh(userId);
 
     return {
-      gameId: String(game._id),
+      gameId: String(claimed._id),
       status: 'CASHEDOUT',
       multiplier,
       payout,
       potentialPayout: payout,
-      betAmount: game.betAmount,
-      minePositions: game.minePositions,
-      serverSeedHash: game.serverSeedHash, nonce: game.nonce,
-      clientSeed: game.clientSeed,
-      revealedTiles: game.revealedTiles,
+      betAmount: claimed.betAmount,
+      minePositions: claimed.minePositions,
+      serverSeedHash: claimed.serverSeedHash, nonce: claimed.nonce,
+      clientSeed: claimed.clientSeed,
+      revealedTiles: claimed.revealedTiles,
     };
   }
 

@@ -19,6 +19,7 @@ import {
   deductStake,
   logStakeTransaction,
   settlePayout,
+  buildAllocations,
 } from '../originals/originals-helpers';
 import {
   ColorRound,
@@ -176,67 +177,184 @@ export class ColorRoundService {
 
   /** Launch one independent continuous loop per room. */
   startLoops() {
-    for (const room of COLOR_ROOMS) {
-      this.runRound(room).catch((e) =>
-        this.logger.error(`Color room ${room} loop error`, e),
-      );
-    }
-    this.logger.log(`Color round loops started for rooms: ${COLOR_ROOMS.join(', ')}`);
+    // Restart recovery: settle any rounds that were left mid-flight by a crash
+    // BEFORE we open new ones, so staked PENDING bets aren't stranded forever.
+    // Done sequentially so recovery completes before the live loops begin.
+    this.recoverStrandedRounds()
+      .catch((e) => this.logger.error('Color restart recovery error', e))
+      .finally(() => {
+        for (const room of COLOR_ROOMS) {
+          this.runRound(room).catch((e) =>
+            this.logger.error(`Color room ${room} loop error`, e),
+          );
+        }
+        this.logger.log(
+          `Color round loops started for rooms: ${COLOR_ROOMS.join(', ')}`,
+        );
+      });
   }
 
+  /**
+   * On boot, find rounds the previous process left behind and settle them so
+   * their staked PENDING bets get paid/cleared:
+   *   - LOCKED rounds        → settle immediately (the draw window had passed).
+   *   - BETTING rounds whose betting window has already elapsed (openedAt +
+   *     room duration is in the past) → flip to LOCKED, then settle.
+   * Fresh BETTING rounds still within their window are left untouched; the live
+   * loop opens a NEW period and they will be recovered on a later boot once they
+   * age past their window.
+   */
+  private async recoverStrandedRounds(): Promise<void> {
+    for (const room of COLOR_ROOMS) {
+      const durationMs = ROOM_DURATIONS_MS[room];
+      const cutoff = new Date(Date.now() - durationMs);
+
+      // 1) Stale BETTING rounds (window elapsed) → LOCKED so settleRound finds them.
+      const staleBetting = await this.roundModel.find({
+        room,
+        status: 'BETTING',
+        openedAt: { $lte: cutoff },
+      });
+      for (const r of staleBetting) {
+        const claimed = await this.roundModel.findOneAndUpdate(
+          { _id: r._id, status: 'BETTING' },
+          { $set: { status: 'LOCKED', lockedAt: new Date() } },
+          { new: true },
+        );
+        if (claimed) {
+          this.logger.warn(
+            `[${room}] recovery: stale BETTING period ${r.period} → LOCKED`,
+          );
+        }
+      }
+
+      // 2) Settle every LOCKED round for this room, draining the backlog.
+      //    settleRound atomically claims the latest LOCKED round each call, so we
+      //    loop until none remain.
+      let guard = 0;
+      while (guard++ < 1000) {
+        const pending = await this.roundModel
+          .findOne({ room, status: 'LOCKED' })
+          .lean();
+        if (!pending) break;
+        this.logger.warn(
+          `[${room}] recovery: settling stranded LOCKED period ${pending.period}`,
+        );
+        await this.settleRound(room).catch((e) =>
+          this.logger.error(
+            `[${room}] recovery settle error on period ${pending.period}`,
+            e,
+          ),
+        );
+      }
+    }
+  }
+
+  /** Small backoff used to reschedule a room loop after any failure. */
+  private static readonly LOOP_BACKOFF_MS = 1000;
+
   private async runRound(room: ColorRoom): Promise<void> {
-    const durationMs = ROOM_DURATIONS_MS[room];
-    const period = await this.nextPeriod(room);
-
-    // Commit: generate the per-round seed, publish only the hash.
-    const { serverSeed, serverSeedHash } = generateServerSeed();
-    const openedAt = new Date();
-
-    await this.roundModel.create({
-      room,
-      period,
-      serverSeed,
-      serverSeedHash,
-      status: 'BETTING',
-      openedAt,
-    });
-
-    const endsAt = Date.now() + durationMs;
-    this.runtime.set(room, { period, status: 'BETTING', serverSeedHash, endsAt });
-
-    this._onBetting?.({
-      room,
-      period,
-      serverSeedHash,
-      endsIn: durationMs,
-      lockIn: Math.max(0, durationMs - LOCK_WINDOW_MS),
-    });
-    this.logger.debug(`[${room}] period ${period} — BETTING (${durationMs}ms)`);
-
-    // Open betting until the final 5s.
-    await this.sleep(Math.max(0, durationMs - LOCK_WINDOW_MS));
-
-    // Lock betting for the final window.
-    const rt = this.runtime.get(room);
-    if (rt) rt.status = 'LOCKED';
-    await this.roundModel.updateOne(
-      { room, period },
-      { $set: { status: 'LOCKED', lockedAt: new Date() } },
-    );
-    this._onLock?.({ room, period });
-    this.logger.debug(`[${room}] period ${period} — LOCKED`);
-
-    await this.sleep(LOCK_WINDOW_MS);
-
-    // Draw + settle at lock+0.
+    // Self-healing loop body: ANY error must NOT permanently freeze the room.
+    // The whole round is wrapped in try/catch/finally and `finally` ALWAYS
+    // schedules the next round with a small backoff. There is intentionally
+    // NO bare trailing this.runRound(room) — rescheduling lives only in finally.
     try {
+      const durationMs = ROOM_DURATIONS_MS[room];
+
+      // Commit: pick the next period + generate the per-round seed, publishing
+      // only the hash. Retries on a duplicate-period race (E11000).
+      const { serverSeed, serverSeedHash } = generateServerSeed();
+      const openedAt = new Date();
+      const period = await this.createRoundWithRetry(
+        room,
+        serverSeed,
+        serverSeedHash,
+        openedAt,
+      );
+
+      const endsAt = Date.now() + durationMs;
+      this.runtime.set(room, {
+        period,
+        status: 'BETTING',
+        serverSeedHash,
+        endsAt,
+      });
+
+      this._onBetting?.({
+        room,
+        period,
+        serverSeedHash,
+        endsIn: durationMs,
+        lockIn: Math.max(0, durationMs - LOCK_WINDOW_MS),
+      });
+      this.logger.debug(`[${room}] period ${period} — BETTING (${durationMs}ms)`);
+
+      // Open betting until the final 5s.
+      await this.sleep(Math.max(0, durationMs - LOCK_WINDOW_MS));
+
+      // Lock betting for the final window.
+      const rt = this.runtime.get(room);
+      if (rt) rt.status = 'LOCKED';
+      await this.roundModel.updateOne(
+        { room, period },
+        { $set: { status: 'LOCKED', lockedAt: new Date() } },
+      );
+      this._onLock?.({ room, period });
+      this.logger.debug(`[${room}] period ${period} — LOCKED`);
+
+      await this.sleep(LOCK_WINDOW_MS);
+
+      // Draw + settle at lock+0.
       await this.settleRound(room);
     } catch (e) {
-      this.logger.error(`[${room}] settle error on period ${period}`, e);
+      // Never let a DB / settlement error escape and kill the loop.
+      this.logger.error(`[${room}] runRound error`, e);
+    } finally {
+      // ALWAYS schedule the next round, even after an error, with a small
+      // backoff so a transient DB outage can't hot-loop and can self-recover.
+      setTimeout(() => {
+        this.runRound(room).catch((e) =>
+          this.logger.error(`[${room}] runRound reschedule error`, e),
+        );
+      }, ColorRoundService.LOOP_BACKOFF_MS);
     }
+  }
 
-    // Seamless: immediately start the next round (no dead air).
-    this.runRound(room);
+  /**
+   * Create the next round document, retrying with period+1 on a duplicate-key
+   * (E11000) collision against the unique (room, period) index. Bounded so a
+   * persistent failure can't spin forever.
+   */
+  private async createRoundWithRetry(
+    room: ColorRoom,
+    serverSeed: string,
+    serverSeedHash: string,
+    openedAt: Date,
+    maxAttempts = 5,
+  ): Promise<number> {
+    let period = await this.nextPeriod(room);
+    for (let attempt = 0; attempt < maxAttempts; attempt++) {
+      try {
+        await this.roundModel.create({
+          room,
+          period,
+          serverSeed,
+          serverSeedHash,
+          status: 'BETTING',
+          openedAt,
+        });
+        return period;
+      } catch (e: any) {
+        const isDup = e?.code === 11000 || e?.code === '11000';
+        if (!isDup || attempt === maxAttempts - 1) throw e;
+        this.logger.warn(
+          `[${room}] duplicate period ${period} (E11000) — retrying period+1`,
+        );
+        period += 1;
+      }
+    }
+    // Unreachable, but satisfies the type checker.
+    throw new Error(`[${room}] could not allocate a unique period`);
   }
 
   /**
@@ -244,28 +362,41 @@ export class ColorRoundService {
    * PENDING bet, broadcast, and mark the round SETTLED.
    */
   async settleRound(room: ColorRoom): Promise<void> {
-    const round = await this.roundModel
+    // Find the candidate LOCKED round first (read its seed/period), but DO NOT
+    // trust it for the draw until we have atomically claimed it below.
+    const candidate = await this.roundModel
       .findOne({ room, status: 'LOCKED' })
       .sort({ period: -1 });
-    if (!round) {
+    if (!candidate) {
       this.logger.warn(`[${room}] settleRound: no LOCKED round found`);
       return;
     }
 
     // ── Provably-fair draw (pure HMAC — NO Date.now in the outcome) ──────────
     // clientSeed = the period id, nonce = 0, matching hmacHex/rollInt helpers.
-    const digest = hmacHex(round.serverSeed, String(round.period), 0);
+    const digest = hmacHex(candidate.serverSeed, String(candidate.period), 0);
     const result = rollInt(digest, 10); // 0..9
     const resultColors = colorsForNumber(result);
     const size = sizeForNumber(result);
     const settledAt = new Date();
 
-    await this.roundModel.updateOne(
-      { _id: round._id },
+    // ── Atomic round claim ───────────────────────────────────────────────────
+    // Only one settler can flip LOCKED → SETTLED. If another worker / a restart
+    // recovery already claimed it, findOneAndUpdate returns null and we abort so
+    // bets are never settled twice.
+    const round = await this.roundModel.findOneAndUpdate(
+      { _id: candidate._id, status: 'LOCKED' },
       { $set: { result, resultColors, size, status: 'SETTLED', settledAt } },
+      { new: true },
     );
+    if (!round) {
+      this.logger.warn(
+        `[${room}] settleRound: round ${candidate.period} already claimed — aborting`,
+      );
+      return;
+    }
     const rt = this.runtime.get(room);
-    if (rt) rt.status = 'SETTLED';
+    if (rt && rt.period === round.period) rt.status = 'SETTLED';
 
     // ── Settle all PENDING bets for this period ──────────────────────────────
     const bets = await this.betModel.find({
@@ -279,22 +410,34 @@ export class ColorRoundService {
 
     const maxWin = await this.getMaxWin();
 
-    for (const bet of bets) {
+    for (const candidateBet of bets) {
       const multiplier = this.multiplierFor(
-        bet.betType,
-        bet.selection,
+        candidateBet.betType,
+        candidateBet.selection,
         result,
         resultColors,
         size,
       );
       const won = multiplier > 0;
-      let payout = won ? roundCurrency(bet.amount * multiplier) : 0;
+      let payout = won ? roundCurrency(candidateBet.amount * multiplier) : 0;
       if (maxWin && payout > maxWin) payout = roundCurrency(maxWin);
 
-      bet.status = won ? 'WON' : 'LOST';
-      bet.multiplier = won ? multiplier : 0;
-      bet.payout = payout;
-      await bet.save();
+      // ── Atomic bet claim ─────────────────────────────────────────────────
+      // Flip PENDING → WON/LOST atomically. If another worker already settled
+      // this bet, findOneAndUpdate returns null and we skip paying it out so a
+      // bet can never be paid twice.
+      const bet = await this.betModel.findOneAndUpdate(
+        { _id: candidateBet._id, status: 'PENDING' },
+        {
+          $set: {
+            status: won ? 'WON' : 'LOST',
+            payout,
+            multiplier: won ? multiplier : 0,
+          },
+        },
+        { new: true },
+      );
+      if (!bet) continue; // already claimed by another settler — do not pay.
 
       const betId = String(bet._id);
 
@@ -459,33 +602,58 @@ export class ColorRoundService {
       useBonus,
     );
 
-    // ── 6. Create PENDING bet ────────────────────────────────────────────────
-    const bet = await this.betModel.create({
-      room,
-      period,
-      userId,
-      betType,
-      selection,
-      amount,
-      walletType,
-      usedBonus: bonusUsed > 0,
-      bonusAmount: bonusUsed,
-      currency: walletType === 'crypto' ? 'USD' : user.currency || 'INR',
-      status: 'PENDING',
-    });
-    const betId = String(bet._id);
+    // ── 6 + 7. Create PENDING bet + write the BET_PLACE log ───────────────────
+    // The stake is already debited from Postgres above. The bet doc lives in
+    // Mongo (a separate store), so a failure here would otherwise strand the
+    // player's money. Wrap both cross-store writes and COMPENSATE by re-crediting
+    // the exact wallets the stake came from before rethrowing.
+    let bet: ColorBetDocument | undefined;
+    let betId: string;
+    try {
+      bet = await this.betModel.create({
+        room,
+        period,
+        userId,
+        betType,
+        selection,
+        amount,
+        walletType,
+        usedBonus: bonusUsed > 0,
+        bonusAmount: bonusUsed,
+        currency: walletType === 'crypto' ? 'USD' : user.currency || 'INR',
+        status: 'PENDING',
+      });
+      betId = String(bet._id);
 
-    // ── 7. Stake (BET_PLACE) log ─────────────────────────────────────────────
-    await logStakeTransaction(
-      this.prisma,
-      userId,
-      amount,
-      walletType,
-      bonusUsed,
-      GAME_SOURCE,
-      betId,
-      `Color ${room} #${period} bet: ${betType} ${selection}`,
-    );
+      // ── 7. Stake (BET_PLACE) log ───────────────────────────────────────────
+      await logStakeTransaction(
+        this.prisma,
+        userId,
+        amount,
+        walletType,
+        bonusUsed,
+        GAME_SOURCE,
+        betId,
+        `Color ${room} #${period} bet: ${betType} ${selection}`,
+      );
+    } catch (err) {
+      // Compensating refund: mirror the wallet allocation that deductStake used
+      // so we restore exactly main + bonus (or crypto) that was taken.
+      await this.refundStake(userId, amount, walletType, bonusUsed).catch((re) =>
+        this.logger.error(
+          `[${room}] CRITICAL: failed to refund stranded stake for user ${userId} after bet-create failure`,
+          re,
+        ),
+      );
+      // If the bet doc was created but the log failed, drop the orphan doc.
+      if (bet) {
+        await this.betModel
+          .deleteOne({ _id: bet._id })
+          .catch(() => undefined);
+      }
+      this.bonusService.emitWalletRefresh(userId);
+      throw err;
+    }
 
     await this.roundModel.updateOne(
       { room, period },
@@ -538,6 +706,26 @@ export class ColorRoundService {
       return String(n);
     }
     throw new BadRequestException('betType must be color, number, or bigsmall');
+  }
+
+  /**
+   * Re-credit a deducted stake to the exact wallets it was taken from. Used as a
+   * compensating action when the cross-store bet write fails after deductStake
+   * has already debited Postgres. Mirrors buildAllocations / deductStake.
+   */
+  private async refundStake(
+    userId: number,
+    amount: number,
+    walletType: 'fiat' | 'crypto' | string,
+    bonusUsed: number,
+  ): Promise<void> {
+    const allocs = buildAllocations(walletType, bonusUsed, amount, amount);
+    if (allocs.length === 0) return;
+    const data: Record<string, any> = {};
+    for (const a of allocs) {
+      data[a.walletField] = { increment: a.amount };
+    }
+    await this.prisma.user.update({ where: { id: userId }, data });
   }
 
   private async getMaxWin(): Promise<number> {
